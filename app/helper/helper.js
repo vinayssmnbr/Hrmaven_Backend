@@ -42,3 +42,20 @@ exports.login = async function(req, res) {
       }
     });
 }
+
+
+//to check that email exist or not
+exports.verify_email = async function(email)
+{
+  try {
+    var data = await User.find({email:email});
+    if(data){
+    return data;
+    } else{
+      return "";
+    }
+}
+catch (err) {
+    return err;
+}
+}
