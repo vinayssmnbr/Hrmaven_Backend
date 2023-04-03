@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
+    googleID:{
+        type:String
+    },
     username: {
         type: String,
         required: false,
@@ -15,12 +18,10 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: true,
         minlength: 8
     },
     confirm: {
         type: String,
-        required: true
     }
 
 }, { timestamps: true })
