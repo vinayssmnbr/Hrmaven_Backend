@@ -12,7 +12,6 @@ router.get(
 );
 
  
-console.log("passport", passport);
 router.get("/google/callback", passport.authenticate('google'), authController.googleController);
 
 

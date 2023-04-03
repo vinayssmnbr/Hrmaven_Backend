@@ -23,7 +23,7 @@ app.use("", Landing);
 Database.connection;
 
 //port used
-var PORT = process.env.PORT || 8000;
+var PORT = process.env.PORT || 3000;
 app.listen(PORT, function (err) {
   if (err) console.log(err);
   console.log("Server listening on PORT", PORT);
