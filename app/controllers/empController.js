@@ -5,7 +5,7 @@ const employeeService = require('../services/employeeService');
 
 
    //Add employee
- //http://localhost:8000/api/create
+   //http://localhost:8000/api/create
 
     const  createEmp = async (req, res) => {
     const { employeeId, name,  designation,email,contact  } = req.body;
@@ -64,7 +64,6 @@ const getsEmp=async(req, res) => {
 //patch
 
 
-
   const  update = (req, res)=>{
     if(!req.body){
         return res
@@ -92,8 +91,6 @@ const getsEmp=async(req, res) => {
 // http://localhost:8000/api/:id
 
 
-
-// const employeeService = require('./employee.service');
 
 const deleteEmployee = (req, res) => {
   const id = req.body.id;
