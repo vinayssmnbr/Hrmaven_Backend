@@ -10,6 +10,10 @@ const session = require("express-session");
 //for employee Management System
 const empRoutes=require('./app/routes/empRoute');
 
+const authRoutes = require("./app/routes/authRoute");
+const session = require("express-session");
+require("./app/middlewares/passport");
+require("./app/routes/authRoute");
 //module used
 app.use(express.json());
 app.use(cors());
@@ -41,3 +45,4 @@ app.use(
 
 //for employee Management System
 app.use("/api", empRoutes);
+app.use("/auth", authRoutes);
