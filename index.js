@@ -10,6 +10,7 @@ const authRoutes = require("./app/routes/authRoute");
 const session = require("express-session");
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
+const leaveRoute=require("./app/routes/leaveRoute")
 //module used
 app.use(express.json());
 app.use(cors());
@@ -40,3 +41,4 @@ app.use(
 );
 
 app.use("/auth", authRoutes);
+app.use("/api/leave",leaveRoute)
