@@ -8,6 +8,8 @@ const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
 const authRoutes = require("./app/routes/authRoute");
 const session = require("express-session");
+const bodyParser = require('body-parser');
+const attendanceRoutes = require('./app/routes/attendanceRoutes');
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
 //module used
@@ -15,28 +17,35 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 //route used
 app.use("", Landing);
-
+app.use('/attendance', attendanceRoutes);
 //Database Connection
 Database.connection;
 
 //port used
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function (err) {
-  if (err) console.log(err);
-  console.log("Server listening on PORT", PORT);
+app.listen(PORT, function(err) {
+    if (err) console.log(err);
+    console.log("Server listening on PORT", PORT);
 });
 
 //Google OAuth
 app.use(
-  session({
-    secret: "vinay",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true },
-  })
+    session({
+        secret: "vinay",
+        resave: false,
+        saveUninitialized: true,
+        cookie: { secure: true },
+    })
 );
 
 app.use("/auth", authRoutes);
+
+
+
+module.exports = app;
