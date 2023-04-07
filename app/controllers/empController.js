@@ -104,7 +104,7 @@ const getsEmp=async(req, res) => {
 
 
 const deleteEmployee = (req, res) => {
-  const id = req.body.id;
+  const id = req.params.id;
 
   employeeService.deleteEmployee(id)
     .then(message => {
