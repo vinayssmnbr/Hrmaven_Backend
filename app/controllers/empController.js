@@ -8,21 +8,32 @@ const employeeService = require('../services/employeeService');
    //http://localhost:8000/api/create
 
     const  createEmp = async (req, res) => {
-    const { employeeId, name,  designation,email,contact  } = req.body;
+    const { uid, name,  designation,email,mobile, dateOfJoining, dateOfBirth , gender, address,bankname,adhaarno,accountno, ifsc,panno} = req.body;
     const user = await EmployeeModel.findOne({ email: email });
     if (user) {
       res.send({ status: "failed", message: "Email already exists in the register" });
     } else {
-      if (employeeId && name && email &&  designation && contact ) {
+      if (uid && name && email &&  designation && mobile && dateOfJoining && dateOfBirth && gender && address &&  bankname &&  adhaarno && accountno && ifsc && panno) {
         try {
            
           
             const newuser = new EmployeeModel({
-                employeeId:employeeId,
+                uid:uid,
                 email:email,
                 name:name,
                 designation:designation,
-                contact:contact
+                mobile:mobile,
+                dateOfBirth: dateOfBirth,
+                dateOfJoining:dateOfJoining,
+                gender: gender,
+                address: address,
+                bankname: bankname,
+                adhaarno: adhaarno,
+                accountno:accountno,
+                ifsc: ifsc,
+                panno:panno
+
+
           });
           await newuser.save();
           const saved_user = await EmployeeModel.findOne({ email: email })
@@ -104,9 +115,7 @@ const deleteEmployee = (req, res) => {
     });
 };
 
-module.exports = {
-  deleteEmployee,
-};
+
 
 
 
