@@ -15,10 +15,18 @@ exports.signup = async function(req, res) {
 };
 
 exports.auth = async function(req, res) {
+    const token = req.headers.authorization.split(' ')[1];
     res.send({
-        message: "dashboard"
+        message: "dashboard",
+        token: token
     });
 }
+
+exports.getUserProfile = async function(req, res) {
+
+    help.getUserProfile(req, res);
+   
+  };
 
 exports.forgot = async function(req, res) {
     auth.tokenParser(req, res);
