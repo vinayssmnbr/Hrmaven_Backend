@@ -6,8 +6,11 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
-const authRoutes = require("./app/routes/authRoute");
 const session = require("express-session");
+//for employee Management System
+const empRoutes=require('./app/routes/empRoute');
+
+const authRoutes = require("./app/routes/authRoute");
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
 //module used
@@ -39,4 +42,6 @@ app.use(
   })
 );
 
+//for employee Management System
+app.use("/api", empRoutes);
 app.use("/auth", authRoutes);
