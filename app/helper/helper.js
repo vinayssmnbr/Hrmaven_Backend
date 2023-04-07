@@ -17,7 +17,7 @@ exports.login = async function(req, res) {
             });
           }
           if (result) {
-            let token = jwt.sign({ UserID: user._id }, process.env.JWT_TOKEN_KEY, {
+            let token = jwt.sign({ userId: user._id }, process.env.JWT_TOKEN_KEY, {
               expiresIn: "12h",
             });
             res.cookie("token", token, {
@@ -52,20 +52,22 @@ exports.getUserProfile = async function(req, res) {
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  jwt.verify(token, process.env.JWT_TOKEN_KEY, async function(err, decoded) {
-    if (err) {
-      return res.status(401).json({ message: "Unauthorized" });
-    } else {
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+    const user = await User.findById(decoded.userId);
 
-      const user = await User.findById(decoded.UserID);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      } else {
-        return res.status(200).json(user);
-      }
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  });
+    return res.status(200).json(user);
+    
+  } catch (err) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 }
+
+
 
 
 //to check that email exist or not

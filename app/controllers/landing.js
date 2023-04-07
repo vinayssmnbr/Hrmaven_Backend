@@ -28,6 +28,12 @@ exports.getUserProfile = async function(req, res) {
    
   };
 
+  exports.getUserProfileId = async function(req, res) {
+
+    help.getUserProfileId(req, res);
+   
+  };  
+
 exports.forgot = async function(req, res) {
     auth.tokenParser(req, res);
 }
