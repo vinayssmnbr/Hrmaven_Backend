@@ -32,13 +32,13 @@ exports.login = async function(req, res) {
             });
           } else {
             res.json({
-              message: "password does not matched",
+              message: "Invalid",
             });
           }
         });
       } else {
         res.json({
-          message: "no user found",
+          message: "Invalid",
         });
       }
     });
