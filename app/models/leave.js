@@ -1,19 +1,30 @@
 const mongoose = require("mongoose");
+
 const leaveSchema = new mongoose.Schema({
+  
     employeeId:{
         type:String
     },
     employeeName:{
         type:String
     },
-    reason:{
-        type:String
-    },
-    action:{
-        type:String,
-        enum:["accept","reject"]
-    },
-    from:Date,
-    to:Date
+   from:{
+    type:Date
+   },
+
+   to:{
+    type:Date
+   },
+   reason:{
+    type:String
+   },
+   status:{
+    type:String,
+    enum:["accept","reject"],
+    default:"pending",
+   }
+
+
 })
-module.exports =  mongoose.model("leave2",leaveSchema)
+
+module.exports = mongoose.model("leave4",leaveSchema)
