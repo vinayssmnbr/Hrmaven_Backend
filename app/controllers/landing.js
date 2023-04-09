@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const help = require('../helper/helper');
 const auth = require('../middlewares/authentication');
-const service = require('../services/user')
+const service = require('../Services/user.js')
 
 exports.login = async function(req, res) {
     help.login(req, res);
@@ -15,10 +15,24 @@ exports.signup = async function(req, res) {
 };
 
 exports.auth = async function(req, res) {
+    const token = req.headers.authorization.split(' ')[1];
     res.send({
-        message: "dashboard"
+        message: "dashboard",
+        token: token
     });
 }
+
+exports.getUserProfile = async function(req, res) {
+
+    help.getUserProfile(req, res);
+   
+  };
+
+  exports.getUserProfileId = async function(req, res) {
+
+    help.getUserProfileId(req, res);
+   
+  };  
 
 exports.forgot = async function(req, res) {
     auth.tokenParser(req, res);
