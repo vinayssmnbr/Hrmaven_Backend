@@ -1,9 +1,9 @@
+const EmployeeModel = require("../models/employeeModel");
 
-const EmployeeModel = require('../models/employeeModel');
-
-const getAllEmployees = async () => {
+const getAllEmployees = async (q) => {
   try {
-    const employees = await EmployeeModel.find();
+    console.log(q);
+    const employees = await EmployeeModel.find(q);
     return employees;
   } catch (err) {
     throw new Error(err.message);
@@ -11,5 +11,5 @@ const getAllEmployees = async () => {
 };
 
 module.exports = {
-  getAllEmployees
+  getAllEmployees,
 };
