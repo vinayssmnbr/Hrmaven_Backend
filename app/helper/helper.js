@@ -33,7 +33,7 @@ exports.login = async function (req, res) {
           });
         } else {
           res.json({
-            message: "Invaliddd",
+            message: "Invalid",
           });
         }
       });

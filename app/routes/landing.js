@@ -8,8 +8,8 @@ router.get('/auth',verify.verify,landing.auth);
 router.post('/login',landing.login);
 router.get('/user-profile',landing.getUserProfile);
 
-router.post('/signup',landing.signup);
-router.post('/forgotpassword',landing.forgot);
-router.post('/resetpassword',landing.reset);
+router.post('/signup', landing.signup);
+router.post('/forgotpassword', landing.forgot);
+router.post('/resetpassword', landing.reset);
 
 module.exports = router;
