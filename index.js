@@ -10,6 +10,8 @@ const authRoutes = require("./app/routes/authRoute");
 const session = require("express-session");
 const bodyParser = require('body-parser');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
+const empRoutes = require('./app/routes/empRoute')
+
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
 //module used
@@ -17,6 +19,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -46,6 +49,6 @@ app.use(
 
 app.use("/auth", authRoutes);
 
-
+app.use("/api", empRoutes);
 
 module.exports = app;
