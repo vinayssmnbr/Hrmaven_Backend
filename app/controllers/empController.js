@@ -67,7 +67,6 @@ const getsEmp = async(req, res) => {
     res.json(res.employee);
 };
 
-h
 
 
 
