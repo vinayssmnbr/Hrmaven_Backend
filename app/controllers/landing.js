@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const help = require('../helper/helper');
 const auth = require('../middlewares/authentication');
-const service = require('../Services/user.js')
+const service = require('../services/user')
 
 exports.login = async function(req, res) {
     help.login(req, res);
