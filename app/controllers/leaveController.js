@@ -27,6 +27,19 @@ const leave_details = async (req,res) =>{
 
 };
 
+const updateStatus = async(req,res)=>{
+    let id = req.params.id;
+    try{
+        await Leave.findByIdAndUpdate(id, req.body);
+        res.send({msg:"Leave updated", id})
+    }catch(err){
+        res.send({err})
+    }
+}
+
+
+
+
 //Add leave data
 
 const leave_create = async(req,res)=>{
@@ -34,8 +47,7 @@ const leave_create = async(req,res)=>{
     const leave_var = new Leave({
         employeeId: req.body.employeeId,
         employeeName: req.body.employeeName,
-        // from:Date(req.body.from),
-        // to: Date(req.body.to),
+
          from:req.body.from,
         to: req.body.to,
         reason:req.body.reason,
@@ -59,9 +71,12 @@ const leave_create = async(req,res)=>{
 
 }
 
+
 module.exports = {
     leave_all,
     leave_create,
-    leave_details
+    leave_details,
+    updateStatus
+
 
 }
