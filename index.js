@@ -14,8 +14,8 @@ const authRoutes = require("./app/routes/authRoute");
 const bodyParser = require('body-parser');
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
-const leaveRoute=require("./app/routes/leaveRoute")
-//module used
+const leaveRoute = require("./app/routes/leaveRoute")
+    //module used
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
