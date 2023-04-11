@@ -48,8 +48,7 @@ const createEmp = async(req, res) => {
 };
 
 
-// GET  ALL Employee
-// http://localhost:8000/api/find
+
 
 
 const getEmp = async(req, res) => {
@@ -62,15 +61,13 @@ const getEmp = async(req, res) => {
 };
 
 
-//GET A specific Employee
+
 
 const getsEmp = async(req, res) => {
     res.json(res.employee);
 };
 
-//Update a new idetified user by user id
-//http://localhost:8000/api/:id
-//patch
+h
 
 
 
@@ -96,10 +93,6 @@ const update = (req, res) => {
         })
 }
 
-
-//Delete a user with with specified user id in the request
-//delete
-// http://localhost:8000/api/:id
 
 
 
