@@ -4,7 +4,7 @@ async function getAttendance(req, res, next) {
     try {
         const attendance = await Attendance.find();
         console.log('Attendance records retrieved successfully!');
-        res.json(attendance);
+        res.send(attendance);
     } catch (error) {
         next(error);
     }

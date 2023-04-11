@@ -62,7 +62,7 @@ const employeeSchema = new Schema({
     },
     ifsc: {
         type: "string",
-        "required": true
+        required: true
     },
     mobile: {
         type: Number,

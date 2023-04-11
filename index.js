@@ -14,6 +14,7 @@ const authRoutes = require("./app/routes/authRoute");
 const bodyParser = require('body-parser');
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
+const leaveRoute=require("./app/routes/leaveRoute")
 //module used
 app.use(express.json());
 app.use(cors());
@@ -50,7 +51,7 @@ app.use(
 //for employee Management System
 app.use("/api", empRoutes);
 app.use("/auth", authRoutes);
-
+app.use("/api/leave",leaveRoute)
 app.use("/api", empRoutes);
 
 module.exports = app;
