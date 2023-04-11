@@ -3,14 +3,11 @@ const User = require('../models/credential');
 const help = require('../helper/helper');
 const mailer = require('../../config/mail');
 
-
 exports.verify = async function(req,res,next)
 {
   console.log('In Verify Token') 
   const token = req.headers.authorization.split(' ')[1];
   if (!token) return res.status(401).send('Access Denied !');
-
-
   console.log("abc",token);
 
   try 

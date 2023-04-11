@@ -14,7 +14,8 @@ const empRoutes = require('./app/routes/empRoute')
 
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
-//module used
+const leaveRoute = require("./app/routes/leaveRoute")
+    //module used
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -52,3 +53,4 @@ app.use("/auth", authRoutes);
 app.use("/api", empRoutes);
 
 module.exports = app;
+app.use("/api/leave", leaveRoute)
