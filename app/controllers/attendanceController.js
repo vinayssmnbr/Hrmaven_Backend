@@ -3,8 +3,10 @@ const Attendance = require('../models/attendance');
 async function getAttendance(req, res, next) {
     try {
         const attendance = await Attendance.find();
-        console.log('Attendance records retrieved successfully!');
-        res.send(attendance);
+        // const attendance = await Attendance.where({ 'date': {$gt:'2023-01-31',$lt:'2023-03-01'},'status':'present'});
+        // console.log('Attendance records retrieved successfully! '+attendance);
+
+        res.send(attendance)
     } catch (error) {
         next(error);
     }
