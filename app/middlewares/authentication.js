@@ -48,7 +48,7 @@ exports.tokenParser = async function (req, res, next) {
     );
     console.log(token);
 
-    var link = "http://localhost:4200/resetpassword/" + token;
+    var link = "https://turneazy.com/resetpassword/" + token;
     console.log(link);
     var mailResponse = await mailer.mail(
       email,
