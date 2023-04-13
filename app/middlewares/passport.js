@@ -19,7 +19,6 @@ passport.use(
     },
     function (request, accessToken, refreshToken, profile, done) {
       userProfile = profile;
-      console.log(profile);
       return done(null, profile);
     }
   )

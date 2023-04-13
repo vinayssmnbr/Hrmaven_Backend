@@ -89,6 +89,33 @@ const employeeSchema = new Schema({
     //     message: props => `${props.value} is not a valid PAN number!`
     //   }
   },
+  fatherName:{
+    type:String
+  },
+  motherNmae:{
+    type:String  
+  },
+  maritalStatus:{
+    type:String
+  },
+  bloodGroup:{
+    type:String
+  },
+  nationality:{
+    type:String
+  },
+  city:{
+    type:String
+  },
+  postalCode:{
+    type:Number
+  },
+  state:{
+    type:String
+  },
+  passport:{
+    type:String
+  }
 });
 
 //MODEL

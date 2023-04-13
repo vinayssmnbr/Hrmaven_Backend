@@ -2,7 +2,6 @@ const EmployeeModel = require("../models/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
 
-
 //Add employee
 //http://localhost:8000/api/create
 
@@ -31,22 +30,24 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      uid &&
+      (uid,
       name &&
-      email &&
-      designation &&
-      mobile &&
-      dateOfJoining &&
-      dateOfBirth &&
-      gender &&
-      address &&
-      bankname &&
-      adhaarno &&
-      accountno &&
-      ifsc &&
-      panno
+        email &&
+        designation &&
+        mobile &&
+        dateOfJoining &&
+        dateOfBirth &&
+        gender &&
+        address &&
+        bankname &&
+        adhaarno &&
+        accountno &&
+        ifsc &&
+        panno)
     ) {
       try {
+        let doc = await EmployeeModel.find().sort({ uid: -1 });
+        let uid = +doc[0].uid + 1;
         const newuser = new EmployeeModel({
           uid: uid,
           email: email,
@@ -64,6 +65,7 @@ const createEmp = async (req, res) => {
           panno: panno,
         });
         await newuser.save();
+
         const saved_user = await EmployeeModel.findOne({ email: email });
 
         res.send({ status: "Success", message: "Added Successfully" });
@@ -76,7 +78,6 @@ const createEmp = async (req, res) => {
     }
   }
 };
-
 
 // GET  ALL Employee
 const getEmp = async (req, res) => {
@@ -94,13 +95,10 @@ const getEmp = async (req, res) => {
   }
 };
 
-
-
 //GET A specific Employee
 const getsEmp = async (req, res) => {
   res.json(res.employee);
 };
-
 
 //UPDATE DATA
 const update = (req, res) => {
