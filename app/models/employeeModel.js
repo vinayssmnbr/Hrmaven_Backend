@@ -73,8 +73,6 @@ const employeeSchema = new Schema({
   },
   ifsc: {
     type: String,
-    // required: true,
-    // unique: true,
     trim: true,
   },
   panno: {

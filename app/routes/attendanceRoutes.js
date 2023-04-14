@@ -6,5 +6,6 @@ router.get('/', attendanceController.getAttendance);
 router.post('/', attendanceController.createAttendance);
 router.patch('/:id', attendanceController.updateAttendance);
 router.delete('/:id', attendanceController.deleteAttendance);
+router.get('/report',attendanceController.getreport);
 
 module.exports = router;
