@@ -25,9 +25,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-//route used
-app.use("", Landing);
-app.use('/attendance', attendanceRoutes);
+
 //Database Connection
 Database.connection;
 
@@ -53,5 +51,7 @@ app.use("/api", empRoutes);
 app.use("/auth", authRoutes);
 app.use("/api/leave",leaveRoute)
 app.use("/api", empRoutes);
+app.use("", Landing);
+app.use('/attendance', attendanceRoutes);
 
 module.exports = app;

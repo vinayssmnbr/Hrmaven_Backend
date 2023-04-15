@@ -6,7 +6,7 @@ const leave_all =  async(req,res) =>{
    
     try{
         const employee_leave = await Leave.find();
-        res.json(employee_leave);
+        res.send(employee_leave);
     }catch(error){
         res.json({message:error})
     }
