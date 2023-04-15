@@ -27,7 +27,7 @@ const google = async (req, res) => {
         //   {}
         // );
         // return { token };
-        return {'invalid email'}
+        return 'invalid email';
       }
     }
   } catch (error) {
