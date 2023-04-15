@@ -15,18 +15,19 @@ const google = async (req, res) => {
 
         return { token };
       } else {
-        const newuser = new UserModel({
-          username: userProfile.displayName,
-          email: userProfile.emails[0].value,
-          googleID: userProfile.id,
-        });
-        const userRegister = await newuser.save();
-        var token = jwt.sign(
-          { email: userRegister.email },
-          process.env.JWT_TOKEN_KEY,
-          {}
-        );
-        return { token };
+        // const newuser = new UserModel({
+        //   username: userProfile.displayName,
+        //   email: userProfile.emails[0].value,
+        //   googleID: userProfile.id,
+        // });
+        // const userRegister = await newuser.save();
+        // var token = jwt.sign(
+        //   { email: userRegister.email },
+        //   process.env.JWT_TOKEN_KEY,
+        //   {}
+        // );
+        // return { token };
+        return {'invalid email'}
       }
     }
   } catch (error) {
