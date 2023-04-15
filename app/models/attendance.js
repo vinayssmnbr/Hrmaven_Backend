@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
-    empId: { type: String, required: true },
+    empId: { type: Number, required: true },
     name: { type: String, required: true },
     date: { type: Date, required: true },
     punch_in: { type: String, required: true },
