@@ -6,7 +6,7 @@ const attendanceSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     punch_in: { type: String, required: true },
     punch_out: { type: String, required: true },
-    status: { type: String, required: true },
+    status: { type: String, required: true, enum: ["present", "absent", "leave"] },
 });
 
 module.exports = mongoose.model('Attendance', attendanceSchema);
