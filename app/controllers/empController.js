@@ -1,4 +1,4 @@
-const EmployeeModel = require("../models/employeeModel");
+const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
 
@@ -21,6 +21,27 @@ const createEmp = async (req, res) => {
     accountno,
     ifsc,
     panno,
+    fatherName,
+    motherName,
+    maritalStatus,
+    bloodGroup,
+    nationality,
+    city,
+    postalCode,
+    state,
+    passport,
+    matric,
+    matricPercent,
+    inter,
+    interPercent,
+    graduation,
+    graduationStream,
+    graduationCgpa,
+    pg,
+    pgStream,
+    pgCgpa,
+    company,
+    duration,
   } = req.body;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
@@ -46,24 +67,46 @@ const createEmp = async (req, res) => {
         panno)
     ) {
       try {
-        let doc = await EmployeeModel.find().sort({ uid: -1 });
-        let uid = +doc[0].uid + 1;
-        const newuser = new EmployeeModel({
-          uid: uid,
-          email: email,
-          name: name,
-          designation: designation,
-          mobile: mobile,
-          dateOfBirth: dateOfBirth,
-          dateOfJoining: dateOfJoining,
-          gender: gender,
-          address: address,
-          bankname: bankname,
-          adhaarno: adhaarno,
-          accountno: accountno,
-          ifsc: ifsc,
-          panno: panno,
-        });
+        const newuser = new EmployeeModel(
+          req.body
+          //   {
+          //   uid: uid,
+          //   email: email,
+          //   name: name,
+          //   designation: designation,
+          //   mobile: mobile,
+          //   dateOfBirth: dateOfBirth,
+          //   dateOfJoining: dateOfJoining,
+          //   gender: gender,
+          //   address: address,
+          //   bankname: bankname,
+          //   adhaarno: adhaarno,
+          //   accountno: accountno,
+          //   ifsc: ifsc,
+          //   panno: panno,
+          //   fatherName,
+          //   motherName,
+          //   maritalStatus,
+          //   bloodGroup,
+          //   nationality,
+          //   city,
+          //   postalCode,
+          //   state,
+          //   passport,
+          //   matric,
+          //   matricPercent,
+          //   inter,
+          //   interPercent,
+          //   graduation,
+          //   graduationStream,
+          //   graduationCgpa,
+          //   pg,
+          //   pgStream,
+          //   pgCgpa,
+          //   company,
+          //   duration
+          // }
+        );
         await newuser.save();
 
         const saved_user = await EmployeeModel.findOne({ email: email });
@@ -139,10 +182,24 @@ const deleteEmployee = (req, res) => {
     });
 };
 
+const generateUid = async (req, res) => {
+  try {
+    let doc = await EmployeeModel.find().sort({ uid: -1 });
+    let uid = +doc[0].uid + 1;
+    console.log(uid, "uid");
+    res.send({ uid });
+  } catch (error) {
+    res.send({
+      msg: "error",
+    });
+  }
+};
+
 module.exports = {
   createEmp,
   deleteEmployee,
   update,
   getEmp,
   getsEmp,
+  generateUid,
 };

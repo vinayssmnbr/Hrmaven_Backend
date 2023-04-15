@@ -5,8 +5,9 @@ const emplcontroller = require("../controllers/empController");
 
 router.post("/create", emplcontroller.createEmp);
 router.get("/find", emplcontroller.getEmp);
+router.get("/uid", emplcontroller.generateUid);
 router.get("/:id", emplcontroller.getsEmp);
-router.patch("/:id", emplcontroller.update);
+router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);
 
 module.exports = router;
