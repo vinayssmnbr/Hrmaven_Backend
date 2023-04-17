@@ -65,6 +65,7 @@ const employeeSchema = new Schema({
       "Central Bank Of India",
       "HDFC Bank",
       "ICICI Bank",
+       'Others',
     ],
   },
   accountno: {
@@ -112,13 +113,7 @@ const employeeSchema = new Schema({
   pgCgpa: {
     type: String,
   },
-  company: {
-    type: String,
-  },
-  duration: {
-    from: Date,
-    to: Date,
-  },
+ 
   designation: {
     type: String,
     enum: [
@@ -126,8 +121,73 @@ const employeeSchema = new Schema({
       "Forntend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
+      "Quality Analyst",
     ],
   },
+  expcompany: {
+    type: String,
+  },
+  expduration: {
+  type:String
+  },
+  explocation:{
+    type:String
+  },
+  expcompany1:{
+    type:String
+  },
+  expduration1:{
+    type:String
+  },
+  explocation1:{
+    type:String
+  },
+  expdesignation:{
+    type:String,
+    enum: [
+      "Software Developer",
+      "Forntend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  expdesignation1:{
+    type:String,
+    enum: [
+      "Software Developer",
+      "Forntend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  jobdesignation:{
+    type:String,
+    enum: [
+      "Software Developer",
+      "Forntend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  joblocation1:{
+    type:String
+  },
+  jobtiming:{
+    type:String,
+    enum:['9:00 am to 5:00 pm', '9:00 am to 6:00pm', '10:00 am to 5:00pm', '10:00 am to 6:00pm']
+  },
+  jobctc:{
+    type:String
+  },
+  jobempstatus:{
+    type:String,
+    enum:['Full-Time','Part-Time','Internship']
+  }
+
+
 });
 
 employeeSchema.index({ name: "text" });

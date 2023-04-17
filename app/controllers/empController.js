@@ -40,8 +40,22 @@ const createEmp = async (req, res) => {
     pg,
     pgStream,
     pgCgpa,
-    company,
-    duration,
+    expcompany,
+    expduration,
+    explocation,
+    expcompany1,
+    expduration1,
+  explocation1,
+  expdesignation,
+  expdesignation1,
+  jobdesignation,
+  joblocation1,
+  jobtiming,
+  jobctc,
+  jobempstatus
+
+
+
   } = req.body;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
@@ -67,46 +81,7 @@ const createEmp = async (req, res) => {
         panno)
     ) {
       try {
-        const newuser = new EmployeeModel(
-          req.body
-          //   {
-          //   uid: uid,
-          //   email: email,
-          //   name: name,
-          //   designation: designation,
-          //   mobile: mobile,
-          //   dateOfBirth: dateOfBirth,
-          //   dateOfJoining: dateOfJoining,
-          //   gender: gender,
-          //   address: address,
-          //   bankname: bankname,
-          //   adhaarno: adhaarno,
-          //   accountno: accountno,
-          //   ifsc: ifsc,
-          //   panno: panno,
-          //   fatherName,
-          //   motherName,
-          //   maritalStatus,
-          //   bloodGroup,
-          //   nationality,
-          //   city,
-          //   postalCode,
-          //   state,
-          //   passport,
-          //   matric,
-          //   matricPercent,
-          //   inter,
-          //   interPercent,
-          //   graduation,
-          //   graduationStream,
-          //   graduationCgpa,
-          //   pg,
-          //   pgStream,
-          //   pgCgpa,
-          //   company,
-          //   duration
-          // }
-        );
+        const newuser = new EmployeeModel(req.body);
         await newuser.save();
 
         const saved_user = await EmployeeModel.findOne({ email: email });
@@ -150,17 +125,18 @@ const update = (req, res) => {
   }
 
   const id = req.params.id;
-  EmployeeModel.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+  EmployeeModel.findByIdAndUpdate(id, req.body)
     .then((data) => {
       if (!data) {
         res.status(404).send({
           message: `Cannot Update user with ${id}. Maybe user not found!`,
         });
       } else {
-        res.send(data);
+        res.send("update success");
       }
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).send({ message: "Error Update user information" });
     });
 };
@@ -185,7 +161,10 @@ const deleteEmployee = (req, res) => {
 const generateUid = async (req, res) => {
   try {
     let doc = await EmployeeModel.find().sort({ uid: -1 });
-    let uid = +doc[0].uid + 1;
+    let uid = 22000;
+    if (Array.isArray(doc) && doc[0]) {
+      uid = +doc[0].uid + 1;
+    }
     console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
