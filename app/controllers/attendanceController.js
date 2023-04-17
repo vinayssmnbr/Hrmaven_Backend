@@ -99,7 +99,7 @@ async function getreport(req, res, next) {
 }
 
 async function updateleavestatus(req, res) {
-    console.log(req.body);
+    // console.log(req.body);
     // res.send(req.body);
     const request = req.body;
     if (request.status == 'accept') {
