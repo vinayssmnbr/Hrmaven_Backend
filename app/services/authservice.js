@@ -12,21 +12,10 @@ const google = async (req, res) => {
           { email: user.email },
           process.env.JWT_TOKEN_KEY
         );
-
+console.log(token)
         return { token };
       } else {
-        const newuser = new UserModel({
-          username: userProfile.displayName,
-          email: userProfile.emails[0].value,
-          googleID: userProfile.id,
-        });
-        const userRegister = await newuser.save();
-        var token = jwt.sign(
-          { email: userRegister.email },
-          process.env.JWT_TOKEN_KEY,
-          {}
-        );
-        return { token };
+        return "email doen not exist";
       }
     }
   } catch (error) {
