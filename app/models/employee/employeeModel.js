@@ -118,7 +118,7 @@ const employeeSchema = new Schema({
     type: String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -146,7 +146,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -156,7 +156,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -166,7 +166,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
