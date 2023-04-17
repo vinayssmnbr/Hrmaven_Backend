@@ -7,5 +7,6 @@ router.post('/', attendanceController.createAttendance);
 router.patch('/:id', attendanceController.updateAttendance);
 router.delete('/:id', attendanceController.deleteAttendance);
 router.get('/report',attendanceController.getreport);
+router.post('/update',attendanceController.updateleavestatus)
 
 module.exports = router;
