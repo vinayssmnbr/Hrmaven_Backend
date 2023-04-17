@@ -81,7 +81,7 @@ const employeeSchema = new Schema({
     type: String,
   },
   passport: {
-    type: Number,
+    type: String,
   },
   matric: {
     type: String,
@@ -118,7 +118,7 @@ const employeeSchema = new Schema({
     type: String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -146,7 +146,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -156,7 +156,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -166,7 +166,7 @@ const employeeSchema = new Schema({
     type:String,
     enum: [
       "Software Developer",
-      "Forntend Developer",
+      "Frontend Developer",
       "Full Stack Developer",
       "UI/UX Designer",
       "Quality Analyst",
@@ -184,8 +184,11 @@ const employeeSchema = new Schema({
   },
   jobempstatus:{
     type:String,
-    enum:['Full-Time','Part-Time','Internship']
-  }
+    enum:['Full-Time Permanent','Part-Time Employement', 'Internship']
+  },
+  joiningdate:{
+    type:Date
+  },
 
 
 });
