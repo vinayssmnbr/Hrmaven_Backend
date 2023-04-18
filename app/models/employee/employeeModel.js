@@ -65,7 +65,7 @@ const employeeSchema = new Schema({
       "Central Bank Of India",
       "HDFC Bank",
       "ICICI Bank",
-       'Others',
+      "Others",
     ],
   },
   accountno: {
@@ -113,7 +113,7 @@ const employeeSchema = new Schema({
   pgCgpa: {
     type: String,
   },
- 
+
   designation: {
     type: String,
     enum: [
@@ -128,22 +128,22 @@ const employeeSchema = new Schema({
     type: String,
   },
   expduration: {
-  type:String
+    type: String,
   },
-  explocation:{
-    type:String
+  explocation: {
+    type: String,
   },
-  expcompany1:{
-    type:String
+  expcompany1: {
+    type: String,
   },
-  expduration1:{
-    type:String
+  expduration1: {
+    type: String,
   },
-  explocation1:{
-    type:String
+  explocation1: {
+    type: String,
   },
-  expdesignation:{
-    type:String,
+  expdesignation: {
+    type: String,
     enum: [
       "Software Developer",
       "Frontend Developer",
@@ -152,8 +152,8 @@ const employeeSchema = new Schema({
       "Quality Analyst",
     ],
   },
-  expdesignation1:{
-    type:String,
+  expdesignation1: {
+    type: String,
     enum: [
       "Software Developer",
       "Frontend Developer",
@@ -162,8 +162,8 @@ const employeeSchema = new Schema({
       "Quality Analyst",
     ],
   },
-  jobdesignation:{
-    type:String,
+  jobdesignation: {
+    type: String,
     enum: [
       "Software Developer",
       "Frontend Developer",
@@ -172,25 +172,33 @@ const employeeSchema = new Schema({
       "Quality Analyst",
     ],
   },
-  joblocation1:{
-    type:String
+  joblocation1: {
+    type: String,
   },
-  jobtiming:{
+  jobtiming: {
+    type: String,
+    enum: [
+      "9:00 am to 5:00 pm",
+      "9:00 am to 6:00pm",
+      "10:00 am to 5:00pm",
+      "10:00 am to 6:00pm",
+    ],
+  },
+  jobctc: {
+    type: String,
+  },
+  jobempstatus: {
+    type: String,
+    enum: ["Full-Time Permanent", "Part-Time Employement", "Internship"],
+  },
+  joiningdate: {
+    type: Date,
+  },
+  status:{
     type:String,
-    enum:['9:00 am to 5:00 pm', '9:00 am to 6:00pm', '10:00 am to 5:00pm', '10:00 am to 6:00pm']
-  },
-  jobctc:{
-    type:String
-  },
-  jobempstatus:{
-    type:String,
-    enum:['Full-Time Permanent','Part-Time Employement', 'Internship']
-  },
-  joiningdate:{
-    type:Date
-  },
-
-
+    enum:['deleted','accepted'],
+    default:'accepted'
+  }
 });
 
 employeeSchema.index({ name: "text" });

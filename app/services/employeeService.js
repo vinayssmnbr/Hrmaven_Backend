@@ -2,7 +2,8 @@ const EmployeeModel = require("../models/employee/employeeModel");
 
 const deleteEmployee = (id) => {
   return new Promise((resolve, reject) => {
-    EmployeeModel.findByIdAndDelete(id)
+    EmployeeModel.findOneAndUpdate({_id:id},
+      { status: "deleted" })
       .then((data) => {
         if (!data) {
           reject(`Cannot Delete with id ${id}. Maybe id is wrong`);
@@ -11,6 +12,7 @@ const deleteEmployee = (id) => {
         }
       })
       .catch((err) => {
+        console.log(err)
         reject("Could not delete User with id=" + id);
       });
   });
