@@ -13,15 +13,23 @@ async function getAttendance(req, res, next) {
 
 async function createAttendance(req, res, next) {
     try {
-        const attendance = new Attendance(req.body);
-        await attendance.save();
-        console.log('New attendance record added successfully!');
-        res.json(attendance);
+        const { empId, date, status } = req.body;
+        const existingAttendance = await Attendance.findOne({ empId, date });
+        if (existingAttendance) {
+            existingAttendance.status = status;
+            await existingAttendance.save();
+            console.log(`Attendance record for empId ${empId} and date ${date} updated successfully!`);
+            res.json(existingAttendance);
+        } else {
+            const attendance = new Attendance(req.body);
+            await attendance.save();
+            console.log('New attendance record added successfully!');
+            res.json(attendance);
+        }
     } catch (error) {
         next(error);
     }
 }
-
 async function updateAttendance(req, res, next) {
     try {
         const { id } = req.params;
@@ -64,8 +72,7 @@ async function getreport(req, res, next) {
         if (i + 1 < 10) {
             start.push(year + '-0' + (i + 1) + '-01');
 
-        }
-        else {
+        } else {
             start.push(year + '-' + (i + 1) + '-01');
         }
     }
@@ -73,11 +80,9 @@ async function getreport(req, res, next) {
     for (let i = 0; i < 12; i++) {
         if (i + 1 < 9) {
             end.push(year + '-0' + (i + 2) + '-01')
-        }
-        else if (i + 2 == 13) {
+        } else if (i + 2 == 13) {
             end.push(year + 1 + '-0' + (1) + '-01')
-        }
-        else {
+        } else {
             end.push(year + '-' + (i + 2) + '-01')
         }
     }
@@ -104,7 +109,7 @@ async function updateleavestatus(req, res) {
     const request = req.body;
     if (request.status == 'accept') {
         try {
-            request.Array.map(async (value) => {
+            request.Array.map(async(value) => {
                 const attendance = new Attendance({
                     empId: Number(request.empId),
                     name: request.name,
@@ -112,8 +117,7 @@ async function updateleavestatus(req, res) {
                     date: value
                 })
                 await attendance.save();
-            }
-            )
+            })
         } catch (error) {
             res.send(err);
         }
