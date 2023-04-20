@@ -35,35 +35,82 @@ exports.getUserProfile = async function(req, res) {
   };  
 
 exports.forgot = async function(req, res) {
-    auth.tokenParser(req, res);
+    // auth.tokenParser(req, res);
+    auth.tokenParser(req, res, function(err) {
+      if (err) {
+        console.log(err);
+        res.status(400).send(err.message);
+      } else {
+        const token = res.getHeader("reset-password-token");
+        res.send({
+          message: "reset password link sent",
+          token: token
+        });
+      }
+    });
 }
 
 exports.reset = async function(req, res) {
-    var newpassword = req.body.password;
-    var confirmPassword = req.body.confirm;
-    var token = req.header("auth-token");
-    var hashedPassword;
-    var hashedConfirm;
+  var newpassword = req.body.password;
+  var confirmPassword = req.body.confirm;
+  var token = req.header("auth-token");
 
+  try {
     let email = await tokenDecrypt(token);
     let database = await help.verify_email(email);
     console.log(database);
+
     if (database.length != 0) {
-        const saltRounds = 10;
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hashedPassword = await bcrypt.hash(newpassword, salt);
-        const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-        console.log(database[0].email);
-        console.log(hashedConfirm);
-        await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
-        await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
-        res.send("changeit");
-
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(newpassword, salt);
+      const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+      console.log(database[0].email);
+      console.log(hashedConfirm);
+      await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+      await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+      res.send("changeit");
+    } else {
+      res.status(400).send("invalid link");
     }
-
+  } catch (error) {
+    console.log(error);
+    res.status(400).send("invalid link");
+  }
 }
 
-function tokenDecrypt(token) {
+
+// exports.reset = async function(req, res) {
+//     var newpassword = req.body.password;
+//     var confirmPassword = req.body.confirm;
+//     var token = req.header("auth-token");
+//     var hashedPassword;
+//     var hashedConfirm;
+
+//     let email = await tokenDecrypt(token);
+//     let database = await help.verify_email(email);
+//     console.log(database);
+
+//     if (database.length != 0) {
+//         const saltRounds = 10;
+//         const salt = await bcrypt.genSalt(saltRounds);
+//         const hashedPassword = await bcrypt.hash(newpassword, salt);
+//         const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+//         console.log(database[0].email);
+//         console.log(hashedConfirm);
+//         await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+//         await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+//         res.send("changeit");
+
+        
+//     }
+
+// }
+
+const tokenDecrypt = async (token) => {  
+
+
+    
     const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
     if (decrypt.email == "") {
         res.send("invalid link");
@@ -71,4 +118,3 @@ function tokenDecrypt(token) {
         return decrypt.email;
     }
 }
-

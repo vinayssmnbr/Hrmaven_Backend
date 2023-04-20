@@ -13,4 +13,5 @@ router.post('/signup', landing.signup);
 router.post('/forgotpassword', landing.forgot);
 router.post('/resetpassword', landing.reset);
 
+
 module.exports = router;

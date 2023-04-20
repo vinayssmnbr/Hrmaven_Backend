@@ -33,29 +33,34 @@ exports.tokenParser = async function (req, res, next) {
   console.log(req.body.email);
   var email;
   var validate = await help.verify_email(req.body.email);
-  console.log(validate);
+  console.log("v: ",validate);
   if (validate.length == 0) {
     res.send("error in the email");
   } else {
     console.log(validate[0].email);
     email = validate[0].email;
-    let token = jwt.sign(
-      { email: validate[0].email },
-      process.env.JWT_TOKEN_KEY,
-      {
-        expiresIn: "12h",
-      }
-    );
-    console.log(token);
-
-    var link = "https://turneazy.com/resetpassword/" + token;
-    console.log(link);
-    var mailResponse = await mailer.mail(
-      email,
-      "Reset password link for HRMaven",
-      link
-    );
-    console.log(mailResponse);
-    res.send("email sent");
   }
-};
+  
+  const payload = {
+    email: email,
+    // set the expiry time to 1 minute from now
+    exp: Math.floor(Date.now() / 1000) + 60 
+  };
+  const secret = process.env.JWT_TOKEN_KEY;// replace with your own secret key
+  const token = jwt.sign(payload, secret);
+  console.log("t:  ",token);
+  
+  const link = `http://localhost:4200/resetpassword/${token}`;
+  console.log(link);
+  var mailResponse = await mailer.mail(
+    email,
+    "Reset password link for HRMaven",
+    link
+  );
+  console.log(mailResponse);
+  res.send({
+    message: "email sent",
+    token: token
+  });
+}   
+// };
