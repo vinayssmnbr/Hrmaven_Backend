@@ -12,6 +12,9 @@ router.get('/user-profile',landing.getUserProfile);
 router.post('/signup', landing.signup);
 router.post('/forgotpassword', landing.forgot);
 router.post('/resetpassword', landing.reset);
+router.post('/changepassword', landing.reset);
+// router.post('/islinkclicked',landing.updateIsLinkClicked);
+
 
 
 module.exports = router;

@@ -71,50 +71,39 @@ exports.reset = async function(req, res) {
       await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
       res.send("changeit");
     } else {
-      res.status(400).send("invalid link");
+      res.status(400).send({message: "invalid linkkkk"});
     }
   } catch (error) {
-    console.log(error);
-    res.status(400).send("invalid link");
+    console.log("error1: ",error);
+    res.status(400).json({message: "Link has expired"});
   }
 }
 
 
-// exports.reset = async function(req, res) {
-//     var newpassword = req.body.password;
-//     var confirmPassword = req.body.confirm;
-//     var token = req.header("auth-token");
-//     var hashedPassword;
-//     var hashedConfirm;
-
-//     let email = await tokenDecrypt(token);
-//     let database = await help.verify_email(email);
-//     console.log(database);
-
-//     if (database.length != 0) {
-//         const saltRounds = 10;
-//         const salt = await bcrypt.genSalt(saltRounds);
-//         const hashedPassword = await bcrypt.hash(newpassword, salt);
-//         const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-//         console.log(database[0].email);
-//         console.log(hashedConfirm);
-//         await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
-//         await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
-//         res.send("changeit");
-
-        
-//     }
-
-// }
-
 const tokenDecrypt = async (token) => {  
 
-
-    
-    const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-    if (decrypt.email == "") {
-        res.send("invalid link");
-    } else {
+    try {
+      const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+      if (decrypt.email == "") {
+        throw new Error("invalid link");
+      } else if (decrypt.exp < Math.floor(Date.now() / 1000)) {
+        throw new Error("Link has expired");
+      } else {
         return decrypt.email;
-    }
+      }
+    } catch (error) {
+      if (error.message === "Link has expired") {
+        throw new Error("Link has expired. Please request a new reset link.");
+      } else {
+        console.log(error);
+        throw new Error("Invalid reset link.");
+      }
+    } 
+  
+    // const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+    // if (decrypt.email == "") {
+    //     res.send("invalid link");
+    // } else {
+    //     return decrypt.email;
+    // }
 }

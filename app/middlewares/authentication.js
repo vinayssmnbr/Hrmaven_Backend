@@ -30,7 +30,7 @@ exports.verify = async function(req,res,next)
 };
 
 exports.tokenParser = async function (req, res, next) {
-  console.log(req.body.email);
+  console.log("inside tokenParser:",req.body.email);
   var email;
   var validate = await help.verify_email(req.body.email);
   console.log("v: ",validate);
@@ -43,10 +43,10 @@ exports.tokenParser = async function (req, res, next) {
   
   const payload = {
     email: email,
-    // set the expiry time to 1 minute from now
-    exp: Math.floor(Date.now() / 1000) + 60 
+    // set the expiry time to 5 minute from now
+    exp: Math.floor(Date.now() / 1000) + (5 * 60)
   };
-  const secret = process.env.JWT_TOKEN_KEY;// replace with your own secret key
+  const secret = process.env.JWT_TOKEN_KEY;
   const token = jwt.sign(payload, secret);
   console.log("t:  ",token);
   
@@ -54,8 +54,8 @@ exports.tokenParser = async function (req, res, next) {
   console.log(link);
   var mailResponse = await mailer.mail(
     email,
-    "Reset password link for HRMaven",
-    link
+    "Reset password link for HRMaven ",
+    `${link}  Link valid for only 5min `
   );
   console.log(mailResponse);
   res.send({
@@ -63,4 +63,6 @@ exports.tokenParser = async function (req, res, next) {
     token: token
   });
 }   
-// };
+
+
+

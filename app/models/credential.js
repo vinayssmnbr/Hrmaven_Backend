@@ -26,7 +26,16 @@ const userSchema = new Schema(
     },
     confirm: {
       type: String,
-    },
+    }
+    // ,
+    // isLinkClicked: {
+    //   type: Boolean,
+    //   default: false
+    // },
+    // linkExpiration: {
+    //   type: Date,
+    //   default: null
+    // }
   },
   { timestamps: true }
 );
