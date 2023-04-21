@@ -1,12 +1,35 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
-    empId: { type: String, required: true },
-    name: { type: String, required: true },
-    punch_in: { type: Date },
-    punch_out: { type: Date },
-    status: { type: String, required: true, enum: ["present", "absent", "leave"] },
-    date: { type: Date, required: true },
+    empId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'employee'
+    },
+    // empId: {
+    //     type: Number,
+    //     required: true
+    // },
+    // name: {
+    //     type: String,
+    //     required: true
+    // },
+    punch_in: {
+        type: Date,
+        default: "-----"
+    },
+    punch_out: {
+        type: Date,
+        default: "-----"
+    },
+    status: {
+        type: String,
+        required: true,
+        enum: ["present", "absent", "leave"]
+    },
+    date: {
+        type: Date,
+        required: true
+    },
 });
 
 attendanceSchema.pre('save', function(next) {
