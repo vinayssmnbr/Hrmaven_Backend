@@ -51,6 +51,7 @@ exports.forgot = async function(req, res) {
 }
 
 exports.reset = async function(req, res) {
+
   var newpassword = req.body.password;
   var confirmPassword = req.body.confirm;
   var token = req.header("auth-token");
@@ -77,7 +78,40 @@ exports.reset = async function(req, res) {
     console.log("error1: ",error);
     res.status(400).json({message: "Link has expired"});
   }
+  // var newpassword = req.body.password;
+  // var confirmPassword = req.body.confirm;
+  // var token = req.header("auth-token");
+
+  // try {
+  //   // verify the token and get the email and resetPasswordTokenId
+  //   const { email, resetPasswordTokenId } = await tokenDecrypt(token);
+
+  //   // check if the reset password link has already been used
+  //   const user = await User.findOne({ email: email, resetPasswordTokenId: resetPasswordTokenId });
+  //   if (!user) {
+  //     throw new Error("Invalid reset link");
+  //   }
+  //   if (user.resetPasswordTokenId === null) {
+  //     throw new Error("Reset link has already been used");
+  //   }
+
+  //   // hash the new password and update the user record
+  //   const saltRounds = 10;
+  //   const salt = await bcrypt.genSalt(saltRounds);
+  //   const hashedPassword = await bcrypt.hash(newpassword, salt);
+  //   const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+  //   await User.findOneAndUpdate({ email: email }, { password: hashedPassword, confirm: hashedConfirm, resetPasswordTokenId: null });
+
+  //   res.send("Password reset successfully");
+  // } catch (error) {
+  //   console.log("error1: ",error);
+  //   res.status(400).json({message: error.message});
+  // }
+
+  
 }
+
+
 
 
 const tokenDecrypt = async (token) => {  

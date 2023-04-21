@@ -30,6 +30,7 @@ exports.verify = async function(req,res,next)
 };
 
 exports.tokenParser = async function (req, res, next) {
+ 
   console.log("inside tokenParser:",req.body.email);
   var email;
   var validate = await help.verify_email(req.body.email);
@@ -50,7 +51,8 @@ exports.tokenParser = async function (req, res, next) {
   const token = jwt.sign(payload, secret);
   console.log("t:  ",token);
   
-  const link = `http://localhost:4200/resetpassword/${token}`;
+  const link = 'https://turneazy.com/resetpassword/' + token;
+  // const link = `http://localhost:4200/resetpassword/${token}`;
   console.log(link);
   var mailResponse = await mailer.mail(
     email,
@@ -62,6 +64,7 @@ exports.tokenParser = async function (req, res, next) {
     message: "email sent",
     token: token
   });
+
 }   
 
 
