@@ -27,6 +27,9 @@ const userSchema = new Schema(
     confirm: {
       type: String,
     },
+    resetPasswordTokenId: {
+      type: String,
+    }
   },
   { timestamps: true }
 );
