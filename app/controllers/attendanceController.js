@@ -1,25 +1,9 @@
 const Attendance = require('../models/attendance');
 const Employee = require("../models/employee/employeeModel");
-const employee = require
 
 async function getAttendance(req, res, next) {
     try {
-
-        let attendance;
-
-        if (true) {
-            attendance = await Attendance.aggregate([
-                { $group: { _id: "$empId", data: { $push: "$date" }, punch_in: { $push: "$punch_in" }, punch_out: { $push: "$punch_out" } } }
-            ]);
-            for (let i = 0; i < attendance.length; i++) {
-                const data = await Employee.findById(attendance[i]._id);
-                attendance[i].uid = data.uid;
-                attendance[i].name = data.name;
-            }
-        } else {
-            attendance = await Attendance.find();
-        }
-
+        const attendance = await Attendance.find();
         res.send(attendance)
     } catch (error) {
         next(error);
@@ -147,11 +131,34 @@ async function updateleavestatus(req, res) {
         }
     }
 }
+
+async function getEmployeeAttendance(req, res) {
+    try {
+        let attendance;
+        if (true) {
+            console.log("hit");
+            attendance = await Attendance.aggregate([
+                { $group: { _id: "$empId", data: { $push: "$date" }, punch_in: { $push: "$punch_in" }, punch_out: { $push: "$punch_out" } } }
+            ]);
+            for (let i = 0; i < attendance.length; i++) {
+                const data = await Employee.findById(attendance[i]._id);
+                attendance[i].uid = data.uid;
+                attendance[i].name = data.name;
+                attendance[i].designation = data.designation;
+            }
+        }
+        res.send(attendance)
+    } catch (error) {
+        res.send(error);
+    }
+}
 module.exports = {
     getreport,
     getAttendance,
     createAttendance,
     updateAttendance,
     deleteAttendance,
-    updateleavestatus
+    updateleavestatus,
+    getEmployeeAttendance
+
 };
