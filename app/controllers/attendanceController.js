@@ -4,10 +4,10 @@ const employee = require
 
 async function getAttendance(req, res, next) {
     try {
-        const { empId } = req.query;
+
         let attendance;
 
-        if (empId) {
+        if (true) {
             attendance = await Attendance.aggregate([
                 { $group: { _id: "$empId", data: { $push: "$date" }, punch_in: { $push: "$punch_in" }, punch_out: { $push: "$punch_out" } } }
             ]);
