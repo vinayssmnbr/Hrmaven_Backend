@@ -1,9 +1,24 @@
 const Attendance = require('../models/attendance');
+const Employee = require("../models/employee/employeeModel");
+const employee = require
 
 async function getAttendance(req, res, next) {
     try {
-        const attendance = await Attendance.find();
+        const { empId } = req.query;
+        let attendance;
 
+        if (empId) {
+            attendance = await Attendance.aggregate([
+                { $group: { _id: "$empId", data: { $push: "$date" }, punch_in: { $push: "$punch_in" }, punch_out: { $push: "$punch_out" } } }
+            ]);
+            for (let i = 0; i < attendance.length; i++) {
+                const data = await Employee.findById(attendance[i]._id);
+                attendance[i].uid = data.uid;
+                attendance[i].name = data.name;
+            }
+        } else {
+            attendance = await Attendance.find();
+        }
 
         res.send(attendance)
     } catch (error) {
