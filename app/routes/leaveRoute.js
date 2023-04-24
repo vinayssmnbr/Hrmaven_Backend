@@ -6,6 +6,6 @@ router.post("/add",leaveController.leave_create);
 router.get("/",leaveController.leave_all);
 router.patch("/:id",leaveController.updateStatus);
 router.get("/:employeeId",leaveController.leave_details);
-
+router.get("/pending",leaveController.pendingsFetch);
 
 module.exports = router

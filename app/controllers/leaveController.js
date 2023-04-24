@@ -1,5 +1,6 @@
 const Leave = require("../models/leave")
-
+const EmployeeModel = require("../models/employee/employeeModel");
+const mongoose = require("mongoose");
 // to get all employee leave
 
 const leave_all = async(req, res) => {
@@ -44,19 +45,17 @@ const updateStatus = async(req, res) => {
 
 const leave_create = async(req, res) => {
 
-    const leave_var = new Leave({
-        employeeId: req.body.employeeId,
-        employeeName: req.body.employeeName,
 
+    const leave_var = new Leave({
+        empId: req.body.empId,
+        appliedOn: req.body.appliedOn,
         from: req.body.from,
         to: req.body.to,
         reason: req.body.reason,
         status: req.body.status,
-
+        category: req.body.category,
+        duration: req.body.duration
     });
-
-    const saveLeave = await leave_var.save();
-    console.log(saveLeave)
     try {
         // res.send("created")
         const saveLeave = await leave_var.save();
@@ -65,9 +64,33 @@ const leave_create = async(req, res) => {
         console.log(error)
         res.status(400).send(error);
     }
-
 }
 
+const pendingsFetch = async(req, res) => {
+    try {
+        const pending = await EmployeeModel.aggregate(
+            [{
+                $lookup: {
+                    from: "employeeleaves",
+                    localField: "_id",
+                    foreignField: "empId",
+                    as: "leaves",
+                },
+            }, function(err, result) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log(result);
+                res.json({ data: result });
+            }]
+        )
+        console.log(pending);
+        res.send(pending);
+    } catch (error) {
+        res.send("error")
+    }
+}
 
 
 
@@ -76,5 +99,6 @@ module.exports = {
     leave_create,
     leave_details,
     updateStatus,
+    pendingsFetch
 
 }
