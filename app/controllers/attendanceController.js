@@ -136,10 +136,10 @@ async function getEmployeeAttendance(req, res) {
     try {
         let attendance;
         if (true) {
-            console.log("hit");
             attendance = await Attendance.aggregate([
                 { $group: { _id: "$empId", data: { $push: "$date" }, punch_in: { $push: "$punch_in" }, punch_out: { $push: "$punch_out" } } }
             ]);
+            const presentCount = await Attendance.countDocuments({ status: 'present' });
             for (let i = 0; i < attendance.length; i++) {
                 const data = await Employee.findById(attendance[i]._id);
                 attendance[i].uid = data.uid;
@@ -151,6 +151,10 @@ async function getEmployeeAttendance(req, res) {
     } catch (error) {
         res.send(error);
     }
+
+
+
+
 }
 module.exports = {
     getreport,
