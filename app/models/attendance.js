@@ -5,14 +5,7 @@ const attendanceSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         ref: 'employee'
     },
-    // empId: {
-    //     type: Number,
-    //     required: true
-    // },
-    // name: {
-    //     type: String,
-    //     required: true
-    // },
+   
     punch_in: {
         type: Date,
         default: "-----"

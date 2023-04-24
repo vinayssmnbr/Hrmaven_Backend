@@ -202,5 +202,5 @@ const employeeSchema = new Schema({
 });
 
 employeeSchema.index({ name: "text" });
-const EmployeeModel = mongoose.model("employee", employeeSchema);
+const EmployeeModel = mongoose.model("employees", employeeSchema);
 module.exports = EmployeeModel;
