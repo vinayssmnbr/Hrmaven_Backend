@@ -13,6 +13,11 @@ const createEmp = async (req, res) => {
     email,
     mobile,
     dateOfJoining,
+    timing,
+    ctc,
+    job_type,
+    location,
+    url,
     dateOfBirth,
     gender,
     address,
@@ -45,17 +50,14 @@ const createEmp = async (req, res) => {
     explocation,
     expcompany1,
     expduration1,
-  explocation1,
-  expdesignation,
-  expdesignation1,
-  jobdesignation,
-  joblocation1,
-  jobtiming,
-  jobctc,
-  jobempstatus
-
-
-
+    explocation1,
+    expdesignation,
+    expdesignation1,
+    jobdesignation,
+    joblocation1,
+    jobtiming,
+    jobctc,
+    jobempstatus,
   } = req.body;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
@@ -71,14 +73,11 @@ const createEmp = async (req, res) => {
         designation &&
         mobile &&
         dateOfJoining &&
-        dateOfBirth &&
-        gender &&
-        address &&
-        bankname &&
-        adhaarno &&
-        accountno &&
-        ifsc &&
-        panno)
+        timing &&
+        ctc &&
+        job_type &&
+        location &&
+        url)
     ) {
       try {
         const newuser = new EmployeeModel(req.body);
@@ -173,7 +172,6 @@ const generateUid = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   createEmp,
   deleteEmployee,
