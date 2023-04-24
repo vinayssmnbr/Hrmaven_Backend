@@ -27,9 +27,13 @@ const userSchema = new Schema(
     confirm: {
       type: String,
     },
-    resetPasswordTokenId: {
-      type: String,
-    }
+  resetPasswordLink: {
+    type: String,
+  },
+  isResetPasswordLinkUsed: {
+    type: Boolean,
+    default: false,
+  },
   },
   { timestamps: true }
 );

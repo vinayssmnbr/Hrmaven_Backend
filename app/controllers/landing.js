@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const help = require('../helper/helper');
 const auth = require('../middlewares/authentication');
 const service = require('../services/user')
+const mailer = require("../../config/mail");
+
 
 exports.login = async function(req, res) {
     help.login(req, res);
@@ -47,97 +49,192 @@ exports.forgot = async function(req, res) {
           token: token
         });
       }
+  
     });
+
 }
+
+
 
 exports.reset = async function(req, res) {
 
+
+
   var newpassword = req.body.password;
-  var confirmPassword = req.body.confirm;
-  var token = req.header("auth-token");
+var confirmPassword = req.body.confirm;
+var token = req.header("auth-token");
 
-  try {
-    let email = await tokenDecrypt(token);
-    let database = await help.verify_email(email);
-    console.log(database);
+try {
+  let email = await tokenDecrypt(token);
+  var database = await help.verify_email(email);
+  console.log("database landing: ",database);
+  console.log("token url: ",`http://localhost:4200/resetpassword/${token}` )
+  // console.log("token url: ",`https://turneazy.com/resetpassword/${token}` )
 
-    if (database.length != 0) {
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(newpassword, salt);
-      const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-      console.log(database[0].email);
-      console.log(hashedConfirm);
-      await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
-      await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
-      res.send("changeit");
-    } else {
-      res.status(400).send({message: "invalid linkkkk"});
+  if (database.length != 0) { 
+    // const user = await User.findOne({ resetPasswordLink: `https://turneazy.com/resetpassword/${token}`});
+    const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}`});
+      
+
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(newpassword, salt);
+    const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+    console.log("database[0].email: ",database[0].email);
+    console.log("hashedConfirm: ",hashedConfirm);
+    
+    await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+    await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+    
+    await User.findOneAndUpdate({ email: database[0].email }, { isResetPasswordLinkUsed: true })
+
+
+    if (user && user.isResetPasswordLinkUsed) {
+      console.log("user: ", user);
+      console.log("user1: ", user.isResetPasswordLinkUsed);
+      throw new Error("Reset password link has already been used");
     }
-  } catch (error) {
-    console.log("error1: ",error);
+
+
+      
+    
+    res.send("changeit");
+
+
+  } else {
+    res.status(400).send({message: "invalid linkkkk"});
+  }
+
+} catch (error) {
+  console.log(error);
+  if (error.message === "Reset password link has already been used") {
+    res.status(400).send({message: error.message});
+  } else {
     res.status(400).json({message: "Link has expired"});
   }
-  // var newpassword = req.body.password;
-  // var confirmPassword = req.body.confirm;
-  // var token = req.header("auth-token");
+}
 
-  // try {
-  //   // verify the token and get the email and resetPasswordTokenId
-  //   const { email, resetPasswordTokenId } = await tokenDecrypt(token);
+}
+// var newpassword = req.body.password;
+// var confirmPassword = req.body.confirm;
+// var token = req.header("auth-token");
 
-  //   // check if the reset password link has already been used
-  //   const user = await User.findOne({ email: email, resetPasswordTokenId: resetPasswordTokenId });
-  //   if (!user) {
-  //     throw new Error("Invalid reset link");
-  //   }
-  //   if (user.resetPasswordTokenId === null) {
-  //     throw new Error("Reset link has already been used");
-  //   }
+// try {
+//   let email = await tokenDecrypt(token);
+//   var database = await help.verify_email(email);
+//   console.log("database landing: ", database);
+//   console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
-  //   // hash the new password and update the user record
-  //   const saltRounds = 10;
-  //   const salt = await bcrypt.genSalt(saltRounds);
-  //   const hashedPassword = await bcrypt.hash(newpassword, salt);
-  //   const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-  //   await User.findOneAndUpdate({ email: email }, { password: hashedPassword, confirm: hashedConfirm, resetPasswordTokenId: null });
+//   if (database.length != 0) {
+//     const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
+//     if (user) {
+  
+//       if (user.isResetPasswordLinkUsed) {
+//         throw new Error("Reset password link has already been used");
+//       }
+//     const saltRounds = 10;
+//     const salt = await bcrypt.genSalt(saltRounds);
+//     const hashedPassword = await bcrypt.hash(newpassword, salt);
+//     const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+//     console.log("database[0].email: ",database[0].email);
+//     console.log("hashedConfirm: ",hashedConfirm);
 
-  //   res.send("Password reset successfully");
-  // } catch (error) {
-  //   console.log("error1: ",error);
-  //   res.status(400).json({message: error.message});
+    
+//     await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+//     await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+//     await User.findOneAndUpdate({ email: database[0].email }, { isResetPasswordLinkUsed: true })
+
+//     res.send("changeit");
+//       } else {
+//       res.status(400).send({ message: "Invalid link" });
+//     }
+//   } else {
+//     res.status(400).send({ message: "Invalid link" });
+//   }
+
+// } catch (error) {
+//   if (error.message === "Reset password link has already been used") {
+//     res.status(400).send({ message: error.message });
+//   } else {
+//     res.status(400).send({ message: "Link has expired" });
+//   }
+// }
+
+// }
+
+
+const tokenDecrypt = async (token,) => {  
+
+ 
+  try {
+    const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+    if (decrypt.email == "") {
+      throw new Error("Link has expired");
+    } else if (decrypt.exp < Math.floor(Date.now() / 1000)) {
+      throw new Error("Link has expired");
+    } else {
+      return decrypt.email;
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error("Link has expired");
+  } 
+
+  // const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+  // if (decrypt.email == "") {
+  //   return decrypt.email;
+  //     // res.send("invalid link");
+  // } else {
+  //     // return decrypt.email;
+  //     res.send("invalid link");
+
   // }
-
-  
 }
 
 
+// exports.sendResetPasswordLink = async function(req, res) {
+//   var email = req.body.email;
+//   var validate = await help.verify_email(email);
+//   if (validate.length == 0) {
+//     res.send("error in the email");
+//   } else {
+//     console.log(validate[0].email);
+//     email = validate[0].email;
+//   }
+
+//   const payload = {
+//     email: email,
+//     // set the expiry time to 5 minute from now
+//     exp: Math.floor(Date.now() / 1000) + (5 * 60)
+//   };
+//   const secret = process.env.JWT_TOKEN_KEY;
+//   const token = jwt.sign(payload, secret);
+//   console.log("t:  ",token);
+
+//   // Check if the reset password link has already been used
+//   const user = await User.findOne({ email: email });
+//   if (user && user.isResetPasswordLinkUsed) {
+//     return res.status(400).send({ message: "Reset password link has already been used" });
+//   }
+
+//   const link = `http://localhost:4200/resetpassword/${token}`;
+
+//   // Set the reset password link and isResetPasswordLinkUsed flag in the user's document
+//   await User.findOneAndUpdate({ email: email }, {
+//     resetPasswordLink: link,
+//     isResetPasswordLinkUsed: false,
+//   });
+
+//   var mailResponse = await mailer.mail(
+//     email,
+//     "Reset password link for HRMaven ",
+//     `${link}  Link valid for only 5min `
+//   );
+//   console.log(mailResponse);
+//   res.send({
+//     message: "email sent",
+//     token: token
+//   });
+// };
 
 
-const tokenDecrypt = async (token) => {  
-
-    try {
-      const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-      if (decrypt.email == "") {
-        throw new Error("invalid link");
-      } else if (decrypt.exp < Math.floor(Date.now() / 1000)) {
-        throw new Error("Link has expired");
-      } else {
-        return decrypt.email;
-      }
-    } catch (error) {
-      if (error.message === "Link has expired") {
-        throw new Error("Link has expired. Please request a new reset link.");
-      } else {
-        console.log(error);
-        throw new Error("Invalid reset link.");
-      }
-    } 
-  
-    // const decrypt = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-    // if (decrypt.email == "") {
-    //     res.send("invalid link");
-    // } else {
-    //     return decrypt.email;
-    // }
-}
