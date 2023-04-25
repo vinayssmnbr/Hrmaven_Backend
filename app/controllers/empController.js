@@ -1,11 +1,14 @@
 const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
+const { Parser } = require('json2csv');
+
 
 //Add employee
 //http://localhost:8000/api/create
 
 const createEmp = async (req, res) => {
+  // console.log("inside")
   const {
     uid,
     name,
@@ -45,14 +48,14 @@ const createEmp = async (req, res) => {
     explocation,
     expcompany1,
     expduration1,
-  explocation1,
-  expdesignation,
-  expdesignation1,
-  jobdesignation,
-  joblocation1,
-  jobtiming,
-  jobctc,
-  jobempstatus
+    explocation1,
+    expdesignation,
+    expdesignation1,
+    jobdesignation,
+    joblocation1,
+    jobtiming,
+    jobctc,
+    jobempstatus
 
 
 
@@ -66,7 +69,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-      name &&
+        name &&
         email &&
         designation &&
         mobile &&
@@ -88,8 +91,8 @@ const createEmp = async (req, res) => {
 
         res.send({ status: "Success", message: "Added Successfully" });
       } catch (error) {
-        console.log(error);
-        res.send({ status: "failed", message: "unable to Added" });
+        console.log(error, 'error');
+        res.send({ status: "failed", message: "unable to Added", error });
       }
     } else {
       res.send({ status: "failed", message: "All fields are required" });
@@ -174,6 +177,113 @@ const generateUid = async (req, res) => {
   }
 };
 
+
+//first file of ExportUsers
+
+const exportUsers = async (req, res) => {
+  // console.log("inside")
+  try {
+    let users = [];
+    var userData = await EmployeeModel.find({});
+    //  console.log('user', userData)
+    userData.forEach((employees) => {
+      const {
+        id,
+        uid,
+        name,
+        dateOfJoining,
+        mobile,
+        address,
+        email,
+        dateOfBirth,
+        gender,
+        bankname,
+        accountno,
+        ifsc,
+        adhaarno,
+        panno,
+        designation,
+        bloodGroup,
+        city } = employees;
+      users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
+    });
+    const csvFields = ['Id', 'UID', 'Name', 'Email', 'DateOfJoining', 'Mobile', 'Address', 'DateofBirth', 'Gender', 'BankName', 'Accountno', 'Ifsc', 'Adharno', 'Panno', 'Designation', 'BloodGroup', 'City'];
+    const csvParser = new Parser({ csvFields });
+    const csvData = csvParser.parse(users);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attatchement:filename=usersData.csv");
+    res.status(200).end(csvData);
+
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
+  }
+}
+
+
+// first file of importUsers
+
+// const importUsers = async (req, res) => {
+//   try {
+//     const files = req.files;
+//     if (Array.isArray(files) && files.length > 0) {
+//       res.json(files);
+//     } else {
+//       throw new Error("File upload unsuccessful");
+//     }
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// };
+
+
+// second file for importUser
+
+const importUsers = async (req, res) => {
+  try {
+    console.log(req.file.path)
+    var userData = [];
+    csv()
+      .fromFile(req.file.path)
+      .then(async (response) => {
+        for (var x = 0; x < response.length; x++) {
+          userData.push({
+            name: response[x].Name,
+            email: response[x].Email,
+            mobile: response[x].Mobile,
+          });
+        }
+
+        await EmployeeModel.insertMany(userData);
+
+        console.log(response);
+        res.send({ status: 200, success: true, msg: 'csv imported' });
+      })
+
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
+  }
+}
+
+
+
+const getEmployees = async(req,res)=>{
+
+  try{
+
+    const employees = await EmployeeModel.find({});
+
+    res.send({ status: 200, success: true, msg: 'Employees data',data:employees  });
+
+  }
+  catch(error){
+    res.send({ status: 400, success: false, msg: error.message  });
+  }
+
+}
+
+
+
+
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -181,4 +291,7 @@ module.exports = {
   getEmp,
   getsEmp,
   generateUid,
+  exportUsers,
+  importUsers,
+  getEmployees
 };
