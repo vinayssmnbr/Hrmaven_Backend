@@ -9,6 +9,8 @@ const session = require("express-session");
 const empRoutes=require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
+const employeespecificdetails = require('./app/routes/employeespecific')
+//email data find
 const emailAll = require('./app/routes/findemail');
 var router = express.Router();
 
@@ -17,6 +19,9 @@ require("./app/middlewares/passport");
 require("./app/routes/authRoute");
 const leaveRoute = require("./app/routes/leaveRoute")
     //module used
+
+
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -54,10 +59,8 @@ app.use("/api/leave",leaveRoute)
 app.use("/api", empRoutes);
 app.use("", Landing);
 app.use('/attendance', attendanceRoutes);
+app.use("/getemployee",employeespecificdetails)
 
 app.use("/getemails", emailAll);
-router.get('/pen',(req,res)=>{
-    console.log("hello");
-})
 
 module.exports = app;
