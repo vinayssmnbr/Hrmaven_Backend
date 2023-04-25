@@ -156,6 +156,250 @@ async function getEmployeeAttendance(req, res) {
 
 
 }
+
+
+const dateWiseAttendance = async(req,res)=>{
+    const mydate=req.headers.mydate;
+        const attendance = await Employee.aggregate(
+            [
+                {
+                  $lookup: {
+                    from: "attendances",
+                    localField: "_id",
+                    foreignField: "empId",
+                    as: "attendances",
+                  },
+                },
+                {
+                  $unwind: "$attendances",
+                },
+                
+                {
+                  $project: {
+                    uid: 1,
+                    name: 1,
+                    date: "$attendances.date",
+                    status:"$attendances.status",
+                    in:"$attendances.punch_in",
+                    out:"$attendances.punch_out",
+                    designation: 1,
+                  },
+                },
+                {
+                    $match:
+                      {
+                        "date": {$eq:new Date(mydate)},
+                      },
+                  },
+              ]  
+        )
+        // console.log("date"+attendance);
+        res.send(attendance);
+}
+
+const dateWiseCard = async(req,res)=>{
+        const d= new Date();
+        const month=req.headers.month;
+        const m=Number(month);
+        const year = d.getFullYear();
+        let firstday = new Date(year,m,1);
+        let lastday = new Date(year,m+1,0);
+        // console.log(firstday);
+        // console.log(lastday);
+
+        const attendance = await Employee.aggregate( 
+            [
+                {
+                  $lookup: {
+                    from: "attendances",
+                    localField: "_id",
+                    foreignField: "empId",
+                    as: "attendance",
+                  },
+                },
+                {
+                  $unwind: "$attendance",
+                },
+                {
+                  $project: {
+                    uid: 1,
+                    name: 1,
+                    designation: 1,
+                    date: "$attendance.date",
+                    status: "$attendance.status",
+                    empId: "$attendance.empId",
+                    _id: "$attendance._id",
+                    in: "$attendance.punch_in",
+                    out: "$attendance.punch_out",
+                  },
+                },
+                {
+                  $match: {
+                    date: {
+                      $lte: new Date(lastday),
+                      $gte: new Date(firstday),
+                    },
+                  },
+                },
+                {
+                  $group: {
+                    _id: {
+                      uid: "$uid",
+                      name: "$name",
+                      designation: "$designation",
+                      empId: "$empId",
+                    },
+                    attendance: {
+                      $push: {
+                        date: "$date",
+                        status: "$status",
+                        in: "$in",
+                        out: "$out",
+                      },
+                    },
+                  },
+                },
+                {
+                  $addFields: {
+                    totalcount: {
+                      $size: "$attendance",
+                    },
+                    leavecount: {
+                      $size: {
+                        $filter: {
+                          input: "$attendance",
+                          as: "item",
+                          cond: {
+                            $eq: ["$$item.status", "leave"],
+                          },
+                        },
+                      },
+                    },
+                    presentcount: {
+                      $size: {
+                        $filter: {
+                          input: "$attendance",
+                          as: "item",
+                          cond: {
+                            $eq: ["$$item.status", "present"],
+                          },
+                        },
+                      },
+                    },
+                    absentcount: {
+                      $size: {
+                        $filter: {
+                          input: "$attendance",
+                          as: "item",
+                          cond: {
+                            $eq: ["$$item.status", "absent"],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                    $addFields: {
+                      percent: {
+                        $round: [
+                          {
+                            $multiply: [
+                              {
+                                $divide: [
+                                  "$presentcount",
+                                  "$totalcount",
+                                ],
+                              },
+                              100,
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                  },
+              ]
+            
+        )
+        res.send(attendance);
+}
+
+const Attendancegraph = async (req,res)=>{
+    const record = await Attendance.aggregate(
+        [
+            {
+              $project: {
+                month: {
+                  $month: "$date",
+                },
+                status: 1,
+              },
+            },
+            {
+              $group: {
+                _id: {
+                  month: "$month",
+                  // status: "$status",
+                },
+          
+                attendance: {
+                  $push: {
+                    status: "$status",
+                  },
+                },
+              },
+            },
+            {
+              $addFields: {
+                leave: {
+                  $size: {
+                    $filter: {
+                      input: "$attendance",
+                      as: "item",
+                      cond: {
+                        $eq: ["$$item.status", "leave"],
+                      },
+                    },
+                  },
+                },
+                present: {
+                  $size: {
+                    $filter: {
+                      input: "$attendance",
+                      as: "item",
+                      cond: {
+                        $eq: ["$$item.status", "present"],
+                      },
+                    },
+                  },
+                },
+                absent: {
+                  $size: {
+                    $filter: {
+                      input: "$attendance",
+                      as: "item",
+                      cond: {
+                        $eq: ["$$item.status", "absent"],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                month: "$_id.month",
+                absent: 1,
+                present: 1,
+                leave: 1,
+                _id: 0,
+              },
+            },
+          ]
+    );
+    res.send(record);
+}
+
 module.exports = {
     getreport,
     getAttendance,
@@ -163,6 +407,9 @@ module.exports = {
     updateAttendance,
     deleteAttendance,
     updateleavestatus,
-    getEmployeeAttendance
+    getEmployeeAttendance,
+    dateWiseAttendance,
+    dateWiseCard,
+    Attendancegraph
 
 };
