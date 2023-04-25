@@ -15,6 +15,45 @@ const employeeSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  mobile: {
+    type: Number,
+  },
+  email: {
+    type: String,
+  },
+  designation: {
+    type: String,
+    enum: [
+      "Software Developer",
+      "Frontend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  timing: {
+    type: String,
+    enum: [
+      "9.00am to 5:00pm",
+      "9.00am to 6:00pm",
+      "10.00am to 5:00pm",
+      "10.00am to 6:00pm",
+    ],
+  },
+  ctc: {
+    type: String,
+  },
+  job_type: {
+    type: String,
+    enum: ["Full-Time Permanent", "Part-Time Employement", "Internship"],
+  },
+  location: {
+    type: String,
+    enum: ["Mohali", "Gurugram", "Pune", "Hyderabad", "Bangalore"],
+  },
+  url: {
+    type: String,
+  },
   city: {
     type: String,
   },
@@ -24,15 +63,11 @@ const employeeSchema = new Schema({
   state: {
     type: String,
   },
-  mobile: {
-    type: Number,
-  },
+
   address: {
     type: String,
   },
-  email: {
-    type: String,
-  },
+
   fatherName: {
     type: String,
   },
@@ -114,16 +149,6 @@ const employeeSchema = new Schema({
     type: String,
   },
 
-  designation: {
-    type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-  },
   expcompany: {
     type: String,
   },
@@ -175,32 +200,41 @@ const employeeSchema = new Schema({
   joblocation1: {
     type: String,
   },
-  jobtiming: {
-    type: String,
-    enum: [
-      "9:00 am to 5:00 pm",
-      "9:00 am to 6:00pm",
-      "10:00 am to 5:00pm",
-      "10:00 am to 6:00pm",
-    ],
-  },
-  jobctc: {
-    type: String,
-  },
-  jobempstatus: {
-    type: String,
-    enum: ["Full-Time Permanent", "Part-Time Employement", "Internship"],
-  },
+
   joiningdate: {
     type: Date,
   },
-  status:{
-    type:String,
-    enum:['deleted','accepted'],
-    default:'accepted'
-  }
+  status: {
+    type: String,
+    enum: ["deleted", "accepted"],
+    default: "accepted",
+  },
+  // experience:[
+  //   {
+  //     company:{
+  //       type:String
+  //     },
+  //     duration:{
+  //       type:String
+  //     },
+  //     location:{
+  //       type:String
+  //     },
+  //     degination:{
+  //         type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  //     }
+
+  //   }
+  // ]
 });
 
 employeeSchema.index({ name: "text" });
-const EmployeeModel = mongoose.model("employee", employeeSchema);
+const EmployeeModel = mongoose.model("employees", employeeSchema);
 module.exports = EmployeeModel;

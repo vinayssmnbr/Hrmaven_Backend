@@ -14,6 +14,9 @@ const {Parser}=require("json2csv");
 const empRoutes=require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
+//email data find
+const emailAll = require('./app/routes/findemail');
+
 const bodyParser = require('body-parser');
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
@@ -63,5 +66,7 @@ app.use("/user",empRoutes);
 
 
 
+
+app.use("/getemails", emailAll);
 
 module.exports = app;

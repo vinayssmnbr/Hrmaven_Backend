@@ -8,5 +8,5 @@ router.patch('/:id', attendanceController.updateAttendance);
 router.delete('/:id', attendanceController.deleteAttendance);
 router.get('/report',attendanceController.getreport);
 router.post('/update',attendanceController.updateleavestatus)
-
+router.get('/all',attendanceController.getEmployeeAttendance)
 module.exports = router;
