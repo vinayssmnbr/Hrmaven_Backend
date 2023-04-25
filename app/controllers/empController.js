@@ -13,6 +13,11 @@ const createEmp = async (req, res) => {
     email,
     mobile,
     dateOfJoining,
+    timing,
+    ctc,
+    job_type,
+    location,
+    url,
     dateOfBirth,
     gender,
     address,
@@ -45,17 +50,14 @@ const createEmp = async (req, res) => {
     explocation,
     expcompany1,
     expduration1,
-  explocation1,
-  expdesignation,
-  expdesignation1,
-  jobdesignation,
-  joblocation1,
-  jobtiming,
-  jobctc,
-  jobempstatus
-
-
-
+    explocation1,
+    expdesignation,
+    expdesignation1,
+    jobdesignation,
+    joblocation1,
+    jobtiming,
+    jobctc,
+    jobempstatus,
   } = req.body;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
@@ -71,14 +73,11 @@ const createEmp = async (req, res) => {
         designation &&
         mobile &&
         dateOfJoining &&
-        dateOfBirth &&
-        gender &&
-        address &&
-        bankname &&
-        adhaarno &&
-        accountno &&
-        ifsc &&
-        panno)
+        timing &&
+        ctc &&
+        job_type &&
+        location &&
+        url)
     ) {
       try {
         const newuser = new EmployeeModel(req.body);
@@ -98,10 +97,25 @@ const createEmp = async (req, res) => {
 };
 
 // GET  ALL Employee
+// const getEmp = async (req, res) => {
+//   let { search, designation, uid } = req.query;
+//   designation = designation != "" ? designation?.split(",") : false;
+//   let query = { designation: designation ? designation : { $regex: "" } };
+//   try {
+//     if (uid?.length) {
+//       query["uid"] = uid;
+//     }
+//     const employees = await getAllEmployees(query);
+//     res.json(employees);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 const getEmp = async (req, res) => {
-  let { search, designation, uid } = req.query;
-  designation = designation != "" ? designation?.split(",") : false;
-  let query = { designation: designation ? designation : { $regex: "" } };
+  let { search, status, uid } = req.query;
+  status = status != "" ? status?.split(",") : false;
+  let query = { status: status ? status : { $regex: "" } };
   try {
     if (uid?.length) {
       query["uid"] = uid;
@@ -173,7 +187,6 @@ const generateUid = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   createEmp,
   deleteEmployee,

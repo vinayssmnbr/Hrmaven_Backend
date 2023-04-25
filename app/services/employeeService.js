@@ -21,3 +21,4 @@ const deleteEmployee = (id) => {
 module.exports = {
   deleteEmployee,
 };
+ 
