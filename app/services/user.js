@@ -12,7 +12,9 @@ userService.addUser = (req, res) => {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
-        confirm: req.body.confirm
+        confirm: req.body.confirm,
+                isFromSignupPage: true // set the flag to true
+
     });
 
 
