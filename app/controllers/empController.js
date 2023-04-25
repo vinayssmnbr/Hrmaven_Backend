@@ -8,7 +8,7 @@ const { Parser } = require('json2csv');
 //http://localhost:8000/api/create
 
 const createEmp = async (req, res) => {
-  // console.log("inside")
+  console.log("inside")
   const {
     uid,
     name,
