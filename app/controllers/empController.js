@@ -97,10 +97,25 @@ const createEmp = async (req, res) => {
 };
 
 // GET  ALL Employee
+// const getEmp = async (req, res) => {
+//   let { search, designation, uid } = req.query;
+//   designation = designation != "" ? designation?.split(",") : false;
+//   let query = { designation: designation ? designation : { $regex: "" } };
+//   try {
+//     if (uid?.length) {
+//       query["uid"] = uid;
+//     }
+//     const employees = await getAllEmployees(query);
+//     res.json(employees);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 const getEmp = async (req, res) => {
-  let { search, designation, uid } = req.query;
-  designation = designation != "" ? designation?.split(",") : false;
-  let query = { designation: designation ? designation : { $regex: "" } };
+  let { search, status, uid } = req.query;
+  status = status != "" ? status?.split(",") : false;
+  let query = { status: status ? status : { $regex: "" } };
   try {
     if (uid?.length) {
       query["uid"] = uid;
