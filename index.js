@@ -1,18 +1,16 @@
 require("dotenv").config();
 var express = require("express");
 var app = express();
-var router = express.Router();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
 const session = require("express-session");
-//for employee Management System
 const empRoutes=require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
-//email data find
 const emailAll = require('./app/routes/findemail');
+var router = express.Router();
 
 const bodyParser = require('body-parser');
 require("./app/middlewares/passport");
@@ -34,9 +32,9 @@ Database.connection;
 
 //port used
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function(err) {
+ app.listen(PORT, function(err) {
     if (err) console.log(err);
-    console.log("Server listening on PORT", PORT);
+     console.log("Server listening on PORT", PORT);
 });
 
 //Google OAuth
@@ -58,5 +56,8 @@ app.use("", Landing);
 app.use('/attendance', attendanceRoutes);
 
 app.use("/getemails", emailAll);
+router.get('/pen',(req,res)=>{
+    console.log("hello");
+})
 
 module.exports = app;
