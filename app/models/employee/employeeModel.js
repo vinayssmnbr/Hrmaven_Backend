@@ -206,8 +206,8 @@ const employeeSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["deleted", "accepted"],
-    default: "accepted",
+    enum: ["Active", "Terminated", "Resigned", "Absconder"],
+    default:"Active"
   },
   // experience:[
   //   {
