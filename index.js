@@ -11,6 +11,7 @@ const session = require("express-session");
 const empRoutes=require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
+const employeespecificdetails = require('./app/routes/employeespecific')
 //email data find
 const emailAll = require('./app/routes/findemail');
 
@@ -56,6 +57,7 @@ app.use("/api/leave",leaveRoute)
 app.use("/api", empRoutes);
 app.use("", Landing);
 app.use('/attendance', attendanceRoutes);
+app.use("/getemployee",employeespecificdetails)
 
 app.use("/getemails", emailAll);
 

@@ -30,6 +30,12 @@ exports.getUserProfile = async function(req, res) {
    
   };
 
+exports.getUserProfilepwd = async function(req, res) {
+
+    help.getUserPassword(req, res);
+   
+  };  
+
   exports.getUserProfileId = async function(req, res) {
 
     help.getUserProfileId(req, res);
@@ -114,7 +120,38 @@ try {
   }
 }
 
+
 }
+
+exports.showResetPasswordForm = async function(req, res) {
+  const token = req.query.token;
+
+  try {
+    let email = await tokenDecrypt(token);
+    var database = await help.verify_email(email);
+
+    if (database.length != 0) {
+      const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
+
+      if (user && user.isResetPasswordLinkUsed) {
+        throw new Error("Password reset link has been used");
+      }
+
+      // Render the reset password form to the user
+      // res.render('reset-password-form', { token: token });
+      res.send("changeit");
+    } else {
+      res.status(400).send({ message: "Invalid link" });
+    }
+
+  } catch (error) {
+    if (error.message === "Password reset link has been used") {
+      res.status(400).send({ message: error.message });
+    } else {
+      res.status(400).send({ message: "Link has expired" });
+    }
+  }
+};
 // var newpassword = req.body.password;
 // var confirmPassword = req.body.confirm;
 // var token = req.header("auth-token");
