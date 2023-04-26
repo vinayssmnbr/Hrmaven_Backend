@@ -318,6 +318,20 @@ const dateWiseCard = async(req,res)=>{
                       },
                     },
                   },
+                  {
+                    $project:
+                      {
+                        name: "$_id.name",
+                        uid: "$_id.uid",
+                        _id: 1,
+                        attendance: 1,
+                        totalcount: 1,
+                        leavecount: 1,
+                        presentcount: 1,
+                        absentcount: 1,
+                        percent: 1,
+                      },
+                  },
               ]
             
         )
