@@ -54,6 +54,25 @@ userService.addUser = (req, res) => {
     });
 };
 
+userService.putcompanydata = async(req, res)=>{
+        const { userId } = req.params;
+  const { name, phone, noOfEmployee, headOffice, description } = req.body;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { 'personaldata.name': name, 'personaldata.phone': phone, 'personaldata.noOfEmployee': noOfEmployee, 'personaldata.headOffice': headOffice, 'personaldata.description': description } },
+      { new: true }
+    ).populate('personaldata');
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'An error occurred while updating the user' });
+  }
+}
+
+
   userService.updateCompany = async (req, res) => {
 //     const { userId } = req.params;
 //   const { name, phone, noOfEmployee, headOffice, description } = req.body;

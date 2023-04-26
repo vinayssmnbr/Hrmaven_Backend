@@ -22,6 +22,11 @@ exports.addpersonals = async function(req, res) {
 exports.updatehrUser = async function(req, res) {
   service.updateCompany(req, res);
 };
+exports.putdatacompany = async function(req, res) {
+  service.putcompanydata(req, res);
+};
+
+
 exports.getpersonalsdata = async function(req, res) {
   help.getUserPersonals(req, res);
 };
