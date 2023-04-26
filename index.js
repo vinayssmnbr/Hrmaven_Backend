@@ -1,24 +1,27 @@
 require("dotenv").config();
 var express = require("express");
 var app = express();
-var router = express.Router();
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
 const session = require("express-session");
-//for employee Management System
 const empRoutes=require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
+const employeespecificdetails = require('./app/routes/employeespecific')
 //email data find
 const emailAll = require('./app/routes/findemail');
+var router = express.Router();
 
 const bodyParser = require('body-parser');
 require("./app/middlewares/passport");
 require("./app/routes/authRoute");
 const leaveRoute = require("./app/routes/leaveRoute")
     //module used
+
+
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -34,9 +37,9 @@ Database.connection;
 
 //port used
 var PORT = process.env.PORT || 3000;
-app.listen(PORT, function(err) {
+ app.listen(PORT, function(err) {
     if (err) console.log(err);
-    console.log("Server listening on PORT", PORT);
+     console.log("Server listening on PORT", PORT);
 });
 
 //Google OAuth
@@ -56,6 +59,7 @@ app.use("/api/leave",leaveRoute)
 app.use("/api", empRoutes);
 app.use("", Landing);
 app.use('/attendance', attendanceRoutes);
+app.use("/getemployee",employeespecificdetails)
 
 app.use("/getemails", emailAll);
 

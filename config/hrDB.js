@@ -6,9 +6,9 @@ const mongoose = require("mongoose");
 
 
 exports.connection = mongoose.connect(process.env.MONGODB)
-.then(()=>{
-     console.log('database connected successfully')
+.then(async ()=>{
+    await console.log('database connected successfully')
 })
-.catch((err)=>{
-    console.log(`Error connecting the data base. n${err}`);
+.catch(async (err)=>{
+   await console.log(`Error connecting the data base. n${err}`);
 })

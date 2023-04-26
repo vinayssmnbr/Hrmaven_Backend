@@ -11,8 +11,10 @@ router.get('/user-profile',landing.getUserProfile);
 
 router.post('/signup', landing.signup);
 router.post('/forgotpassword', landing.forgot);
-router.post('/resetpassword', landing.reset);
-// router.post('/changepassword', landing.reset);
+
+router.post('/resetpassword',landing.reset);
+router.get('/userprofilepwd', landing.getUserProfilepwd)
+// router.get('/resetpassword',landing.showResetPasswordForm);
 
 
 
