@@ -32,7 +32,7 @@ router.post("/import",upload.single("csv"),emplcontroller.importUsers);
 router.get("/getEmployees",emplcontroller.getEmployees);
 router.get("/find", emplcontroller.getEmp);
 router.get("/uid", emplcontroller.generateUid);
-router.get("/export",emplcontroller.exportUsers);
+router.post("/export",emplcontroller.exportUsers);
 router.get("/:id", emplcontroller.getsEmp);
 router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);

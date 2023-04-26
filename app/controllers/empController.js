@@ -198,12 +198,14 @@ const generateUid = async (req, res) => {
 //first file of ExportUsers
 
 const exportUsers = async (req, res) => {
-  // console.log("inside")
+  console.log("inside")
   try {
     let users = [];
-    var userData = await EmployeeModel.find({});
-    //  console.log('user', userData)
-    userData.forEach((employees) => {
+    let usersData = req.body.data
+   
+    console.log(req.body);
+    console.log('adarsh', usersData)
+    usersData.forEach((employees) => {
       const {
         id,
         uid,
@@ -221,10 +223,13 @@ const exportUsers = async (req, res) => {
         panno,
         designation,
         bloodGroup,
-        city } = employees;
+        city
+
+      } = employees;
       users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
     });
-    const csvFields = ['Id', 'UID', 'Name', 'Email', 'DateOfJoining', 'Mobile', 'Address', 'DateofBirth', 'Gender', 'BankName', 'Accountno', 'Ifsc', 'Adharno', 'Panno', 'Designation', 'BloodGroup', 'City'];
+
+    const csvFields = ["id", "uid", "name", "dateOfJoining", "mobile", "address", "email", "dateOfBirth", "gender", "bankname", "accountno", "ifsc", "adhaarno", "panno", "designation", "bloodGroup", "city"];
     const csvParser = new Parser({ csvFields });
     const csvData = csvParser.parse(users);
     res.setHeader("Content-Type", "text/csv");
@@ -235,6 +240,46 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 }
+
+// const exportUsers = async (req, res) => {
+//   // console.log("inside")
+//   try {
+//     let users = [];
+//     var userData = await EmployeeModel.find({});
+//     // let userData = req.body.userData // this.selectedEmployess
+//     //  console.log('user', userData)
+//     userData.forEach((employees) => {
+//       const {
+//         id,
+//         uid,
+//         name,
+//         dateOfJoining,
+//         mobile,
+//         address,
+//         email,
+//         dateOfBirth,
+//         gender,
+//         bankname,
+//         accountno,
+//         ifsc,
+//         adhaarno,
+//         panno,
+//         designation,
+//         bloodGroup,
+//         city } = employees;
+//       users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
+//     });
+//     const csvFields = ['Id', 'UID', 'Name', 'Email', 'DateOfJoining', 'Mobile', 'Address', 'DateofBirth', 'Gender', 'BankName', 'Accountno', 'Ifsc', 'Adharno', 'Panno', 'Designation', 'BloodGroup', 'City'];
+//     const csvParser = new Parser({ csvFields });
+//     const csvData = csvParser.parse(users);
+//     res.setHeader("Content-Type", "text/csv");
+//     res.setHeader("Content-Disposition", "attatchement:filename=usersData.csv");
+//     res.status(200).end(csvData);
+
+//   } catch (error) {
+//     res.send({ status: 400, success: false, msg: error.message });
+//   }
+// }
 
 
 // first file of importUsers
@@ -283,17 +328,17 @@ const importUsers = async (req, res) => {
 
 
 
-const getEmployees = async(req,res)=>{
+const getEmployees = async (req, res) => {
 
-  try{
+  try {
 
     const employees = await EmployeeModel.find({});
 
-    res.send({ status: 200, success: true, msg: 'Employees data',data:employees  });
+    res.send({ status: 200, success: true, msg: 'Employees data', data: employees });
 
   }
-  catch(error){
-    res.send({ status: 400, success: false, msg: error.message  });
+  catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
   }
 
 }
