@@ -1,7 +1,6 @@
 const User = require("../models/credential");
 const employeespecificdetailsservice = require('../services/employeespecificdetails')
 
-
 exports.employeespecificdetails = async function(req, res) {
     try {
         const specificDetails = await employeespecificdetailsservice.getSpecificDetails;
@@ -11,5 +10,3 @@ exports.employeespecificdetails = async function(req, res) {
         res.status(500).json({ error: "Internal server error" });
       }
 };
-
-
