@@ -60,5 +60,8 @@ app.use('/attendance', attendanceRoutes);
 app.use("/getemployee",employeespecificdetails)
 
 app.use("/getemails", emailAll);
-
+const userRoutes = require('./app/routes/employeespecific');
+const companyRoutes = require('./app/routes/employeespecific');
+app.use("/updateprofile",userRoutes);
+app.use("companyprofile",companyRoutes);
 module.exports = app;
