@@ -13,12 +13,15 @@ router.post('/signup', landing.signup);
 router.post('/forgotpassword', landing.forgot);
 
 router.post('/resetpassword',landing.reset);
+
+router.post('/resetpasswordaccount/:email',landing.resett);
+
 router.get('/userprofilepwd', landing.getUserProfilepwd)
 router.post('/addpersonaldata',landing.addpersonals);
-router.patch('/updatepersonal/:userId', landing.updatehrUser);
-router.put('/putpersonal/:userId', landing.putdatacompany);
+router.patch('/updatepersonal/:email', landing.updatehrUser);
+router.put('/putpersonal/:email', landing.putdatacompany);
 
-router.get('/getpersonalsdata/:id', landing.getpersonalsdata)
+router.get('/getpersonalsdata/:email', landing.getpersonalsdata)
 
 
 

@@ -55,13 +55,36 @@ userService.addUser = (req, res) => {
 };
 
 userService.putcompanydata = async(req, res)=>{
-        const { userId } = req.params;
+  //       const { userId } = req.params;
+  // const { name, phone, noOfEmployee, headOffice, description } = req.body;
+
+  // try {
+  //   const updatedUser = await User.findByIdAndUpdate(
+  //     userId,
+  //     { $set: { 'personaldata.name': name, 'personaldata.phone': phone, 'personaldata.noOfEmployee': noOfEmployee, 'personaldata.headOffice': headOffice, 'personaldata.description': description } },
+  //     { new: true }
+  //   ).populate('personaldata');
+
+  //   res.status(200).json(updatedUser);
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json({ message: 'An error occurred while updating the user' });
+  // }
+  const { email } = req.params;
   const { name, phone, noOfEmployee, headOffice, description } = req.body;
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: { 'personaldata.name': name, 'personaldata.phone': phone, 'personaldata.noOfEmployee': noOfEmployee, 'personaldata.headOffice': headOffice, 'personaldata.description': description } },
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      {
+        $set: {
+          'personaldata.name': name,
+          'personaldata.phone': phone,
+          'personaldata.noOfEmployee': noOfEmployee,
+          'personaldata.headOffice': headOffice,
+          'personaldata.description': description
+        }
+      },
       { new: true }
     ).populate('personaldata');
 
@@ -89,38 +112,39 @@ userService.putcompanydata = async(req, res)=>{
 //     console.error(err);
 //     res.status(500).json({ message: 'An error occurred while updating the user' });
 //   }
-const { userId } = req.params;
-  const update = {};
-  
-  // check which fields are present in the request body and add them to the update object
-  if (req.body.name) {
-    update['personaldata.name'] = req.body.name;
-  }
-  if (req.body.phone) {
-    update['personaldata.phone'] = req.body.phone;
-  }
-  if (req.body.noOfEmployee) {
-    update['personaldata.noOfEmployee'] = req.body.noOfEmployee;
-  }
-  if (req.body.headOffice) {
-    update['personaldata.headOffice'] = req.body.headOffice;
-  }
-  if (req.body.description) {
-    update['personaldata.description'] = req.body.description;
-  }
+const { email } = req.params;
+const update = {};
 
-  try {
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      { $set: update },
-      { new: true }
-    ).populate('personaldata');
+// check which fields are present in the request body and add them to the update object
+if (req.body.name) {
+  update['personaldata.name'] = req.body.name;
+}
+if (req.body.phone) {
+  update['personaldata.phone'] = req.body.phone;
+}
+if (req.body.noOfEmployee) {
+  update['personaldata.noOfEmployee'] = req.body.noOfEmployee;
+}
+if (req.body.headOffice) {
+  update['personaldata.headOffice'] = req.body.headOffice;
+}
+if (req.body.description) {
+  update['personaldata.description'] = req.body.description;
+}
 
-    res.status(200).json(updatedUser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'An error occurred while updating the user' });
-  }
+try {
+  const updatedUser = await User.findOneAndUpdate(
+    { email: email },
+    { $set: update },
+    { new: true }
+  ).populate('personaldata');
+
+  res.status(200).json(updatedUser);
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ message: 'An error occurred while updating the user' });
+}
+
   };
   
 
