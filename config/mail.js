@@ -10,8 +10,8 @@ exports.mail = async function (target,subjectMail,message)
         port: 587,
         secure: false,
         auth: {
-          user: 'harpreet.singh@venturepact.com',
-          pass: 'qrmnytnhmnphvkdo'
+          user: 'noreply.hrmaven@gmail.com',
+          pass: 'ohhvfhjxlhoxnklp'
         }
       });
 
@@ -22,7 +22,7 @@ exports.mail = async function (target,subjectMail,message)
     // var resetLink = 'http://yourwebsite.com/reset-password?token=' + token;
   
       var mailOptions = {
-        from: 'harpreet.singh@venturepact.com',
+        from: 'noreply.hrmaven@gmail.com',
         to: target,
         subject: subjectMail,
         text: message

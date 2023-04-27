@@ -21,6 +21,12 @@ const employeeSchema = new Schema({
   email: {
     type: String,
   },
+  professionalemail:{
+    type:String
+  },
+  password:{
+    type:String,
+  },
   designation: {
     type: String,
     enum: [
