@@ -136,6 +136,83 @@ try {
   }
 }
 
+}
+
+exports.resett = async function(req, res){
+  // var newpassword = req.body.password;
+  // var confirmPassword = req.body.confirm;
+  // var token = req.header("auth-token");
+  // var hashedPassword;
+  // var hashedConfirm;
+
+  // let email = await tokenDecrypt(token);
+  // let database = await help.verify_email(email);
+  // console.log(database);
+  // if (database.length != 0) {
+  //     const saltRounds = 10;
+  //     const salt = await bcrypt.genSalt(saltRounds);
+  //     const hashedPassword = await bcrypt.hash(newpassword, salt);
+  //     const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+  //     console.log(database[0].email);
+  //     console.log(hashedConfirm);
+  //     await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+  //     await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+  //     res.send("changeit");
+
+  // }
+    var newpassword = req.body.password;
+  var confirmPassword = req.body.confirm;
+  var token = req.header("auth-token");
+  var hashedPassword;
+  var hashedConfirm;
+
+  let email = req.params.email
+   let database = await help.verify_email(email);
+
+  console.log(database);
+  if (database.length != 0) {
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedPassword = await bcrypt.hash(newpassword, salt);
+      const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+      console.log(database[0].email);
+      console.log(hashedConfirm);
+      await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+      await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+      res.send("changeit");
+
+  }
+
+  // try {
+  //   const { email,newpassword , confirmPassword } = req.body;
+
+  //   // Find the user by email
+  //   const user = await User.findOne({ email });
+
+  //   if (!user) {
+  //     return res.status(404).json({ message: 'User not found' });
+  //   }
+
+  //   // Generate new salt and hash the new password
+  //   const saltRounds = 10;
+  //   const salt = await bcrypt.genSalt(saltRounds);
+  //   const hashedPassword = await bcrypt.hash(newpassword, salt);
+  //   const hashedConfirmPassword = await bcrypt.hash(confirmPassword, salt);
+
+  //   // Update the user's password and confirm password
+  //   user.password = hashedPassword;
+  //   user.confirm = hashedConfirmPassword;
+  //         // res.send("changeit");
+
+  //   await user.save();
+  //   res.send("changeit");
+
+
+  //   // res.json({ message: 'Password updated successfully' });
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).json({ message: 'An error occurred' });
+  // }
 
 }
 

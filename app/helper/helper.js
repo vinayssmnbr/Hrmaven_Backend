@@ -97,22 +97,23 @@ exports.getUserProfile = async function (req, res) {
 }
 
 exports.getUserPersonals = async function (req, res) {
-    const userId = req.params.id;
-  
-    try {
-      const user = await User.findById(userId).select('personaldata');
-      if (!user) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-  
-      const personaldata = user.personaldata;
-      const useridd = user._id
-  
-      return res.status(200).send({ personaldata,useridd });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).send({ message: 'Error fetching user personals data' });
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email: email }).select('personaldata');
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
     }
+  
+    const personaldata = user.personaldata;
+    const userId = user._id;
+  
+    return res.status(200).send({ personaldata });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: 'Error fetching user personal data' });
+  }
+  
   
 }
 
