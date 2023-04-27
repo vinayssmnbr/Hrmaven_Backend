@@ -1,4 +1,4 @@
-const UserModel = require("../models/credential");
+const {UserModel} = require("../models/credential");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
@@ -6,7 +6,7 @@ const google = async (req, res) => {
   try {
     if (userProfile) {
       console.log("userProfile.id", userProfile.id);
-      const user = await UserModel.findOne({ email: userProfile.email });
+      const user = await {UserModel}.findOne({ email: userProfile.email });
       if (user) {
         const token = jwt.sign(
           { email: user.email },

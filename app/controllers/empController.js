@@ -2,6 +2,8 @@ const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
 const { Parser } = require('json2csv');
+const sendMail = require("../../config/mail");
+const sendlink=require("../middlewares/authentication")
 
 
 //Add employee
@@ -21,50 +23,8 @@ const createEmp = async (req, res) => {
     job_type,
     location,
     url,
-    dateOfBirth,
-    gender,
-    address,
-    bankname,
-    adhaarno,
-    accountno,
-    ifsc,
-    panno,
-    fatherName,
-    motherName,
-    maritalStatus,
-    bloodGroup,
-    nationality,
-    city,
-    postalCode,
-    state,
-    passport,
-    matric,
-    matricPercent,
-    inter,
-    interPercent,
-    graduation,
-    graduationStream,
-    graduationCgpa,
-    pg,
-    pgStream,
-    pgCgpa,
-    expcompany,
-    expduration,
-    explocation,
-    expcompany1,
-    expduration1,
-    explocation1,
-    expdesignation,
-    expdesignation1,
-    jobdesignation,
-    joblocation1,
-    jobtiming,
-    jobctc,
-    jobempstatus
-
-
-
   } = req.body;
+  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -85,10 +45,19 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      try {
-        const newuser = new EmployeeModel(req.body);
+      const password='Hrmaven@123'
+      try{
+        const newuser = new EmployeeModel({
+          ...req.body,
+          professionalemail,
+          password,
+        });
         await newuser.save();
 
+        const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
+        const subject = "Your data submitted";
+        const text =`this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`
+        await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
         res.send({ status: "Success", message: "Added Successfully" });
