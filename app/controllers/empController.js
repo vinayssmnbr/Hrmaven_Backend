@@ -207,7 +207,6 @@ const exportUsers = async (req, res) => {
     console.log('adarsh', usersData)
     usersData.forEach((employees) => {
       const {
-        id,
         uid,
         name,
         dateOfJoining,
@@ -226,7 +225,7 @@ const exportUsers = async (req, res) => {
         city
 
       } = employees;
-      users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
+      users.push({  uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
     });
 
     const csvFields = ["id", "uid", "name", "dateOfJoining", "mobile", "address", "email", "dateOfBirth", "gender", "bankname", "accountno", "ifsc", "adhaarno", "panno", "designation", "bloodGroup", "city"];
