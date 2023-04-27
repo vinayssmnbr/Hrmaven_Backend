@@ -1,5 +1,5 @@
 var express = require('express');
-const User = require('../models/credential');
+const {User} = require('../models/credential');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 
@@ -18,7 +18,7 @@ exports.login = async function (req, res) {
           });
         }
         if (result) {
-          let token = jwt.sign({ userId: user._id }, process.env.JWT_TOKEN_KEY, {
+          let token = jwt.sign({ userId: user._id}, process.env.JWT_TOKEN_KEY, {
             expiresIn: "12h",
           });
           res.cookie("token", token, {
@@ -30,8 +30,9 @@ exports.login = async function (req, res) {
 
           res.send({
             message: "login successful",
-            token
-          });
+            _id: user._id,
+            token 
+                      });
         } else {
           res.json({
             message: "Invalid",
@@ -47,6 +48,29 @@ exports.login = async function (req, res) {
 }
 
 exports.getUserProfile = async function (req, res) {
+  // const authHeader = req.headers['authorization'];
+  // const token = authHeader && authHeader.split(' ')[1];
+
+  // if (!token) {
+  //   return res.status(401).json({ message: "Unauthorized" });
+  // }
+
+  // try {
+  //   var user;
+  //   const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+  //   if (decoded.userId) {
+  //     const user = await User.findById(decoded.userId);
+  //     res.send(user);
+  //     return;
+  //   } else {
+  //     const user = await User.findOne({ email: decoded.email });
+  //     res.send(user);
+  //     return;
+  //   }
+    
+  // } catch (err) {
+  //   return res.status(401).json({ message: "Unauthorized" });
+  // }
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -58,11 +82,11 @@ exports.getUserProfile = async function (req, res) {
     var user;
     const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
     if (decoded.userId) {
-      const user = await User.findById(decoded.userId);
+      const user = await User.findById(decoded.userId).populate('personaldata');
       res.send(user);
       return;
     } else {
-      const user = await User.findOne({ email: decoded.email });
+      const user = await User.findOne({ email: decoded.email }).populate('personaldata');
       res.send(user);
       return;
     }
@@ -70,6 +94,27 @@ exports.getUserProfile = async function (req, res) {
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized" });
   }
+}
+
+exports.getUserPersonals = async function (req, res) {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email: email }).select('personaldata');
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+  
+    const personaldata = user.personaldata;
+    const userId = user._id;
+  
+    return res.status(200).send({ personaldata });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send({ message: 'Error fetching user personal data' });
+  }
+  
+  
 }
 
 exports.getUserPassword = async function(req, res) {

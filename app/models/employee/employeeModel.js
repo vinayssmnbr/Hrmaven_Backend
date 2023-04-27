@@ -21,6 +21,12 @@ const employeeSchema = new Schema({
   email: {
     type: String,
   },
+  professionalemail:{
+    type:String
+  },
+  password:{
+    type:String,
+  },
   designation: {
     type: String,
     enum: [
@@ -206,8 +212,8 @@ const employeeSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["Active", "Terminated", "Resigned", "Absconder"],
-    default:"Active"
+    enum: ["active", "terminated", "resigned", "absconder"],
+    default: "active",
   },
   // experience:[
   //   {

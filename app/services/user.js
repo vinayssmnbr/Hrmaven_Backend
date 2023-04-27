@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/credential');
+const {User} = require('../models/credential');
 
 
 const userService = {};
@@ -54,8 +54,105 @@ userService.addUser = (req, res) => {
     });
 };
 
+userService.putcompanydata = async(req, res)=>{
+  //       const { userId } = req.params;
+  // const { name, phone, noOfEmployee, headOffice, description } = req.body;
 
+  // try {
+  //   const updatedUser = await User.findByIdAndUpdate(
+  //     userId,
+  //     { $set: { 'personaldata.name': name, 'personaldata.phone': phone, 'personaldata.noOfEmployee': noOfEmployee, 'personaldata.headOffice': headOffice, 'personaldata.description': description } },
+  //     { new: true }
+  //   ).populate('personaldata');
+
+  //   res.status(200).json(updatedUser);
+  // } catch (err) {
+  //   console.error(err);
+  //   res.status(500).json({ message: 'An error occurred while updating the user' });
+  // }
+  const { email } = req.params;
+  const { name, phone, noOfEmployee, headOffice, description } = req.body;
+
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { email: email },
+      {
+        $set: {
+          'personaldata.name': name,
+          'personaldata.phone': phone,
+          'personaldata.noOfEmployee': noOfEmployee,
+          'personaldata.headOffice': headOffice,
+          'personaldata.description': description
+        }
+      },
+      { new: true }
+    ).populate('personaldata');
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'An error occurred while updating the user' });
+  }
+}
+
+
+  userService.updateCompany = async (req, res) => {
+//     const { userId } = req.params;
+//   const { name, phone, noOfEmployee, headOffice, description } = req.body;
+
+//   try {
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       { $set: { 'personaldata.name': name, 'personaldata.phone': phone, 'personaldata.noOfEmployee': noOfEmployee, 'personaldata.headOffice': headOffice, 'personaldata.description': description } },
+//       { new: true }
+//     ).populate('personaldata');
+
+//     res.status(200).json(updatedUser);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'An error occurred while updating the user' });
+//   }
+const { email } = req.params;
+const update = {};
+
+// check which fields are present in the request body and add them to the update object
+if (req.body.name) {
+  update['personaldata.name'] = req.body.name;
+}
+if (req.body.phone) {
+  update['personaldata.phone'] = req.body.phone;
+}
+if (req.body.noOfEmployee) {
+  update['personaldata.noOfEmployee'] = req.body.noOfEmployee;
+}
+if (req.body.headOffice) {
+  update['personaldata.headOffice'] = req.body.headOffice;
+}
+if (req.body.description) {
+  update['personaldata.description'] = req.body.description;
+}
+
+try {
+  const updatedUser = await User.findOneAndUpdate(
+    { email: email },
+    { $set: update },
+    { new: true }
+  ).populate('personaldata');
+
+  res.status(200).json(updatedUser);
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ message: 'An error occurred while updating the user' });
+}
+
+  };
+  
+
+  
+    
 module.exports = userService;
+
+
 // const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
 // const { Company, User } = require('../models/credential');
@@ -119,116 +216,3 @@ module.exports = userService;
 //         }
 //       });
 //     })
-// userService.addUser = (req, res) => {
-//     if (req.body.username && req.body.email) {
-//       // handle the case where the request contains username and email
-//       const user = new User({
-//         username: req.body.username,
-//         email: req.body.email,
-//         password: req.body.password,
-//         confirm: req.body.confirm,
-//         isFromSignupPage: true // set the flag to true
-//       });
-  
-//       // hash the password and confirm fields
-//       bcrypt.hash(user.password, 10, function (err, hashedPass) {
-//         if (err) {
-//           res.json({ error: err });
-//         } else {
-//           user.password = hashedPass;
-//           bcrypt.hash(user.confirm, 10, function (err, hashedConfirm) {
-//             if (err) {
-//               res.json({ error: err });
-//             } else {
-//               user.confirm = hashedConfirm;
-  
-//               // save the user document
-//               user.save().then((savedUser) => {
-//                 const token = jwt.sign(
-//                   { userId: savedUser._id },
-//                   process.env.JWT_TOKEN_KEY
-//                 );
-  
-//                 res.json({
-//                   message: 'User added successfully',
-//                   user: savedUser,
-//                   token: token,
-//                 });
-//               })
-//               .catch(error => {
-//                 res.json({
-//                   message: 'An error occurred while saving the user',
-//                   error: error
-//                 });
-//               });
-//             }
-//           });
-//         }
-//       });
-//     } else if (req.body.headOffice && req.body.noOfEmployee) {
-//       // handle the case where the request contains headOffice and noOfEmployee
-//       const company = new Company({
-//         name: req.body.name,
-//         phone: req.body.phone,
-//         noOfEmployee: req.body.noOfEmployee,
-//         headOffice: req.body.headOffice
-//       });
-  
-//       // save the company document
-//       company.save().then((company) => {
-//         // create a new user and link it to the company
-//         const user = new User({
-//           username: req.body.username,
-//           email: req.body.email,
-//           password: req.body.password,
-//           confirm: req.body.confirm,
-//           company: company._id,
-//           isFromSignupPage: true // set the flag to true
-//         });
-  
-//         // hash the password and confirm fields
-//         bcrypt.hash(user.password, 10, function (err, hashedPass) {
-//           if (err) {
-//             res.json({ error: err });
-//           } else {
-//             user.password = hashedPass;
-//             bcrypt.hash(user.confirm, 10, function (err, hashedConfirm) {
-//               if (err) {
-//                 res.json({ error: err });
-//               } else {
-//                 user.confirm = hashedConfirm;
-  
-//                 // save the user document
-//                 user.save().then((savedUser) => {
-//                   const token = jwt.sign(
-//                     { userId: savedUser._id },
-//                     process.env.JWT_TOKEN_KEY
-//                   );
-  
-//                   res.json({
-//                     message: 'User added successfully',
-//                     user: savedUser,
-//                     token: token,
-//                   });
-//                 })
-//                 .catch(error => {
-//                   res.json({
-//                     message: 'An error occurred while saving the user',
-//                     error: error
-//                   });
-//                 });
-//               }
-//             });
-//           }
-//         });
-//       })
-//     .catch((error) => {
-//       res.json({
-//         message: 'An error occurred while saving the company',
-//         error: error,
-//       });
-//     });
-//   };
-// }
-
-// module.exports = userService;

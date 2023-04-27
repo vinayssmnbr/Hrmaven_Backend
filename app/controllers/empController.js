@@ -1,6 +1,9 @@
 const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
+const sendMail = require("../../config/mail");
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/credential");
 
 //Add employee
 //http://localhost:8000/api/create
@@ -18,47 +21,8 @@ const createEmp = async (req, res) => {
     job_type,
     location,
     url,
-    dateOfBirth,
-    gender,
-    address,
-    bankname,
-    adhaarno,
-    accountno,
-    ifsc,
-    panno,
-    fatherName,
-    motherName,
-    maritalStatus,
-    bloodGroup,
-    nationality,
-    city,
-    postalCode,
-    state,
-    passport,
-    matric,
-    matricPercent,
-    inter,
-    interPercent,
-    graduation,
-    graduationStream,
-    graduationCgpa,
-    pg,
-    pgStream,
-    pgCgpa,
-    expcompany,
-    expduration,
-    explocation,
-    expcompany1,
-    expduration1,
-    explocation1,
-    expdesignation,
-    expdesignation1,
-    jobdesignation,
-    joblocation1,
-    jobtiming,
-    jobctc,
-    jobempstatus,
   } = req.body;
+  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -79,10 +43,39 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
+      const password = "Hrmaven@123";
       try {
-        const newuser = new EmployeeModel(req.body);
+        const newuser = new EmployeeModel({
+          ...req.body,
+          professionalemail,
+          password,
+        });
         await newuser.save();
+        const user = new User({
+          email: professionalemail,
+          password: password,
+        });
 
+        await user.save();
+
+        const payload = {
+          email: professionalemail,
+          // set the expiry time to 5 minute from now
+          exp: Math.floor(Date.now() / 1000) + 5 * 60,
+        };
+        const secret = process.env.JWT_TOKEN_KEY;
+        const token = jwt.sign(payload, secret);
+        console.log("t:  ", token);
+        // const link = 'https://turneazy.com/resetpassword/${token}' + token;
+        const link = 'https://turneazy.com/resetpassword/${token}';
+        // const link = `http://localhost:4200/resetpassword/${token}`;
+
+        const to = Array.isArray(req.body.email)
+          ? req.body.email.join(",")
+          : req.body.email;
+        const subject = "Your data submitted";
+        const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\n Reset Password:${link}`;
+        await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
         res.send({ status: "Success", message: "Added Successfully" });
