@@ -14,7 +14,11 @@ router.post('/forgotpassword', landing.forgot);
 
 router.post('/resetpassword',landing.reset);
 router.get('/userprofilepwd', landing.getUserProfilepwd)
-// router.get('/resetpassword',landing.showResetPasswordForm);
+router.post('/addpersonaldata',landing.addpersonals);
+router.patch('/updatepersonal/:userId', landing.updatehrUser);
+router.put('/putpersonal/:userId', landing.putdatacompany);
+
+router.get('/getpersonalsdata/:id', landing.getpersonalsdata)
 
 
 

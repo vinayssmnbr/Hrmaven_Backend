@@ -1,5 +1,5 @@
 var express = require("express");
-const User = require("../models/credential");
+const {User} = require("../models/credential");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const help = require('../helper/helper');
@@ -15,6 +15,22 @@ exports.login = async function(req, res) {
 exports.signup = async function(req, res) {
     service.addUser(req, res);
 };
+
+exports.addpersonals = async function(req, res) {
+  service.addPersonals(req, res);
+};
+exports.updatehrUser = async function(req, res) {
+  service.updateCompany(req, res);
+};
+exports.putdatacompany = async function(req, res) {
+  service.putcompanydata(req, res);
+};
+
+
+exports.getpersonalsdata = async function(req, res) {
+  help.getUserPersonals(req, res);
+};
+
 
 exports.auth = async function(req, res) {
     const token = req.headers.authorization.split(' ')[1];
