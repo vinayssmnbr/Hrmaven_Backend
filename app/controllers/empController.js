@@ -2,8 +2,8 @@ const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
 const sendMail = require("../../config/mail");
-const sendlink=require("../middlewares/authentication")
-
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/credential");
 
 //Add employee
 //http://localhost:8000/api/create
@@ -43,18 +43,38 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      const password='Hrmaven@123'
-      try{
+      const password = "Hrmaven@123";
+      try {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
           password,
         });
         await newuser.save();
+        const user = new User({
+          email: professionalemail,
+          password: password,
+        });
 
-        const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
+        await user.save();
+
+        const payload = {
+          email: professionalemail,
+          // set the expiry time to 5 minute from now
+          exp: Math.floor(Date.now() / 1000) + 5 * 60,
+        };
+        const secret = process.env.JWT_TOKEN_KEY;
+        const token = jwt.sign(payload, secret);
+        console.log("t:  ", token);
+        // const link = 'https://turneazy.com/resetpassword/${token}' + token;
+        const link = 'https://turneazy.com/resetpassword/${token}';
+        // const link = `http://localhost:4200/resetpassword/${token}`;
+
+        const to = Array.isArray(req.body.email)
+          ? req.body.email.join(",")
+          : req.body.email;
         const subject = "Your data submitted";
-        const text =`this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`
+        const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\n Reset Password:${link}`;
         await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
