@@ -8,16 +8,20 @@ const leaveSchema = new mongoose.Schema({
     },
     appliedOn:
     {
-        type:Date
+        type:Date,
+        default:""
     },
     from: {
-        type: Date
+        type: Date,
+        default:""
     },
     to: {
-        type: Date
+        type: Date,
+        default:""
     },
     reason: {
-        type: String
+        type: String,
+        default:""
     },
     status: {
         type: String,
@@ -26,10 +30,20 @@ const leaveSchema = new mongoose.Schema({
     },
     category :{
         type:String,
+        enum:["casual","medical","urgent","earned"],
         default:"casual"
     },
     duration:{
         type:Number,
+        default:0
+    },
+    message:{
+        type:String,
+        default:""
+    },
+    document:{
+        type:String,
+        default:"https://vein.stonybrookmedicine.edu/sites/default/files/Adult_Patient_Demographic_Form.pdf"
     }
 
 
