@@ -44,7 +44,13 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      const password = "Hrmaven@123";
+      let password = "Hrmaven@123";
+      bcrypt.hash(password, 10, function(err, hashedPass) {
+        if (err) {
+            res.json({ error: err });
+        } else {
+           password = hashedPass;
+        }})
       try {
         const newuser = new EmployeeModel({
           ...req.body,
