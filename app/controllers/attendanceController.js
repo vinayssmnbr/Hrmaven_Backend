@@ -103,15 +103,17 @@ async function getreport(req, res, next) {
 }
 
 async function updateleavestatus(req, res) {
-    // console.log(req.body);
-    // res.send(req.body);
-    const request = req.body;
-    if (request.status == 'accept') {
+
+    console.log(req.body);
+    const empdata= await Employee.find({uid:req.body.uid});
+    console.log(empdata);
+    const id=empdata._id;
+
+   
         try {
-            request.Array.map(async(value) => {
+            req.body.Array.map(async(value) => {
                 const attendance = new Attendance({
-                    empId: Number(request.empId),
-                    name: request.name,
+                    empId: id,
                     status: 'leave',
                     date: value
                 })
@@ -120,16 +122,8 @@ async function updateleavestatus(req, res) {
         } catch (error) {
             res.send(err);
         }
-        res.send('done it');
-    } else {
-        try {
-            request.Array.map(async(value) => {
-                await Attendance.findOneAndDelete({ empId: Number(request.empId), name: request.name, date: value });
-            })
-        } catch (err) {
-            res.send(err);
-        }
-    }
+        res.json({response:"done"});
+  
 }
 
 async function getEmployeeAttendance(req, res) {

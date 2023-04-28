@@ -4,6 +4,7 @@ const employeeService = require("../services/employeeService");
 const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
+const Balance = require("../models/leavebalance")
 
 //Add employee
 //http://localhost:8000/api/create
@@ -43,14 +44,25 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      const password = "Hrmaven@123";
+      let password = "Hrmaven@123";
+      bcrypt.hash(password, 10, function(err, hashedPass) {
+        if (err) {
+            res.json({ error: err });
+        } else {
+           password = hashedPass;
+        }})
       try {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
           password,
         });
-        await newuser.save();
+      const dd= await newuser.save();
+        const balance = new Balance({
+          empId:dd._id
+        })
+        balance.save();
+
         const user = new User({
           email: professionalemail,
           password: password,
