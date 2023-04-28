@@ -3,8 +3,9 @@ const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
 const { Parser } = require('json2csv');
 const sendMail = require("../../config/mail");
-const sendlink=require("../middlewares/authentication")
-
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/credential");
+const Balance = require("../models/leavebalance")
 
 //Add employee
 //http://localhost:8000/api/create
@@ -45,14 +46,29 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      const password='Hrmaven@123'
-      try{
+      let password = "Hrmaven@123";
+      bcrypt.hash(password, 10, function(err, hashedPass) {
+        if (err) {
+            res.json({ error: err });
+        } else {
+           password = hashedPass;
+        }})
+      try {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
           password,
         });
-        await newuser.save();
+      const dd= await newuser.save();
+        const balance = new Balance({
+          empId:dd._id
+        })
+        balance.save();
+
+        const user = new User({
+          email: professionalemail,
+          password: password,
+        });
 
         const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
         const subject = "Your data submitted";

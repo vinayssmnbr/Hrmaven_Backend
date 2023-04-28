@@ -8,11 +8,11 @@ const attendanceSchema = new mongoose.Schema({
    
     punch_in: {
         type: Date,
-        default: "-----"
+        default: ""
     },
     punch_out: {
         type: Date,
-        default: "-----"
+        default: ""
     },
     status: {
         type: String,
