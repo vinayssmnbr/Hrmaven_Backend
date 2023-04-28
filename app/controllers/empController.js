@@ -4,6 +4,7 @@ const employeeService = require("../services/employeeService");
 const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
+const Balance = require("../models/leavebalance")
 
 //Add employee
 //http://localhost:8000/api/create
@@ -50,7 +51,12 @@ const createEmp = async (req, res) => {
           professionalemail,
           password,
         });
-        await newuser.save();
+      const dd= await newuser.save();
+        const balance = new Balance({
+          empId:dd._id
+        })
+        balance.save();
+
         const user = new User({
           email: professionalemail,
           password: password,
