@@ -1,77 +1,3 @@
-// const mongoose = require("mongoose");
-
-// const Schema = mongoose.Schema;
-
-// const companySchema = new Schema({
-//   name: {
-//     type: String,
-//     required: true
-//   },
-//   phone: {
-//     type: Number,
-//     required: true
-//   },
-//   noOfEmployee: {
-//     type: String,
-//     enum: ["0-50", "50-100", "100-150"],
-//     default: "0-50",
-//     required: true,
-//   },
-//   headOffice: {
-//     type: String,
-//     enum: ["Leeds United-Kingdom", "London United-Kingdom", "Manchester United-Kingdom"],
-//     default: "Leeds United-Kingdom",
-//     required: true,
-//   },
-//   description: {
-//     type: String,
-//   }
-// });
-
-// const hrUserSchema = new Schema(
-//   {
-//     googleID: {
-//       type: String,
-//     },
-//     username: {
-//       type: String,
-//       required: false,
-//       trim: true,
-//       lowercase: true,
-//     },
-//     email: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//       lowercase: true,
-//       trim: true,
-//     },
-//     password: {
-//       type: String,
-//       minlength: 8,
-//     },
-//     confirm: {
-//       type: String,
-//     },
-//     resetPasswordLink: {
-//       type: String,
-//     },
-//     isResetPasswordLinkUsed: {
-//       type: Boolean,
-//       default: false,
-//     },
-//     company: companySchema,
-//     isFromSignupPage: {
-//       type: Boolean,
-//       default: false,
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// const hrUser = mongoose.model("hrUser", hrUserSchema);
-
-// module.exports = hrUser;
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
@@ -95,6 +21,10 @@ const companySchema = new Schema({
   },
   description: {
     type: String,
+  },
+  profileimage: {
+    type: String,
+    default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi"
   }
 });
 
