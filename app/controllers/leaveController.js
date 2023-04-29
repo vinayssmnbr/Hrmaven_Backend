@@ -45,24 +45,25 @@ const updateStatus = async (req, res) => {
 //Add leave data
 
 const leave_create = async (req, res) => {
-
+  console.log("yeah");
+  console.log(req.body);
+  console.log(req.headers);
 
   const leave_var = new Leave({
-    empId: req.body.empId,
-    appliedOn: req.body.appliedOn,
+    empId: req.body.id,
+    appliedOn: req.body.appliedon,
     from: req.body.from,
     to: req.body.to,
     reason: req.body.reason,
-    status: req.body.status,
+    status: "pending",
     category: req.body.category,
     duration: req.body.duration,
-    message: req.body.message,
-    document: req.body.document,
+    document: req.body.url,
   });
   try {
     // res.send("created")
     const saveLeave = await leave_var.save();
-    res.send(saveLeave)
+    res.send({saveLeave:"yeah"})
   } catch (error) {
     console.log(error)
     res.status(400).send(error);
@@ -231,15 +232,15 @@ const leavefilter = async (req, res) => {
   let category = [];
   console.log(req.headers);
   if (req.headers.from == '') {
-    from="2023-01-01";
+    from = "2023-01-01";
   } else {
-    from=req.headers.from;
+    from = req.headers.from;
   }
 
   if (req.headers.to == '') {
-    to="2023-12-31";
+    to = "2023-12-31";
   } else {
-    to=req.headers.to;
+    to = req.headers.to;
   }
   if (req.headers.category == 'all') {
     category.push("casual");

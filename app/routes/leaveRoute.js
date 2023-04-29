@@ -5,7 +5,7 @@ const empleave = require('../controllers/eside');
 const User = require("../models/credential");
 
 console.log("leave route");
-router.post("/add", leaveController.leave_create);
+router.post("/add/leave", leaveController.leave_create);
 router.get('/all', leaveController.leave_all);
 router.patch("/:id", leaveController.updateStatus);
 router.get("/:employeeId", leaveController.leave_details);
