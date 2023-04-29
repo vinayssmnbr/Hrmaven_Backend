@@ -46,18 +46,10 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      let password = "Hrmaven@123";
-      bcrypt.hash(password, 10, function(err, hashedPass) {
-        if (err) {
-            res.json({ error: err });
-        } else {
-           password = hashedPass;
-        }})
       try {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
-          password,
         });
       const dd= await newuser.save();
         const balance = new Balance({
@@ -67,12 +59,12 @@ const createEmp = async (req, res) => {
 
         const user = new User({
           email: professionalemail,
-          password: password,
         });
+        user.save()
 
         const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
         const subject = "Your data submitted";
-        const text =`this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`
+        const text =`this is a professional email for hrmaven: username:${professionalemail},`
         await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
