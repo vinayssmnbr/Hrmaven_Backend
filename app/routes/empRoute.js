@@ -9,5 +9,6 @@ router.get("/uid", emplcontroller.generateUid);
 router.get("/:id", emplcontroller.getsEmp);
 router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);
+router.get("/detail/fetch",emplcontroller.employeedetail);
 
 module.exports = router;

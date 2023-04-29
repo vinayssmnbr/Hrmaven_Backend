@@ -33,7 +33,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-      name &&
+        name &&
         email &&
         designation &&
         mobile &&
@@ -45,21 +45,22 @@ const createEmp = async (req, res) => {
         url)
     ) {
       let password = "Hrmaven@123";
-      bcrypt.hash(password, 10, function(err, hashedPass) {
+      bcrypt.hash(password, 10, function (err, hashedPass) {
         if (err) {
-            res.json({ error: err });
+          res.json({ error: err });
         } else {
-           password = hashedPass;
-        }})
+          password = hashedPass;
+        }
+      })
       try {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
           password,
         });
-      const dd= await newuser.save();
+        const dd = await newuser.save();
         const balance = new Balance({
-          empId:dd._id
+          empId: dd._id
         })
         balance.save();
 
@@ -192,6 +193,19 @@ const generateUid = async (req, res) => {
     });
   }
 };
+
+const employeedetail = async (req, res) => {
+  const email = req.headers.email;
+  const data = await EmployeeModel.aggregate([
+    {
+      $match: {
+        professionalemail:
+          email,
+      },
+    },
+  ])
+  res.json({response:data});
+}
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -199,4 +213,5 @@ module.exports = {
   getEmp,
   getsEmp,
   generateUid,
+  employeedetail
 };
