@@ -4,11 +4,10 @@ const employeeService = require("../services/employeeService");
 const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
-const Balance = require("../models/leavebalance")
+const Balance = require("../models/leavebalance");
 
 //Add employee
 //http://localhost:8000/api/create
-
 const createEmp = async (req, res) => {
   const {
     uid,
@@ -56,7 +55,6 @@ const createEmp = async (req, res) => {
         const newuser = new EmployeeModel({
           ...req.body,
           professionalemail,
-          password,
         });
         const dd = await newuser.save();
         const balance = new Balance({
@@ -66,7 +64,8 @@ const createEmp = async (req, res) => {
 
         const user = new User({
           email: professionalemail,
-          password: password,
+          // status: req.body.status,
+          empId:dd._id
         });
 
         await user.save();
@@ -80,14 +79,14 @@ const createEmp = async (req, res) => {
         const token = jwt.sign(payload, secret);
         console.log("t:  ", token);
         // const link = 'https://turneazy.com/resetpassword/${token}' + token;
-        const link = 'https://turneazy.com/resetpassword/${token}';
-        // const link = `http://localhost:4200/resetpassword/${token}`;
+        // const link = 'https://turneazy.com/resetpassword/${token}';
+        const link = `http://localhost:4200/resetpassword/${token}`;
 
         const to = Array.isArray(req.body.email)
           ? req.body.email.join(",")
           : req.body.email;
         const subject = "Your data submitted";
-        const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\n Reset Password:${link}`;
+        const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n Reset Password:${link}`;
         await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
