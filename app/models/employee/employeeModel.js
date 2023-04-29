@@ -155,57 +155,57 @@ const employeeSchema = new Schema({
     type: String,
   },
 
-  expcompany: {
-    type: String,
-  },
-  expduration: {
-    type: String,
-  },
-  explocation: {
-    type: String,
-  },
-  expcompany1: {
-    type: String,
-  },
-  expduration1: {
-    type: String,
-  },
-  explocation1: {
-    type: String,
-  },
-  expdesignation: {
-    type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-  },
-  expdesignation1: {
-    type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-  },
-  jobdesignation: {
-    type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-  },
-  joblocation1: {
-    type: String,
-  },
+  // expcompany: {
+  //   type: String,
+  // },
+  // expduration: {
+  //   type: String,
+  // },
+  // explocation: {
+  //   type: String,
+  // },
+  // expcompany1: {
+  //   type: String,
+  // },
+  // expduration1: {
+  //   type: String,
+  // },
+  // explocation1: {
+  //   type: String,
+  // },
+  // expdesignation: {
+  //   type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  // },
+  // expdesignation1: {
+  //   type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  // },
+  // jobdesignation: {
+  //   type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  // },
+  // joblocation1: {
+  //   type: String,
+  // },
 
   joiningdate: {
     type: Date,
@@ -215,30 +215,30 @@ const employeeSchema = new Schema({
     enum: ["active", "terminated", "resigned", "absconder"],
     default: "active",
   },
-  // experience:[
-  //   {
-  //     company:{
-  //       type:String
-  //     },
-  //     duration:{
-  //       type:String
-  //     },
-  //     location:{
-  //       type:String
-  //     },
-  //     degination:{
-  //         type: String,
-  //   enum: [
-  //     "Software Developer",
-  //     "Frontend Developer",
-  //     "Full Stack Developer",
-  //     "UI/UX Designer",
-  //     "Quality Analyst",
-  //   ],
-  //     }
+  experience:[
+    {
+      company:{
+        type:String
+      },
+      duration:{
+        type:String
+      },
+      location:{
+        type:String
+      },
+      degination:{
+          type: String,
+    enum: [
+      "Software Developer",
+      "Frontend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+      }
 
-  //   }
-  // ]
+    }
+  ]
 });
 
 employeeSchema.index({ name: "text" });
