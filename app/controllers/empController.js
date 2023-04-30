@@ -86,7 +86,7 @@ const createEmp = async (req, res) => {
               ? req.body.email.join(",")
               : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven:\n username:${professionalemail},\r\n Reset Password:${link}`;
+            const text = `this is a professional email for hrmaven:\n username:${professionalemail},\n Password:${password}\r\n Reset Password:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
 
