@@ -29,6 +29,10 @@ const companySchema = new Schema({
 });
 
 const userSchema = new Schema({
+  empId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'employees'
+},
   googleID: {
     type: String,
   },

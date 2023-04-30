@@ -1,5 +1,6 @@
 const Attendance = require('../models/attendance');
 const Employee = require("../models/employee/employeeModel");
+var ObjectId = require('mongodb').ObjectId;
 
 async function getAttendance(req, res, next) {
     try {
@@ -408,6 +409,12 @@ const Attendancegraph = async (req,res)=>{
     res.send(record);
 }
 
+const employeerecord = async(req,res)=>{
+  const id=req.headers.id;
+  const data = await Attendance.find({empId: new ObjectId(id)});
+  console.log(data);
+  res.json({response:data});
+}
 module.exports = {
     getreport,
     getAttendance,
@@ -418,6 +425,7 @@ module.exports = {
     getEmployeeAttendance,
     dateWiseAttendance,
     dateWiseCard,
-    Attendancegraph
+    Attendancegraph,
+    employeerecord
 
 };

@@ -12,4 +12,5 @@ router.get('/all',attendanceController.getEmployeeAttendance);
 router.get('/date/attendance',attendanceController.dateWiseAttendance);
 router.get("/date/attendancecard",attendanceController.dateWiseCard);
 router.get("/date/report",attendanceController.Attendancegraph);
+router.get("/emp/attendance",attendanceController.employeerecord);
 module.exports = router;
