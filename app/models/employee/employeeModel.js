@@ -155,16 +155,47 @@ const employeeSchema = new Schema({
     type: String,
   },
 
-  // expcompany: {
-  //   type: String,
-  // },
-  // expduration: {
-  //   type: String,
-  // },
-  // explocation: {
-  //   type: String,
-  // },
-  // expcompany1: {
+  expcompany: {
+    type: String,
+  },
+  expduration: {
+    type: String,
+  },
+  explocation: {
+    type: String,
+  },
+  expdesignation: {
+    type: String,
+    enum: [
+      "Software Developer",
+      "Frontend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  jobdesignation: {
+    type: String,
+    enum: [
+      "Software Developer",
+      "Frontend Developer",
+      "Full Stack Developer",
+      "UI/UX Designer",
+      "Quality Analyst",
+    ],
+  },
+  joiningdate: {
+    type: Date,
+  },
+  status: {
+    type: String,
+    enum: ["active", "terminated", "resigned", "absconder"],
+    default: "active",
+  },
+
+
+  
+   // expcompany1: {
   //   type: String,
   // },
   // expduration1: {
@@ -173,16 +204,7 @@ const employeeSchema = new Schema({
   // explocation1: {
   //   type: String,
   // },
-  // expdesignation: {
-  //   type: String,
-  //   enum: [
-  //     "Software Developer",
-  //     "Frontend Developer",
-  //     "Full Stack Developer",
-  //     "UI/UX Designer",
-  //     "Quality Analyst",
-  //   ],
-  // },
+
   // expdesignation1: {
   //   type: String,
   //   enum: [
@@ -193,8 +215,23 @@ const employeeSchema = new Schema({
   //     "Quality Analyst",
   //   ],
   // },
-  // jobdesignation: {
+ 
+  // joblocation1: {
   //   type: String,
+  // },
+  // experience:[
+  //   {
+  //     company:{
+  //       type:String
+  //     },
+  //     duration:{
+  //       type:String
+  //     },
+  //     location:{
+  //       type:String
+  //     },
+  //     degination:{
+  //         type: String,
   //   enum: [
   //     "Software Developer",
   //     "Frontend Developer",
@@ -202,43 +239,10 @@ const employeeSchema = new Schema({
   //     "UI/UX Designer",
   //     "Quality Analyst",
   //   ],
-  // },
-  // joblocation1: {
-  //   type: String,
-  // },
+  //     }
 
-  joiningdate: {
-    type: Date,
-  },
-  status: {
-    type: String,
-    enum: ["active", "terminated", "resigned", "absconder"],
-    default: "active",
-  },
-  experience:[
-    {
-      company:{
-        type:String
-      },
-      duration:{
-        type:String
-      },
-      location:{
-        type:String
-      },
-      degination:{
-          type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-      }
-
-    }
-  ]
+  //   }
+  // ]
 });
 
 employeeSchema.index({ name: "text" });

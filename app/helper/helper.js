@@ -1,7 +1,9 @@
+//helper.js 
 var express = require('express');
 const {User} = require('../models/credential');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const EmployeeModel=require('../models/employee/employeeModel')
 
 
 
@@ -9,33 +11,41 @@ var mongoose = require('mongoose');
 exports.login = async function (req, res) {
   var name = req.body.email;
   var password = req.body.password;
+  
   User.findOne({ $or: [{ email: name }, { username: name }] }).then((user) => {
     if (user) {
-      bcrypt.compare(password, user.password, function (err, result) {
-        if (err) {
-          res.json({
-            message: "error",
-          });
-        }
-        if (result) {
-          let token = jwt.sign({ userId: user._id}, process.env.JWT_TOKEN_KEY, {
-            expiresIn: "12h",
-          });
-          res.cookie("token", token, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 3600000,
-          });
+      EmployeeModel.findOne({ professionalemail: name }).then((employee) => {
+        if (employee && employee.status === 'active') {
+          bcrypt.compare(password, user.password, function (err, result) {
+            if (err) {
+              res.json({
+                message: "error",
+              });
+            }
+            if (result) {
+              let token = jwt.sign({ userId: user._id}, process.env.JWT_TOKEN_KEY, {
+                expiresIn: "12h",
+              });
+              res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                maxAge: 3600000,
+              });
 
-
-          res.send({
-            message: "login successful",
-            _id: user._id,
-            token 
-                      });
+              res.send({
+                message: "login successful",
+                _id: user._id,
+                token 
+              });
+            } else {
+              res.json({
+                message: "Invalid",
+              });
+            }
+          });
         } else {
           res.json({
-            message: "Invalid",
+            message: "Employee email or status invalid",
           });
         }
       });
@@ -45,7 +55,9 @@ exports.login = async function (req, res) {
       });
     }
   });
-}
+};
+
+
 
 exports.getUserProfile = async function (req, res) {
   // const authHeader = req.headers['authorization'];

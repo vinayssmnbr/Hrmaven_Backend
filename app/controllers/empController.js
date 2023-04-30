@@ -9,6 +9,7 @@ const Balance = require("../models/leavebalance")
 
 //Add employee
 //http://localhost:8000/api/create
+const bcrypt = require("bcrypt");
 
 const createEmp = async (req, res) => {
   console.log("inside")
@@ -35,7 +36,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-        name &&
+      name &&
         email &&
         designation &&
         mobile &&
@@ -46,42 +47,58 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      // let password = "Hrmaven@123";
-      // let pass
-      // bcrypt.hash(password, 10, function(err, hashedPass) {
-      //   if (err) {
-      //       res.json({ error: err });
-      //   } else {
-      //      pass = hashedPass;
-      //   }})
-      try {
-        const newuser = new EmployeeModel({
-          ...req.body,
-          professionalemail,
+      const password = "Hrmaven@123";
+      bcrypt.hash(password, 10, async (err, hashedPass) => {
+        if (err) {
+          res.json({ error: err });
+        } else {
+          try {
+            const newuser = new EmployeeModel({
+              ...req.body,
+              professionalemail,
+              password: hashedPass,
+            });
+            const dd = await newuser.save();
+            const balance = new Balance({
+              empId: dd._id,
+            });
+            balance.save();
 
-        });
-      const dd= await newuser.save();
-        const balance = new Balance({
-          empId:dd._id
-        })
-        balance.save();
+            const user = new User({
+              email: professionalemail,
+              password: hashedPass,
+              empId: dd._id,
+            });
 
-        const user = new User({
-          email: professionalemail,
-          password: password,
-        });
+            await user.save();
 
-        const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
-        const subject = "Your data submitted";
-        const text =`this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`
-        await sendMail.mail(to, subject, text);
-        const saved_user = await EmployeeModel.findOne({ email: email });
+            const payload = {
+              email: professionalemail,
+              // set the expiry time to 5 minute from now
+              exp: Math.floor(Date.now() / 1000) + 5 * 60,
+            };
+            const secret = process.env.JWT_TOKEN_KEY;
+            const token = jwt.sign(payload, secret);
+            console.log("t:  ", token);
+            // const link = 'https://turneazy.com/resetpassword/${token}' + token;
+            // const link = 'https://turneazy.com/resetpassword/${token}';
+            const link = `http://localhost:4200/resetpassword/${token}`;
 
-        res.send({ status: "Success", message: "Added Successfully" });
-      } catch (error) {
-        console.log(error, 'error');
-        res.send({ status: "failed", message: "unable to Added", error });
-      }
+            const to = Array.isArray(req.body.email)
+              ? req.body.email.join(",")
+              : req.body.email;
+            const subject = "Your data submitted";
+            const text = `this is a professional email for hrmaven:\n username:${professionalemail},\n Password:${password}\r\n Reset Password:${link}`;
+            await sendMail.mail(to, subject, text);
+            const saved_user = await EmployeeModel.findOne({ email: email });
+
+            res.send({ status: "Success", message: "Added Successfully" });
+          } catch (error) {
+            console.log(error);
+            res.send({ status: "failed", message: "unable to Added" });
+          }
+        }
+      });
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
@@ -331,6 +348,17 @@ const getEmployees = async (req, res) => {
 
 
 
+const employeedetail = async (req, res) => {
+  let userId = req.user.userId;
+  try {
+    let user = await User.findById(userId);
+    console.log(user, "roit");
+    const data = await EmployeeModel.findOne({ professionalemail: user.email });
+    res.json({ response: data });
+  } catch (err) {
+    res.send({ err });
+  }
+};
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -340,5 +368,6 @@ module.exports = {
   generateUid,
   exportUsers,
   importUsers,
-  getEmployees
+  getEmployees,
+  employeedetail,
 };

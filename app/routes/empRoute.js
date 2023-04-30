@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const emplcontroller = require("../controllers/empController");
+const {verify} = require("../middlewares/authentication.js")
 
 const multer=require('multer');
 const path=require('path');
@@ -36,7 +37,6 @@ router.post("/export",emplcontroller.exportUsers);
 router.get("/:id", emplcontroller.getsEmp);
 router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);
-router.get("/detail/fetch",emplcontroller.getEmployees);
-
+router.get("/detail/fetch",verify, emplcontroller.employeedetail);
 
 module.exports = router;
