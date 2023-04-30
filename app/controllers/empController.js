@@ -64,7 +64,7 @@ const createEmp = async (req, res) => {
 
         const to = Array.isArray(req.body.email) ? req.body.email.join(',') : req.body.email;
         const subject = "Your data submitted";
-        const text =`this is a professional email for hrmaven: username:${professionalemail},`
+        const text =`this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`
         await sendMail.mail(to, subject, text);
         const saved_user = await EmployeeModel.findOne({ email: email });
 
@@ -116,6 +116,7 @@ const getsEmp = async (req, res) => {
 };
 
 //UPDATE DATA
+
 const update = (req, res) => {
   if (!req.body) {
     return res.status(400).send({ message: "Data to update can not be empty" });
@@ -137,6 +138,36 @@ const update = (req, res) => {
       res.status(500).send({ message: "Error Update user information" });
     });
 };
+
+// const update = (req, res) => {
+//   if (!req.body) {
+//     return res.status(400).send({ message: "Data to update can not be empty" });
+//   }
+
+//   const id = req.params.id;
+//   EmployeeModel.findByIdAndUpdate(id, {
+//     $set: {
+//       name: req.body.name,
+//       age: req.body.age,
+//       // add more fields to update here
+//       experiences: req.body.experiences // add the experiences array to update
+//     }
+//   }, { new: true })
+//     .then((data) => {
+//       if (!data) {
+//         res.status(404).send({
+//           message: `Cannot Update user with ${id}. Maybe user not found!`,
+//         });
+//       } else {
+//         res.send(data);
+//       }
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).send({ message: "Error Update user information" });
+//     });
+// };
+
 
 //Delete a user with with specified user id in the request
 //delete

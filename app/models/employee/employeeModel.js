@@ -215,6 +215,7 @@ const employeeSchema = new Schema({
     enum: ["active", "terminated", "resigned", "absconder"],
     default: "active",
   },
+
   // experience:[
   //   {
   //     company:{
@@ -239,6 +240,7 @@ const employeeSchema = new Schema({
 
   //   }
   // ]
+
 });
 
 employeeSchema.index({ name: "text" });
