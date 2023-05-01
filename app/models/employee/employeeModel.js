@@ -130,11 +130,17 @@ const employeeSchema = new Schema({
   matricPercent: {
     type: Number,
   },
+  matricpassing:{
+    type:Number
+  },
   inter: {
     type: String,
   },
   interPercent: {
     type: Number,
+  },
+  interpassing:{
+    type:Number
   },
   graduation: {
     type: String,
@@ -194,7 +200,7 @@ const employeeSchema = new Schema({
   },
 
 
-  
+
    // expcompany1: {
   //   type: String,
   // },
