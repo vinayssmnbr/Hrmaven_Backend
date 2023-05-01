@@ -71,44 +71,6 @@ const leave_create = async (req, res) => {
 }
 
 const pendingsFetch = async (req, res) => {
-  // try {
-  //     const pending = await EmployeeModel.aggregate(
-  //         [{
-  //                 $lookup: {
-  //                     from: "employeeleaves",
-  //                     localField: "_id",
-  //                     foreignField: "empId",
-  //                     as: "leaves",
-  //                 },
-  //             },
-  //             {
-  //                 $unwind: "$leaves",
-  //             },
-  //             {
-  //                 $match: {
-  //                     "leaves.status": "pending",
-  //                 },
-  //             },
-  //             {
-  //                 $project: {
-  //                     uid: 1,
-  //                     name: 1,
-  //                     appliedOn: "$leaves.appliedOn",
-  //                     from: "$leaves.from",
-  //                     to: "$leaves.to",
-  //                     reason: "$leaves.reason",
-  //                     status: "$leaves.status",
-  //                     category: "$leaves.category",
-  //                     duration: "$leaves.duration",
-  //                 },
-  //             },
-  //         ]
-  //     )
-  //     console.log(pending);
-  //     res.send(pending);
-  // } catch (error) {
-  //     res.send("error")
-  // }
   console.log("pending");
 }
 

@@ -103,22 +103,6 @@ const createEmp = async (req, res) => {
   }
 };
 
-// GET  ALL Employee
-// const getEmp = async (req, res) => {
-//   let { search, designation, uid } = req.query;
-//   designation = designation != "" ? designation?.split(",") : false;
-//   let query = { designation: designation ? designation : { $regex: "" } };
-//   try {
-//     if (uid?.length) {
-//       query["uid"] = uid;
-//     }
-//     const employees = await getAllEmployees(query);
-//     res.json(employees);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 const getEmp = async (req, res) => {
   let { search, status, uid } = req.query;
   status = status != "" ? status?.split(",") : false;
@@ -161,10 +145,6 @@ const update = (req, res) => {
       res.status(500).send({ message: "Error Update user information" });
     });
 };
-
-//Delete a user with with specified user id in the request
-//delete
-// http://localhost:8000/api/:id
 
 const deleteEmployee = (req, res) => {
   const id = req.params.id;

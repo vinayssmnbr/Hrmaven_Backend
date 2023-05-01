@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema({
+    company:{
+        type:mongoose.Schema.ObjectId,
+        ref:'hrUser'
+    },
     empId: {
         type: mongoose.Schema.ObjectId,
         ref: 'employee'

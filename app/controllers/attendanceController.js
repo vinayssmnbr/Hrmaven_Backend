@@ -348,7 +348,6 @@ const Attendancegraph = async (req, res) => {
         $group: {
           _id: {
             month: "$month",
-            // status: "$status",
           },
 
           attendance: {
@@ -417,6 +416,14 @@ const employeerecord = async (req, res) => {
 }
 
 const intializeAttendanceDaily = async (req, res) => {
+
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
   console.log("initialize");
   const initialize = await Employee.aggregate([
     {
@@ -428,6 +435,7 @@ const intializeAttendanceDaily = async (req, res) => {
     {
       $project:
       {
+        company:""
         _id: 0,
         empId: "$_id",
         status: "absent",
@@ -437,15 +445,15 @@ const intializeAttendanceDaily = async (req, res) => {
       },
     },
   ])
-
-
-  // const todayAtt = await Attendance.insertMany(initialize).then(function (d) {
-  //   console.log("Data inserted")
-  // }).catch(function (error) {
-  //   console.log(error)      // Failure
-  // });
-
-
+  initialize.map(async(it)=>{
+  
+  const check = await Attendance.find({date:{$gte: new Date(today),$lt: new Date(tomorrow)},empId: new ObjectId(it.empId)});
+  if(check.length==0)
+  {
+    console.log("not found");
+    await Attendance.create(it);
+  }
+  })
 }
 
 const markattendance = async(req,res)=>{
@@ -483,11 +491,13 @@ const attendanceMark = async (req, res) => {
   }
   else {
     res.json({in:check[0].punch_in,out:check[0].punch_out});
+    
   }
 
 }
 
-// intializeAttendanceDaily();
+intializeAttendanceDaily();
+
 module.exports = {
   getreport,
   getAttendance,
@@ -503,5 +513,4 @@ module.exports = {
   intializeAttendanceDaily,
   attendanceMark,
   markattendance
-
 };
