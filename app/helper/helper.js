@@ -40,6 +40,7 @@ exports.login = async function (req, res) {
           res.send({
             message: "login successful",
             _id: user._id,
+            role:user.Role,
             token,
           });
         } else {

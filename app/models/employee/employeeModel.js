@@ -198,6 +198,10 @@ const employeeSchema = new Schema({
     enum: ["active", "terminated", "resigned", "absconder"],
     default: "active",
   },
+Role:{
+  type:String,
+
+}
 
 
 
