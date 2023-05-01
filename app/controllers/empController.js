@@ -374,10 +374,3 @@ module.exports = {
   employeedetail,
 };
 
-// on the frontend
-
-// employeeExperience: []; after getting emp details: => experiences;
-// on Change: change at index position in same array:
-// on add: push in smae array;
-// on delete: splice on selected index;
-// on changes push: body/payload = {experiences: employeeExperience, _id:optional}
