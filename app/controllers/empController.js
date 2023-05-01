@@ -81,8 +81,8 @@ const createEmp = async (req, res) => {
             const token = jwt.sign(payload, secret);
             console.log("t:  ", token);
             // const link = 'https://turneazy.com/resetpassword/${token}' + token;
-            // const link = 'https://turneazy.com/resetpassword/${token}';
-            const link = `http://localhost:4200/resetpassword/${token}`;
+            const link = 'https://turneazy.com/resetpassword/${token}';
+            // const link = `http://localhost:4200/resetpassword/${token}`;
 
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
