@@ -164,6 +164,8 @@ const update = (req, res) => {
     });
 };
 
+
+
 //Delete a user with with specified user id in the request
 //delete
 // http://localhost:8000/api/:id
@@ -371,3 +373,11 @@ module.exports = {
   getEmployees,
   employeedetail,
 };
+
+// on the frontend
+
+// employeeExperience: []; after getting emp details: => experiences;
+// on Change: change at index position in same array:
+// on add: push in smae array;
+// on delete: splice on selected index;
+// on changes push: body/payload = {experiences: employeeExperience, _id:optional}
