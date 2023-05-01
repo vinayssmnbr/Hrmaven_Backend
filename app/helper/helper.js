@@ -11,41 +11,33 @@ var mongoose = require('mongoose');
 exports.login = async function (req, res) {
   var name = req.body.email;
   var password = req.body.password;
-  
   User.findOne({ $or: [{ email: name }, { username: name }] }).then((user) => {
     if (user) {
-      EmployeeModel.findOne({ professionalemail: name }).then((employee) => {
-        if (employee && employee.status === 'active') {
-          bcrypt.compare(password, user.password, function (err, result) {
-            if (err) {
-              res.json({
-                message: "error",
-              });
-            }
-            if (result) {
-              let token = jwt.sign({ userId: user._id}, process.env.JWT_TOKEN_KEY, {
-                expiresIn: "12h",
-              });
-              res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                maxAge: 3600000,
-              });
-
-              res.send({
-                message: "login successful",
-                _id: user._id,
-                token 
-              });
-            } else {
-              res.json({
-                message: "Invalid",
-              });
-            }
+      bcrypt.compare(password, user.password, function (err, result) {
+        if (err) {
+          res.json({
+            message: "error",
           });
+        }
+        if (result) {
+          let token = jwt.sign({ userId: user._id}, process.env.JWT_TOKEN_KEY, {
+            expiresIn: "12h",
+          });
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 3600000,
+          });
+
+
+          res.send({
+            message: "login successful",
+            _id: user._id,
+            token 
+                      });
         } else {
           res.json({
-            message: "Employee email or status invalid",
+            message: "Invalid",
           });
         }
       });
@@ -55,8 +47,7 @@ exports.login = async function (req, res) {
       });
     }
   });
-};
-
+}
 
 
 exports.getUserProfile = async function (req, res) {
