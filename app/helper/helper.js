@@ -1,7 +1,9 @@
+//helper.js 
 var express = require('express');
 const {User} = require('../models/credential');
 const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
+const EmployeeModel=require('../models/employee/employeeModel')
 
 
 
@@ -46,6 +48,7 @@ exports.login = async function (req, res) {
     }
   });
 }
+
 
 exports.getUserProfile = async function (req, res) {
   // const authHeader = req.headers['authorization'];
