@@ -13,4 +13,6 @@ router.get('/date/attendance',attendanceController.dateWiseAttendance);
 router.get("/date/attendancecard",attendanceController.dateWiseCard);
 router.get("/date/report",attendanceController.Attendancegraph);
 router.get("/emp/attendance",attendanceController.employeerecord);
+router.get("/check/empattendance",attendanceController.attendanceMark);
+router.patch('/update/time',attendanceController.markattendance);
 module.exports = router;
