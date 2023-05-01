@@ -26,7 +26,7 @@ const createEmp = async (req, res) => {
     location,
     url,
   } = req.body;
-  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
+  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`.toLowerCase();
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -48,6 +48,7 @@ const createEmp = async (req, res) => {
         url)
     ) {
       const password = "Hrmaven@123";
+      const Role = "Employee";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
         if (err) {
           res.json({ error: err });
@@ -57,6 +58,7 @@ const createEmp = async (req, res) => {
               ...req.body,
               professionalemail,
               password: hashedPass,
+              Role,
             });
             const dd = await newuser.save();
             const balance = new Balance({
@@ -68,6 +70,7 @@ const createEmp = async (req, res) => {
               email: professionalemail,
               password: hashedPass,
               empId: dd._id,
+              Role: Role,
             });
 
             await user.save();
@@ -81,7 +84,7 @@ const createEmp = async (req, res) => {
             const token = jwt.sign(payload, secret);
             console.log("t:  ", token);
             // const link = 'https://turneazy.com/resetpassword/${token}' + token;
-            const link = 'https://turneazy.com/resetpassword/${token}';
+            const link = "https://turneazy.com/resetpassword/${token}";
             // const link = `http://localhost:4200/resetpassword/${token}`;
 
             const to = Array.isArray(req.body.email)
@@ -355,7 +358,7 @@ const employeedetail = async (req, res) => {
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({ professionalemail: user.email });
+    const data = await EmployeeModel.findOne({professionalemail: user.email,});
     res.json({ response: data });
   } catch (err) {
     res.send({ err });
