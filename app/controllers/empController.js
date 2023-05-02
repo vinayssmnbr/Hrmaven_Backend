@@ -1,16 +1,18 @@
 const EmployeeModel = require("../models/employee/employeeModel");
 const { getAllEmployees } = require("../helper/employeeHelper");
 const employeeService = require("../services/employeeService");
+const { Parser } = require("json2csv");
 const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
+const employee_emailcheck = require("../helper/empemailcheck");
 
 //Add employee
 //http://localhost:8000/api/create
-const bcrypt = require("bcrypt");
 
 const createEmp = async (req, res) => {
+  console.log("inside");
   const {
     uid,
     name,
@@ -45,58 +47,43 @@ const createEmp = async (req, res) => {
         location &&
         url)
     ) {
-      const password = "Hrmaven@123";
-      bcrypt.hash(password, 10, async (err, hashedPass) => {
-        if (err) {
-          res.json({ error: err });
-        } else {
-          try {
-            const newuser = new EmployeeModel({
-              ...req.body,
-              professionalemail,
-              password: hashedPass,
-            });
-            const dd = await newuser.save();
-            const balance = new Balance({
-              empId: dd._id,
-            });
-            balance.save();
+      // let password = "Hrmaven@123";
+      // let pass
+      // bcrypt.hash(password, 10, function(err, hashedPass) {
+      //   if (err) {
+      //       res.json({ error: err });
+      //   } else {
+      //      pass = hashedPass;
+      //   }})
+      try {
+        const newuser = new EmployeeModel({
+          ...req.body,
+          professionalemail,
+        });
+        const dd = await newuser.save();
+        const balance = new Balance({
+          empId: dd._id,
+        });
+        balance.save();
 
-            const user = new User({
-              email: professionalemail,
-              password: hashedPass,
-              empId: dd._id,
-            });
+        const user = new User({
+          email: professionalemail,
+          password: password,
+        });
 
-            await user.save();
+        const to = Array.isArray(req.body.email)
+          ? req.body.email.join(",")
+          : req.body.email;
+        const subject = "Your data submitted";
+        const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
+        await sendMail.mail(to, subject, text);
+        const saved_user = await EmployeeModel.findOne({ email: email });
 
-            const payload = {
-              email: professionalemail,
-              // set the expiry time to 5 minute from now
-              exp: Math.floor(Date.now() / 1000) + 5 * 60,
-            };
-            const secret = process.env.JWT_TOKEN_KEY;
-            const token = jwt.sign(payload, secret);
-            console.log("t:  ", token);
-            // const link = 'https://turneazy.com/resetpassword/${token}' + token;
-            const link = 'https://turneazy.com/resetpassword/${token}';
-            // const link = `http://localhost:4200/resetpassword/${token}`;
-
-            const to = Array.isArray(req.body.email)
-              ? req.body.email.join(",")
-              : req.body.email;
-            const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven:\n username:${professionalemail},\n Password:${password}\r\n Reset Password:${link}`;
-            await sendMail.mail(to, subject, text);
-            const saved_user = await EmployeeModel.findOne({ email: email });
-
-            res.send({ status: "Success", message: "Added Successfully" });
-          } catch (error) {
-            console.log(error);
-            res.send({ status: "failed", message: "unable to Added" });
-          }
-        }
-      });
+        res.send({ status: "Success", message: "Added Successfully" });
+      } catch (error) {
+        console.log(error, "error");
+        res.send({ status: "failed", message: "unable to Added", error });
+      }
     } else {
       res.send({ status: "failed", message: "All fields are required" });
     }
@@ -104,29 +91,19 @@ const createEmp = async (req, res) => {
 };
 
 // GET  ALL Employee
-// const getEmp = async (req, res) => {
-//   let { search, designation, uid } = req.query;
-//   designation = designation != "" ? designation?.split(",") : false;
-//   let query = { designation: designation ? designation : { $regex: "" } };
-//   try {
-//     if (uid?.length) {
-//       query["uid"] = uid;
-//     }
-//     const employees = await getAllEmployees(query);
-//     res.json(employees);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 const getEmp = async (req, res) => {
-  let { search, status, uid } = req.query;
+  let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
   let query = { status: status ? status : { $regex: "" } };
   try {
     if (uid?.length) {
       query["uid"] = uid;
     }
+
+    if (email?.length) {
+      query["email"] = email;
+    }
+
     const employees = await getAllEmployees(query);
     res.json(employees);
   } catch (err) {
@@ -195,17 +172,220 @@ const generateUid = async (req, res) => {
   }
 };
 
+//first file of ExportUsers
+
+const exportUsers = async (req, res) => {
+  console.log("inside");
+  try {
+    let users = [];
+    let usersData = req.body.data;
+
+    console.log(req.body);
+    console.log("adarsh", usersData);
+    usersData.forEach((employees) => {
+      const {
+        uid,
+        name,
+        dateOfJoining,
+        mobile,
+        address,
+        email,
+        dateOfBirth,
+        gender,
+        bankname,
+        accountno,
+        ifsc,
+        adhaarno,
+        panno,
+        designation,
+        bloodGroup,
+        city,
+      } = employees;
+      users.push({
+        uid,
+        name,
+        dateOfJoining,
+        mobile,
+        address,
+        email,
+        dateOfBirth,
+        gender,
+        bankname,
+        accountno,
+        ifsc,
+        adhaarno,
+        panno,
+        designation,
+        bloodGroup,
+        city,
+      });
+    });
+
+    const csvFields = [
+      "id",
+      "uid",
+      "name",
+      "dateOfJoining",
+      "mobile",
+      "address",
+      "email",
+      "dateOfBirth",
+      "gender",
+      "bankname",
+      "accountno",
+      "ifsc",
+      "adhaarno",
+      "panno",
+      "designation",
+      "bloodGroup",
+      "city",
+    ];
+    const csvParser = new Parser({ csvFields });
+    const csvData = csvParser.parse(users);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attatchement:filename=usersData.csv");
+    res.status(200).end(csvData);
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
+  }
+};
+
 const employeedetail = async (req, res) => {
   let userId = req.user.userId;
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({ professionalemail: user.email });
+    const data = await EmployeeModel.findOne({professionalemail: user.email,});
     res.json({ response: data });
   } catch (err) {
     res.send({ err });
   }
 };
+//CHECK EMAIL
+
+const getEmployeeEmail = async (req, res) => {
+  const { email } = req.params;
+  if (!email || email.trim() === "") {
+    res.status(400).json({ message: "Email address is required" });
+    return;
+  }
+  try {
+    const employee = await employee_emailcheck.getCredentialsByEmail(email);
+    if (employee) {
+      res.send({
+        message: `user-found`,
+        email,
+      });
+    } else {
+      res.send({
+        message: `email-id not found`,
+        email,
+      });
+      // res.status(404).json({ message:`No user found with email ${email}` });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching user email" });
+  }
+};
+
+// const exportUsers = async (req, res) => {
+//   // console.log("inside")
+//   try {
+//     let users = [];
+//     var userData = await EmployeeModel.find({});
+//     // let userData = req.body.userData // this.selectedEmployess
+//     //  console.log('user', userData)
+//     userData.forEach((employees) => {
+//       const {
+//         id,
+//         uid,
+//         name,
+//         dateOfJoining,
+//         mobile,
+//         address,
+//         email,
+//         dateOfBirth,
+//         gender,
+//         bankname,
+//         accountno,
+//         ifsc,
+//         adhaarno,
+//         panno,
+//         designation,
+//         bloodGroup,
+//         city } = employees;
+//       users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
+//     });
+//     const csvFields = ['Id', 'UID', 'Name', 'Email', 'DateOfJoining', 'Mobile', 'Address', 'DateofBirth', 'Gender', 'BankName', 'Accountno', 'Ifsc', 'Adharno', 'Panno', 'Designation', 'BloodGroup', 'City'];
+//     const csvParser = new Parser({ csvFields });
+//     const csvData = csvParser.parse(users);
+//     res.setHeader("Content-Type", "text/csv");
+//     res.setHeader("Content-Disposition", "attatchement:filename=usersData.csv");
+//     res.status(200).end(csvData);
+
+//   } catch (error) {
+//     res.send({ status: 400, success: false, msg: error.message });
+//   }
+// }
+
+// first file of importUsers
+
+// const importUsers = async (req, res) => {
+//   try {
+//     const files = req.files;
+//     if (Array.isArray(files) && files.length > 0) {
+//       res.json(files);
+//     } else {
+//       throw new Error("File upload unsuccessful");
+//     }
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// };
+
+// second file for importUser
+
+const importUsers = async (req, res) => {
+  try {
+    console.log(req.file.path);
+    var userData = [];
+    csv()
+      .fromFile(req.file.path)
+      .then(async (response) => {
+        for (var x = 0; x < response.length; x++) {
+          userData.push({
+            name: response[x].Name,
+            email: response[x].Email,
+            mobile: response[x].Mobile,
+          });
+        }
+
+        await EmployeeModel.insertMany(userData);
+
+        console.log(response);
+        res.send({ status: 200, success: true, msg: "csv imported" });
+      });
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
+  }
+};
+
+const getEmployees = async (req, res) => {
+  try {
+    const employees = await EmployeeModel.find({});
+
+    res.send({
+      status: 200,
+      success: true,
+      msg: "Employees data",
+      data: employees,
+    });
+  } catch (error) {
+    res.send({ status: 400, success: false, msg: error.message });
+  }
+};
+
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -213,5 +393,9 @@ module.exports = {
   getEmp,
   getsEmp,
   generateUid,
-  employeedetail,
+  getEmployeeEmail,
+  exportUsers,
+  importUsers,
+  getEmployees,
+  employeedetail
 };

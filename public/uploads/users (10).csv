@@ -1,0 +1,16 @@
+"id","uid","name","dateOfJoining","mobile","address","email","dateOfBirth","gender","bankname","accountno","ifsc","adhaarno","panno","designation","bloodGroup","city"
+"643e1992dfe10e83eb9a65ac",22000,"John","2023-04-11T00:00:00.000Z",9867452310,"US","John.william@gmail.com","1998-02-05T00:00:00.000Z","Male","Punjab National Bank",10298765435,"SBIN00029806",423567896543,"ABFRS6545B","Frontend Developer","B+",""
+"643e1b13dfe10e83eb9a6608",22001,"john kumar ","2023-04-12T00:00:00.000Z",6734569845,"jalandhar","rama@gmai.com","2023-04-14T00:00:00.000Z","Female","Punjab National Bank",4456789012347,"SNBN23456780",445698760985,"LUNJH2345G","Software Developer","B+","ludhiana"
+"643ec909616d65af034a38cb",22002,"rohan kumar","2022-12-09T00:00:00.000Z",9845444578,"Bihar","abhishek29345gmail.com","2002-12-09T00:00:00.000Z","","Punjab National Bank",1209104811433,"122134802",212064890016,"3489KALJJBVN","Software Developer","",""
+"643f6dab0f61d3d0f67fa34e",22003,"Gursimran","2023-03-29T00:00:00.000Z",6307167086,"jnjk","gsb70720@gmail.com","2023-04-13T00:00:00.000Z","Male","Punjab National Bank",1.1111111111111111e+24,"AAAA11111111",123445677865,"ABCTY3423D","Frontend Developer","B+",
+"6442119d0641828d1c0df33c",22004,"atul","2023-04-19T00:00:00.000Z",6789987667,"lpu","atul@gmail.com","2023-04-22T00:00:00.000Z","Male","Punjab National Bank",23456654323,"SBIN00029806",134213421342,"PUNJH2345C","Full Stack Developer","",""
+"6443718dfd8cc31c6b138f60",22005,"ankush","2023-04-07T00:00:00.000Z",7689987667,,"ankush@gmail.com","2023-04-20T00:00:00.000Z","Female","Central Bank Of India",643658747850095,"",,"","Full Stack Developer","A-",
+"6443fa326059a5ea8aa97349",22006,"vinay","2023-04-12T00:00:00.000Z",6204958560,,"vinayssmnbr@gmail.com",,,,,,,,"Full Stack Developer",,
+"6443fb910b3e2ef61968d34b",22007,"vishal","2023-04-19T00:00:00.000Z",6578998765,,"vishal@gmail.com",,,,,,,,"Full Stack Developer",,
+"6444021f0b3e2ef61968d36b",22008,"vivek","2023-04-19T00:00:00.000Z",8765567898,,"vivek@gmail.com",,,,,,,,"UI/UX Designer",,
+"644402e30b3e2ef61968d371",22009,"adarsh","2023-04-19T00:00:00.000Z",9876789987,,"adarsh@gmail.com",,,,,,,,"UI/UX Designer",,
+"64448d770b3e2ef61968d387",22010,"rohit","2023-04-21T00:00:00.000Z",9878998789,,"rohit@gmail.com",,,,,,,,"Full Stack Developer",,
+"644497160b3e2ef61968d3b5",22011,"vigfj","2023-04-06T00:00:00.000Z",9808958866,,"mnbfjk@gmail.com",,,,,,,,"UI/UX Designer",,
+"64449a840b3e2ef61968d3d5",22012,"fvbhgb","2023-04-12T00:00:00.000Z",7767988786,,"abc@gmail.com",,,,,,,,"UI/UX Designer",,
+"644519d00b3e2ef61968d513",22013,"nikhil","2023-04-06T00:00:00.000Z",6298585860,,"nikhil@gmail.com",,,,,,,,"Full Stack Developer",,
+"64451c080b3e2ef61968d530",22014,"guru","2023-04-26T00:00:00.000Z",8743423245,,"guru@gmail.com",,,,,,,,"Full Stack Developer",,

@@ -161,25 +161,25 @@ const employeeSchema = new Schema({
     type: String,
   },
 
-  expcompany: {
-    type: String,
-  },
-  expduration: {
-    type: String,
-  },
-  explocation: {
-    type: String,
-  },
-  expdesignation: {
-    type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-  },
+  // expcompany: {
+  //   type: String,
+  // },
+  // expduration: {
+  //   type: String,
+  // },
+  // explocation: {
+  //   type: String,
+  // },
+  // expdesignation: {
+  //   type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  // },
   jobdesignation: {
     type: String,
     enum: [
@@ -198,6 +198,10 @@ const employeeSchema = new Schema({
     enum: ["active", "terminated", "resigned", "absconder"],
     default: "active",
   },
+Role:{
+  type:String,
+
+}
 
 
 
