@@ -5,6 +5,7 @@ const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
+var ObjectId = require('mongodb').ObjectId;
 
 //Add employee
 //http://localhost:8000/api/create
@@ -23,7 +24,9 @@ const createEmp = async (req, res) => {
     job_type,
     location,
     url,
+    hrid
   } = req.body;
+  console.log(req.body);
   const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
@@ -55,6 +58,8 @@ const createEmp = async (req, res) => {
               ...req.body,
               professionalemail,
               password: hashedPass,
+              company: new ObjectId(req.body.hrid)
+
             });
             const dd = await newuser.save();
             const balance = new Balance({
@@ -111,7 +116,7 @@ const getEmp = async (req, res) => {
     if (uid?.length) {
       query["uid"] = uid;
     }
-    const employees = await getAllEmployees(query);
+    const employees = await getAllEmployees(query,req.headers.hrid);
     res.json(employees);
   } catch (err) {
     res.status(500).json({ message: err.message });

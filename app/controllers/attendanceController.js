@@ -12,23 +12,16 @@ async function getAttendance(req, res, next) {
 }
 
 async function createAttendance(req, res, next) {
-  try {
-    const { empId, date, status } = req.body;
-    const existingAttendance = await Attendance.findOne({ empId, date });
-    if (existingAttendance) {
-      existingAttendance.status = status;
-      await existingAttendance.save();
-      console.log(`Attendance record for empId ${empId} and date ${date} updated successfully!`);
-      res.json(existingAttendance);
-    } else {
-      const attendance = new Attendance(req.body);
-      await attendance.save();
-      console.log('New attendance record added successfully!');
-      res.json(attendance);
-    }
-  } catch (error) {
-    next(error);
-  }
+  const empId =req.headers.empId;
+  const date = req.headers.date;
+  const data = await Attendance({
+    empId: new ObjectId(empId),
+    status:"present",
+    date:new Date(date)
+  })
+
+  data.save();
+  res.send({res:data});
 }
 async function updateAttendance(req, res, next) {
   try {
@@ -334,14 +327,34 @@ const dateWiseCard = async (req, res) => {
 }
 
 const Attendancegraph = async (req, res) => {
-  const record = await Attendance.aggregate(
+  const hrid=req.headers.hrid;
+  const record = await Employee.aggregate(
     [
+      {
+        $match:
+          {
+            company:new  ObjectId(
+              hrid
+            ),
+          },
+      },
+      {
+        $lookup: {
+          from: "attendances",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
       {
         $project: {
           month: {
-            $month: "$date",
+            $month: "$result.date",
           },
-          status: 1,
+          status: "$result.status",
         },
       },
       {
@@ -349,7 +362,6 @@ const Attendancegraph = async (req, res) => {
           _id: {
             month: "$month",
           },
-
           attendance: {
             $push: {
               status: "$status",
@@ -435,7 +447,6 @@ const intializeAttendanceDaily = async (req, res) => {
     {
       $project:
       {
-        company:""
         _id: 0,
         empId: "$_id",
         status: "absent",

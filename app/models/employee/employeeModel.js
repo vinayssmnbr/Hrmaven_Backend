@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const employeeSchema = new Schema({
+  company:{
+  type:mongoose.Schema.ObjectId,
+  ref:'hrUser'
+  },
   uid: {
     type: Number,
     required: true,

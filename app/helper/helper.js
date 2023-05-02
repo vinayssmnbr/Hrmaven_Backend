@@ -36,11 +36,11 @@ exports.login = async function (req, res) {
             secure: true,
             maxAge: 3600000,
           });
-
-          res.send({
+          res.json({
             message: "login successful",
             _id: user._id,
             token,
+            empId:user.empId
           });
         } else {
           res.json({
