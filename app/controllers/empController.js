@@ -91,7 +91,7 @@ const createEmp = async (req, res) => {
       res.send({ status: "failed", message: "All fields are required" });
     }
   })}
-};
+}};
 
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
