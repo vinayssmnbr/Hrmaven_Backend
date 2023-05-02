@@ -229,30 +229,30 @@ Role:{
   // joblocation1: {
   //   type: String,
   // },
-  experience:[
-    {
-      company:{
-        type:String
-      },
-      duration:{
-        type:String
-      },
-      location:{
-        type:String
-      },
-      degination:{
-          type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
-      }
+  // experience:[
+  //   {
+  //     company:{
+  //       type:String
+  //     },
+  //     duration:{
+  //       type:String
+  //     },
+  //     location:{
+  //       type:String
+  //     },
+  //     degination:{
+  //         type: String,
+  //   enum: [
+  //     "Software Developer",
+  //     "Frontend Developer",
+  //     "Full Stack Developer",
+  //     "UI/UX Designer",
+  //     "Quality Analyst",
+  //   ],
+  //     }
 
-    }
-  ]
+  //   }
+  // ]
 });
 
 employeeSchema.index({ name: "text" });

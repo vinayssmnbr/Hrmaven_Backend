@@ -37,6 +37,6 @@ router.post("/export",emplcontroller.exportUsers);
 router.get("/:id", emplcontroller.getsEmp);
 router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);
-router.get("/detail/fetch",verify, emplcontroller.employeedetail);
+// router.get("/detail/fetch",verify, emplcontroller.employeedetail);
 
 module.exports = router;
