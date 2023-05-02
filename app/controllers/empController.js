@@ -5,6 +5,7 @@ const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
+const employee_emailcheck = require("../helper/empemailcheck")
 
 //Add employee
 //http://localhost:8000/api/create
@@ -107,29 +108,19 @@ const createEmp = async (req, res) => {
 };
 
 // GET  ALL Employee
-// const getEmp = async (req, res) => {
-//   let { search, designation, uid } = req.query;
-//   designation = designation != "" ? designation?.split(",") : false;
-//   let query = { designation: designation ? designation : { $regex: "" } };
-//   try {
-//     if (uid?.length) {
-//       query["uid"] = uid;
-//     }
-//     const employees = await getAllEmployees(query);
-//     res.json(employees);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 const getEmp = async (req, res) => {
-  let { search, status, uid } = req.query;
+  let { search, status, uid,email } = req.query;
   status = status != "" ? status?.split(",") : false;
   let query = { status: status ? status : { $regex: "" } };
   try {
     if (uid?.length) {
       query["uid"] = uid;
     }
+
+    if(email?.length){
+     query["email"]=email
+      }
+    
     const employees = await getAllEmployees(query);
     res.json(employees);
   } catch (err) {
@@ -209,6 +200,33 @@ const employeedetail = async (req, res) => {
     res.send({ err });
   }
 };
+//CHECK EMAIL
+
+const getEmployeeEmail = async (req, res) => {
+  const { email } = req.params;
+  if (!email || email.trim() === '') {
+    res.status(400).json({ message: "Email address is required" });
+    return;
+  }
+  try {
+    const employee = await employee_emailcheck.getCredentialsByEmail(email);
+    if (employee) {
+      res.send({
+        message: `user-found`,
+        email,
+      });
+    } else {
+      res.send({
+          message: `email-id not found`,
+          email,
+        });
+      // res.status(404).json({ message:`No user found with email ${email}` });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching user email" });
+  }
+};
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -217,4 +235,5 @@ module.exports = {
   getsEmp,
   generateUid,
   employeedetail,
+  getEmployeeEmail
 };
