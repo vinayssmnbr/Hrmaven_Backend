@@ -32,7 +32,7 @@ exports.login = async function (req, res) {
 
           res.send({
             message: "login successful",
-            _id: user._id,
+            noOfEmployee: User.personaldata.noOfEmployee,
             token 
                       });
         } else {
