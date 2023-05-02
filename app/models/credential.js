@@ -72,6 +72,10 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  Role:{
+    type:String,
+    default:"HR"
+  }
 }, { timestamps: true });
 
 const User = mongoose.model('hrUser', userSchema);
