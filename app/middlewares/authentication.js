@@ -79,7 +79,7 @@ exports.tokenParser = async function (req, res, next) {
   const secret = process.env.JWT_TOKEN_KEY;
   const token = jwt.sign(payload, secret);
   console.log("t:  ", token);
-  // const link = 'https://turneazy.com/resetpassword/${token}' + token;
+  // const link = 'https://turneazy.com/resetpassword/' + token;
   // const link = 'https://turneazy.com/resetpassword/${token}';
   const link = `http://localhost:4200/resetpassword/${token}`;
   await User.findOneAndUpdate(
@@ -102,3 +102,23 @@ exports.tokenParser = async function (req, res, next) {
     token: token,
   });
 };
+
+// exports.authenticate = async function(req, res, next) {
+//   try {
+//     // Get the user object from the authentication token
+//     const token = req.headers.authorization.split(' ')[1];
+//     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+//     const user = await User.findById(decodedToken.userId);
+
+//     if (!user) {
+//       return res.status(401).json({ message: "Unauthorized" });
+//     }
+
+//     // Attach the user object to the request
+//     req.user = user;
+//     next();
+//   } catch (error) {
+//     res.status(401).json({ message: "Unauthorized" });
+//   }
+// };
+

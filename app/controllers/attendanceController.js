@@ -12,23 +12,16 @@ async function getAttendance(req, res, next) {
 }
 
 async function createAttendance(req, res, next) {
-  try {
-    const { empId, date, status } = req.body;
-    const existingAttendance = await Attendance.findOne({ empId, date });
-    if (existingAttendance) {
-      existingAttendance.status = status;
-      await existingAttendance.save();
-      console.log(`Attendance record for empId ${empId} and date ${date} updated successfully!`);
-      res.json(existingAttendance);
-    } else {
-      const attendance = new Attendance(req.body);
-      await attendance.save();
-      console.log('New attendance record added successfully!');
-      res.json(attendance);
-    }
-  } catch (error) {
-    next(error);
-  }
+  const empId =req.headers.empId;
+  const date = req.headers.date;
+  const data = await Attendance({
+    empId: new ObjectId(empId),
+    status:"present",
+    date:new Date(date)
+  })
+
+  data.save();
+  res.send({res:data});
 }
 async function updateAttendance(req, res, next) {
   try {
@@ -334,23 +327,41 @@ const dateWiseCard = async (req, res) => {
 }
 
 const Attendancegraph = async (req, res) => {
-  const record = await Attendance.aggregate(
+  const hrid=req.headers.hrid;
+  const record = await Employee.aggregate(
     [
+      {
+        $match:
+          {
+            company:new  ObjectId(
+              hrid
+            ),
+          },
+      },
+      {
+        $lookup: {
+          from: "attendances",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
       {
         $project: {
           month: {
-            $month: "$date",
+            $month: "$result.date",
           },
-          status: 1,
+          status: "$result.status",
         },
       },
       {
         $group: {
           _id: {
             month: "$month",
-            // status: "$status",
           },
-
           attendance: {
             $push: {
               status: "$status",
@@ -417,6 +428,14 @@ const employeerecord = async (req, res) => {
 }
 
 const intializeAttendanceDaily = async (req, res) => {
+
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
   console.log("initialize");
   const initialize = await Employee.aggregate([
     {
@@ -437,15 +456,15 @@ const intializeAttendanceDaily = async (req, res) => {
       },
     },
   ])
-
-
-  // const todayAtt = await Attendance.insertMany(initialize).then(function (d) {
-  //   console.log("Data inserted")
-  // }).catch(function (error) {
-  //   console.log(error)      // Failure
-  // });
-
-
+  initialize.map(async(it)=>{
+  
+  const check = await Attendance.find({date:{$gte: new Date(today),$lt: new Date(tomorrow)},empId: new ObjectId(it.empId)});
+  if(check.length==0)
+  {
+    console.log("not found");
+    await Attendance.create(it);
+  }
+  })
 }
 
 const markattendance = async(req,res)=>{
@@ -483,11 +502,13 @@ const attendanceMark = async (req, res) => {
   }
   else {
     res.json({in:check[0].punch_in,out:check[0].punch_out});
+    
   }
 
 }
 
-// intializeAttendanceDaily();
+intializeAttendanceDaily();
+
 module.exports = {
   getreport,
   getAttendance,
@@ -503,5 +524,4 @@ module.exports = {
   intializeAttendanceDaily,
   attendanceMark,
   markattendance
-
 };

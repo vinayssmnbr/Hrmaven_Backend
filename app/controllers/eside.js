@@ -59,6 +59,7 @@ const leaveHistory = async(req,res)=>{
               },
             },
           ])
+          console.log(data);
           res.json({response:data});
 
 }

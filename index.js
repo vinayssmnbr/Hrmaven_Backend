@@ -6,6 +6,10 @@ const cors = require("cors");
 const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
 const session = require("express-session");
+const { Parser } = require("json2csv");
+
+
+//for employee Management System
 const empRoutes = require('./app/routes/empRoute');
 const attendanceRoutes = require('./app/routes/attendanceRoutes');
 const authRoutes = require("./app/routes/authRoute");
@@ -28,7 +32,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(router);
-
+app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -61,6 +65,12 @@ app.use("/api/leave", leaveRoute)
 app.use("/api", empRoutes);
 app.use("", Landing);
 app.use('/attendance', attendanceRoutes);
+app.use("/user", empRoutes);
+app.use("/user", empRoutes);
+
+
+
+
 app.use("/getemployee", employeespecificdetails)
 
 app.use("/getemails", emailAll);
