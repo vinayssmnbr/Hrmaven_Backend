@@ -245,11 +245,7 @@ const employeedetail = async (req, res) => {
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
-<<<<<<< HEAD
     const data = await EmployeeModel.findOne({ professionalemail: user.email, });
-=======
-    const data = await EmployeeModel.findOne({ professionalemail: user.email });
->>>>>>> e1c6586556be3ed99e97e484cadc21bb81113033
     res.json({ response: data });
   } catch (err) {
     res.send({ err });

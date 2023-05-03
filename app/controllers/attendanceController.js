@@ -526,7 +526,7 @@ const attendanceMark = async (req, res) => {
 
 }
 
-intializeAttendanceDaily();
+// intializeAttendanceDaily();
 
 module.exports = {
   getreport,
