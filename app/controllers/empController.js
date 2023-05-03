@@ -8,6 +8,7 @@ const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
+const employee_mobilecheck = require("../helper/empmobilecheck");
 
 //Add employee
 //http://localhost:8000/api/create
@@ -276,7 +277,34 @@ const getEmployeeEmail = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching user email" });
+    res.status(500).json({ message: "Error fetching user mobile" });
+  }
+};
+
+const getEmployeeMobile = async (req, res) => {
+  const { mobile } = req.params;
+  if (!mobile || mobile.trim() === "") {
+    res.status(400).json({ message: "mobile is required" });
+    return;
+  }
+  try {
+    const employee = await employee_mobilecheck.getCredentialsByEmail(mobile);
+    if (employee) {
+      res.send({
+        message: `user-found`,
+        mobile,
+        flag: true,
+      });
+    } else {
+      res.send({
+        message: `mobile not found`,
+        mobile,
+        flag: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching user mobile" });
   }
 };
 
@@ -389,5 +417,5 @@ module.exports = {
   importUsers,
   getEmployees,
   employeedetail,
-  // getEmployeemobile,
+  getEmployeeMobile,
 };

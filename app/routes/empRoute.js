@@ -37,6 +37,6 @@ router.patch("/update/:id", emplcontroller.update);
 router.delete("/:id", emplcontroller.deleteEmployee);
 router.get("/detail/fetch", verify, emplcontroller.employeedetail);
 router.get("/checkemail/:email", emplcontroller.getEmployeeEmail);
-// router.get("/checkmobile/:mobile", emplcontroller.getEmployeeEmail);
+router.get("/checkmobile/:mobile", emplcontroller.getEmployeeMobile);
 
 module.exports = router;
