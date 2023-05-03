@@ -447,6 +447,7 @@ const employeerecord = async (req, res) => {
   const data = await Attendance.find({ empId: new ObjectId(id) });
   console.log(data);
   res.json({ response: data });
+  // res.json({message:'yeah'});
 }
 
 const intializeAttendanceDaily = async (req, res) => {
