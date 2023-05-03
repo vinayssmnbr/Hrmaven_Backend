@@ -6,90 +6,96 @@ const sendMail = require("../../config/mail");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
-var ObjectId = require('mongodb').ObjectId;
+var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
 
 //Add employee
 //http://localhost:8000/api/create
 
 const createEmp = async (req, res) => {
-//   console.log("inside");
-//   const {
-//     uid,name,designation,email,mobile,dateOfJoining,timing,ctc,job_type,location,url,hrid} = req.body;
-//   console.log(req.body);
-//   const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
-//   const user = await EmployeeModel.findOne({ email: email });
-//   if (user) {
-//     res.send({
-//       status: "failed",
-//       message: "Email already exists in the register",
-//     });
-//   } 
-//   else {
-//     if (
-//       (uid,
-//         name &&
-//         email &&
-//         designation &&
-//         mobile &&
-//         dateOfJoining &&
-//         timing &&
-//         ctc &&
-//         job_type &&
-//         location &&url)
-//     ) {
-//       const password = "Hrmaven@123";
-//       bcrypt.hash(password, 10, async (err, hashedPass) => {
-//         if (err) {
-//           res.json({ error: err });
-//         } else {
-//           try {
-//             const newuser = new EmployeeModel({
-//               ...req.body,
-//               professionalemail,
-//               password: hashedPass,
-//               company: new ObjectId(req.body.hrid)
+  console.log("inside");
+  const {
+    uid,
+    name,
+    designation,
+    email,
+    mobile,
+    dateOfJoining,
+    timing,
+    ctc,
+    job_type,
+    location,
+    url,
+    hrid,
+  } = req.body;
+  console.log(req.body);
+  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
+  const user = await EmployeeModel.findOne({ email: email });
+  if (user) {
+    res.send({
+      status: "failed",
+      message: "Email already exists in the register",
+    });
+  } else {
+    if (
+      (uid,
+        name &&
+        email &&
+        designation &&
+        mobile &&
+        dateOfJoining &&
+        timing &&
+        ctc &&
+        job_type &&
+        location &&
+        url)
+    ) {
+      const password = "Hrmaven@123";
+      bcrypt.hash(password, 10, async (err, hashedPass) => {
+        if (err) {
+          res.json({ error: err });
+        } else {
+          try {
+            const newuser = new EmployeeModel({
+              ...req.body,
+              professionalemail,
+              company: new ObjectId(req.body.hrid)
+            });
+            const dd = await newuser.save();
+            const balance = new Balance({
+              empId: dd._id,
+            });
+            balance.save();
 
-//             });
-//             const dd = await newuser.save();
-//             const balance = new Balance({
-//               empId: dd._id,
-//             });
-//             balance.save();
+            const user = new User({
+              email: professionalemail,
+              password: password,
+            });
 
-//             const user = new User({
-//               email: professionalemail,
-//               password: password,
-//             });
+            const to = Array.isArray(req.body.email) ?
+              req.body.email.join(",") :
+              req.body.email;
+            const subject = "Your data submitted";
+            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
+            await sendMail.mail(to, subject, text);
+            const saved_user = await EmployeeModel.findOne({ email: email });
 
-//             const to = Array.isArray(req.body.email)
-//               ? req.body.email.join(",")
-//               : req.body.email;
-//             const subject = "Your data submitted";
-//             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
-//             await sendMail.mail(to, subject, text);
-//             const saved_user = await EmployeeModel.findOne({ email: email });
-
-//             res.send({ status: "Success", message: "Added Successfully" });
-//           }
-//           catch (error) {
-//             console.log(error, "error");
-//             res.send({ status: "failed", message: "unable to Added", error });
-//           }
-//     else {
-//       res.send({ status: "failed", message: "All fields are required" });
-//     }
-//   }
-// }
-// }};
-}
-
+            res.send({ status: "Success", message: "Added Successfully" });
+          } catch (error) {
+            console.log(error, "error");
+            res.send({ status: "failed", message: "unable to Added", error });
+          }
+        }
+      });
+    }
+  }
+};
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
-  status = status != "" ? status?.split(",") : false;
+  status = status != "" ? status ?.split(",") : false;
   let query = { status: status ? status : { $regex: "" } };
   try {
-    if (uid?.length) {
+    if (uid ?.length) {
       query["uid"] = uid;
     }
     const employees = await getAllEmployees(query, req.headers.hrid);
@@ -239,7 +245,11 @@ const employeedetail = async (req, res) => {
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
+<<<<<<< HEAD
     const data = await EmployeeModel.findOne({ professionalemail: user.email, });
+=======
+    const data = await EmployeeModel.findOne({ professionalemail: user.email });
+>>>>>>> e1c6586556be3ed99e97e484cadc21bb81113033
     res.json({ response: data });
   } catch (err) {
     res.send({ err });
@@ -381,5 +391,5 @@ module.exports = {
   exportUsers,
   importUsers,
   getEmployees,
-  employeedetail
+  employeedetail,
 };
