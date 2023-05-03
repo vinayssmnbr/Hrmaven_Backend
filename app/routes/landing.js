@@ -13,6 +13,7 @@ router.post('/signup', landing.signup);
 router.post('/forgotpassword', landing.forgot);
 
 router.post('/resetpassword',landing.reset);
+// router.get('/resetpassword',landing.reset);
 
 router.post('/resetpasswordaccount/:email',landing.resett);
 
@@ -22,6 +23,7 @@ router.patch('/updatepersonal/:email', landing.updatehrUser);
 router.put('/putpersonal/:email', landing.putdatacompany);
 
 router.get('/getpersonalsdata/:email', landing.getpersonalsdata)
+// router.post("/reset", verify.tokenParser, landing.checkreset);
 
 
 

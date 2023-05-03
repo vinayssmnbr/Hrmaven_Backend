@@ -12,23 +12,16 @@ async function getAttendance(req, res, next) {
 }
 
 async function createAttendance(req, res, next) {
-  try {
-    const { empId, date, status } = req.body;
-    const existingAttendance = await Attendance.findOne({ empId, date });
-    if (existingAttendance) {
-      existingAttendance.status = status;
-      await existingAttendance.save();
-      console.log(`Attendance record for empId ${empId} and date ${date} updated successfully!`);
-      res.json(existingAttendance);
-    } else {
-      const attendance = new Attendance(req.body);
-      await attendance.save();
-      console.log('New attendance record added successfully!');
-      res.json(attendance);
-    }
-  } catch (error) {
-    next(error);
-  }
+  const empId = req.headers.empId;
+  const date = req.headers.date;
+  const data = await Attendance({
+    empId: new ObjectId(empId),
+    status: "present",
+    date: new Date(date)
+  })
+
+  data.save();
+  res.send({ res: data });
 }
 async function updateAttendance(req, res, next) {
   try {
@@ -155,8 +148,20 @@ async function getEmployeeAttendance(req, res) {
 
 const dateWiseAttendance = async (req, res) => {
   const mydate = req.headers.mydate;
+  const hrid = req.headers.hrid;
   const attendance = await Employee.aggregate(
     [
+      {
+        $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+          company: new ObjectId(
+            hrid
+          ),
+        },
+      },
       {
         $lookup: {
           from: "attendances",
@@ -168,7 +173,6 @@ const dateWiseAttendance = async (req, res) => {
       {
         $unwind: "$attendances",
       },
-
       {
         $project: {
           uid: 1,
@@ -181,9 +185,10 @@ const dateWiseAttendance = async (req, res) => {
         },
       },
       {
-        $match:
-        {
-          "date": { $eq: new Date(mydate) },
+        $match: {
+          date: {
+            $gte: new Date(mydate),
+          },
         },
       },
     ]
@@ -193,6 +198,7 @@ const dateWiseAttendance = async (req, res) => {
 }
 
 const dateWiseCard = async (req, res) => {
+  const hrid = req.headers.hrid;
   const d = new Date();
   const month = req.headers.month;
   const m = Number(month);
@@ -204,6 +210,12 @@ const dateWiseCard = async (req, res) => {
 
   const attendance = await Employee.aggregate(
     [
+      {
+        $match: {
+          company: new ObjectId(hrid),
+          // status:"active"
+        }
+      },
       {
         $lookup: {
           from: "attendances",
@@ -218,6 +230,7 @@ const dateWiseCard = async (req, res) => {
       {
         $project: {
           uid: 1,
+          url:"$url",
           name: 1,
           designation: 1,
           date: "$attendance.date",
@@ -243,6 +256,8 @@ const dateWiseCard = async (req, res) => {
             name: "$name",
             designation: "$designation",
             empId: "$empId",
+            url:"$url"
+
           },
           attendance: {
             $push: {
@@ -334,23 +349,41 @@ const dateWiseCard = async (req, res) => {
 }
 
 const Attendancegraph = async (req, res) => {
-  const record = await Attendance.aggregate(
+  const hrid = req.headers.hrid;
+  const record = await Employee.aggregate(
     [
+      {
+        $match:
+        {
+          company: new ObjectId(
+            hrid
+          ),
+        },
+      },
+      {
+        $lookup: {
+          from: "attendances",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
       {
         $project: {
           month: {
-            $month: "$date",
+            $month: "$result.date",
           },
-          status: 1,
+          status: "$result.status",
         },
       },
       {
         $group: {
           _id: {
             month: "$month",
-            // status: "$status",
           },
-
           attendance: {
             $push: {
               status: "$status",
@@ -417,6 +450,14 @@ const employeerecord = async (req, res) => {
 }
 
 const intializeAttendanceDaily = async (req, res) => {
+
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
   console.log("initialize");
   const initialize = await Employee.aggregate([
     {
@@ -437,18 +478,17 @@ const intializeAttendanceDaily = async (req, res) => {
       },
     },
   ])
+  initialize.map(async (it) => {
 
-
-  // const todayAtt = await Attendance.insertMany(initialize).then(function (d) {
-  //   console.log("Data inserted")
-  // }).catch(function (error) {
-  //   console.log(error)      // Failure
-  // });
-
-
+    const check = await Attendance.find({ date: { $gte: new Date(today), $lt: new Date(tomorrow) }, empId: new ObjectId(it.empId) });
+    if (check.length == 0) {
+      console.log("not found");
+      await Attendance.create(it);
+    }
+  })
 }
 
-const markattendance = async(req,res)=>{
+const markattendance = async (req, res) => {
   const id = req.headers.id;
   let today = new Date();
   let tomorrow = new Date(today);
@@ -457,9 +497,9 @@ const markattendance = async(req,res)=>{
   tomorrow.setHours(0, 0, 0, 0);
   today = today.toString();
   tomorrow = tomorrow.toString();
-  const check = await Attendance.findOneAndUpdate({date:{$gte: new Date(today),$lt: new Date(tomorrow)},empId: new ObjectId(id)},{punch: new Date()});
-  res.json({res:check});
-  
+  const check = await Attendance.findOneAndUpdate({ date: { $gte: new Date(today), $lt: new Date(tomorrow) }, empId: new ObjectId(id) }, { punch: new Date() });
+  res.json({ res: check });
+
 }
 const attendanceMark = async (req, res) => {
   const id = req.headers.id;
@@ -470,24 +510,24 @@ const attendanceMark = async (req, res) => {
   tomorrow.setHours(0, 0, 0, 0);
   today = today.toString();
   tomorrow = tomorrow.toString();
-  const check = await Attendance.find({date:{$gte: new Date(today),$lt: new Date(tomorrow)},empId: new ObjectId(id)});
-  console.log("check",check);
-  if(check.length==0)
-  {
+  const check = await Attendance.find({ date: { $gte: new Date(today), $lt: new Date(tomorrow) }, empId: new ObjectId(id) });
+  console.log("check", check);
+  if (check.length == 0) {
     console.log("iflse");
-    res.json({response:'noresponse'});
+    res.json({ response: 'noresponse' });
   }
-  else if(check[0].status=='absent' || check[0].status=='leave')
-  {
-    res.json({in:"----",out:"-----"});
+  else if (check[0].status == 'absent' || check[0].status == 'leave') {
+    res.json({ in: "----", out: "-----" });
   }
   else {
-    res.json({in:check[0].punch_in,out:check[0].punch_out});
+    res.json({ in: check[0].punch_in, out: check[0].punch_out });
+
   }
 
 }
 
 // intializeAttendanceDaily();
+
 module.exports = {
   getreport,
   getAttendance,
@@ -503,5 +543,4 @@ module.exports = {
   intializeAttendanceDaily,
   attendanceMark,
   markattendance
-
 };
