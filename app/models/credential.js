@@ -7,7 +7,15 @@ const companySchema = new Schema({
     type: String
     },
   phone: {
-    type: Number
+    type: Number,
+    required: true,
+    validate: {
+      validator: function (value) {
+        const phoneRegex = /^((\+91-?)|0)?[0-9]{10}$/;
+        return phoneRegex.test(value);
+      },
+      message: 'Invalid phone number'
+    }
   },
   noOfEmployee: {
     type: String,

@@ -8,6 +8,7 @@ const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
+const employee_mobilecheck = require("../helper/empmobilecheck");
 
 //Add employee
 //http://localhost:8000/api/create
@@ -39,7 +40,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-        name &&
+      name &&
         email &&
         designation &&
         mobile &&
@@ -59,7 +60,7 @@ const createEmp = async (req, res) => {
             const newuser = new EmployeeModel({
               ...req.body,
               professionalemail,
-              company: new ObjectId(req.body.hrid)
+              company: new ObjectId(req.body.hrid),
             });
             const dd = await newuser.save();
             const balance = new Balance({
@@ -72,9 +73,9 @@ const createEmp = async (req, res) => {
               password: password,
             });
 
-            const to = Array.isArray(req.body.email) ?
-              req.body.email.join(",") :
-              req.body.email;
+            const to = Array.isArray(req.body.email)
+              ? req.body.email.join(",")
+              : req.body.email;
             const subject = "Your data submitted";
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
             await sendMail.mail(to, subject, text);
@@ -92,10 +93,10 @@ const createEmp = async (req, res) => {
 };
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
-  status = status != "" ? status ?.split(",") : false;
+  status = status != "" ? status?.split(",") : false;
   let query = { status: status ? status : { $regex: "" } };
   try {
-    if (uid ?.length) {
+    if (uid?.length) {
       query["uid"] = uid;
     }
     const employees = await getAllEmployees(query, req.headers.hrid);
@@ -245,7 +246,7 @@ const employeedetail = async (req, res) => {
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({ professionalemail: user.email, });
+    const data = await EmployeeModel.findOne({ professionalemail: user.email });
     res.json({ response: data });
   } catch (err) {
     res.send({ err });
@@ -265,17 +266,45 @@ const getEmployeeEmail = async (req, res) => {
       res.send({
         message: `user-found`,
         email,
+        flag: true,
       });
     } else {
       res.send({
         message: `email-id not found`,
         email,
+        flag: false,
       });
-      // res.status(404).json({ message:`No user found with email ${email}` });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching user email" });
+    res.status(500).json({ message: "Error fetching user mobile" });
+  }
+};
+
+const getEmployeeMobile = async (req, res) => {
+  const { mobile } = req.params;
+  if (!mobile || mobile.trim() === "") {
+    res.status(400).json({ message: "mobile is required" });
+    return;
+  }
+  try {
+    const employee = await employee_mobilecheck.getCredentialsByEmail(mobile);
+    if (employee) {
+      res.send({
+        message: `user-found`,
+        mobile,
+        flag: true,
+      });
+    } else {
+      res.send({
+        message: `mobile not found`,
+        mobile,
+        flag: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching user mobile" });
   }
 };
 
@@ -388,4 +417,5 @@ module.exports = {
   importUsers,
   getEmployees,
   employeedetail,
+  getEmployeeMobile,
 };
