@@ -3,6 +3,7 @@ const EmployeeModel = require("../models/employee/employeeModel");
 const mongoose = require("mongoose");
 const { setDefaultResultOrder } = require("dns/promises");
 // to get all employee leave
+var ObjectId = require('mongodb').ObjectId;
 
 const leave_all = async (req, res) => {
 
@@ -63,7 +64,7 @@ const leave_create = async (req, res) => {
   try {
     // res.send("created")
     const saveLeave = await leave_var.save();
-    res.send({saveLeave:"yeah"})
+    res.send({ saveLeave: "yeah" })
   } catch (error) {
     console.log(error)
     res.status(400).send(error);
@@ -71,56 +72,37 @@ const leave_create = async (req, res) => {
 }
 
 const pendingsFetch = async (req, res) => {
-  // try {
-  //     const pending = await EmployeeModel.aggregate(
-  //         [{
-  //                 $lookup: {
-  //                     from: "employeeleaves",
-  //                     localField: "_id",
-  //                     foreignField: "empId",
-  //                     as: "leaves",
-  //                 },
-  //             },
-  //             {
-  //                 $unwind: "$leaves",
-  //             },
-  //             {
-  //                 $match: {
-  //                     "leaves.status": "pending",
-  //                 },
-  //             },
-  //             {
-  //                 $project: {
-  //                     uid: 1,
-  //                     name: 1,
-  //                     appliedOn: "$leaves.appliedOn",
-  //                     from: "$leaves.from",
-  //                     to: "$leaves.to",
-  //                     reason: "$leaves.reason",
-  //                     status: "$leaves.status",
-  //                     category: "$leaves.category",
-  //                     duration: "$leaves.duration",
-  //                 },
-  //             },
-  //         ]
-  //     )
-  //     console.log(pending);
-  //     res.send(pending);
-  // } catch (error) {
-  //     res.send("error")
-  // }
   console.log("pending");
 }
 
 const leavegraph = async (req, res) => {
-  const graphcontent = await Leave.aggregate(
+  const hrid = req.headers.hrid;
+  const graphcontent = await EmployeeModel.aggregate(
     [
       {
+        $match: {
+          company: new ObjectId(
+            hrid
+          ),
+        },
+      },
+      {
+        $lookup: {
+          from: "employeeleaves",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
+      {
         $group: {
-          _id: "$status",
+          _id: "$result.status",
           attendance: {
             $push: {
-              status: "$status",
+              status: "$result.status",
             },
           },
         },
@@ -134,12 +116,13 @@ const leavegraph = async (req, res) => {
       },
     ]
   );
-  res.send(graphcontent);
+  res.json({graph:graphcontent});
 
 }
 
 
 const leavecontent = async (req, res) => {
+  const hrid = req.headers.hrid;
 
   var date = new Date();
   // Get year, month, and day part from the date
@@ -152,12 +135,20 @@ const leavecontent = async (req, res) => {
   console.log(today);
 
 
-  const data = await Leave.aggregate([
+  const data = await EmployeeModel.aggregate([
+    {
+      $match: {
+        company: new ObjectId(
+          hrid
+        ),
+        status: "active",
+      },
+    },
     {
       $lookup: {
-        from: "employees",
-        localField: "empId",
-        foreignField: "_id",
+        from: "employeeleaves",
+        localField: "_id",
+        foreignField: "empId",
         as: "result",
       },
     },
@@ -166,19 +157,20 @@ const leavecontent = async (req, res) => {
     },
     {
       $group: {
-        _id: "$status",
+        _id: "$result.status",
         leave: {
           $push: {
-            status: "$status",
-            appliedOn: "$appliedOn",
-            from: "$from",
-            to: "$to",
-            reason: "$reason",
-            category: "$category",
-            _id: "$_id",
-            message: "$message",
-            uid: "$result.uid",
-            name: "$result.name",
+            uid: "$uid",
+            name: "$name",
+            empId: "$_id",
+            status: "$result.status",
+            appliedOn: "$result.appliedOn",
+            from: "$result.from",
+            to: "$result.to",
+            reason: "$result.reason",
+            category: "$result.category",
+            _id: "$result._id",
+            message: "$result.message",
             select: false,
           },
         },
@@ -197,7 +189,8 @@ const leavecontent = async (req, res) => {
                 },
                 {
                   $gte: [
-                    "$$item.from", new Date("2023-04-01"),
+                    "$$item.from",
+                    new Date("2023-04-01"),
                   ],
                 },
               ],
