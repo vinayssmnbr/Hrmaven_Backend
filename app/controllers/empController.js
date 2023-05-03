@@ -255,7 +255,7 @@ const employeedetail = async (req, res) => {
   try {
     let user = await User.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({professionalemail: user.email,});
+    const data = await EmployeeModel.findOne({ professionalemail: user.email });
     res.json({ response: data });
   } catch (err) {
     res.send({ err });
@@ -275,13 +275,14 @@ const getEmployeeEmail = async (req, res) => {
       res.send({
         message: `user-found`,
         email,
+        flag: true,
       });
     } else {
       res.send({
         message: `email-id not found`,
         email,
+        flag: false,
       });
-      // res.status(404).json({ message:`No user found with email ${email}` });
     }
   } catch (error) {
     console.log(error);
@@ -397,5 +398,6 @@ module.exports = {
   exportUsers,
   importUsers,
   getEmployees,
-  employeedetail
+  employeedetail,
+  // getEmployeemobile,
 };
