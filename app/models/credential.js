@@ -27,8 +27,7 @@ const companySchema = new Schema({
   },
   headOffice: {
     type: String
-    // enum: ["Leeds United-Kingdom", "London United-Kingdom", "Manchester United-Kingdom"],
-    // default: "Leeds United-Kingdom",
+   
   },
   description: {
     type: String,
@@ -90,7 +89,7 @@ const userSchema = new Schema({
   }
 }, { timestamps: true });
 
-const User = mongoose.model('credit', userSchema);
+const User = mongoose.model('hrUser', userSchema);
 // const Company = mongoose.model('personaldata', companySchema);
 
 module.exports = {
