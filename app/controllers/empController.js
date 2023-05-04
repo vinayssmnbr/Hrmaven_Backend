@@ -8,7 +8,7 @@ const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
-
+const bcrypt = require('bcrypt')
 //Add employee
 //http://localhost:8000/api/create
 
@@ -38,8 +38,8 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      (uid,
-        name &&
+      (
+        name ,
         email &&
         designation &&
         mobile &&
@@ -48,7 +48,8 @@ const createEmp = async (req, res) => {
         ctc &&
         job_type &&
         location &&
-        url)
+        url
+        )
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -87,9 +88,12 @@ const createEmp = async (req, res) => {
           }
         }
       });
+    }else{
+      res.status(400).send({msg:"some fields are missing", status:'fail'})
     }
   }
 };
+
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status ?.split(",") : false;
@@ -239,6 +243,7 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
+
 
 const employeedetail = async (req, res) => {
   let userId = req.user.userId;
