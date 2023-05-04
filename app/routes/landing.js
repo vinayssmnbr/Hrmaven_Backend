@@ -6,6 +6,7 @@ const landing = require("../controllers/landing");
 router.get("/auth", verify.verify, landing.auth);
 // router.post('/login',authentication.verify,landing.login);
 router.post('/login',landing.login);
+router.post('/login/emp',landing.loginemp);
 router.get('/user-profile',landing.getUserProfile);
 
 

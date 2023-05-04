@@ -11,6 +11,9 @@ const mailer = require("../../config/mail");
 exports.login = async function(req, res) {
     help.login(req, res);
 };
+exports.loginemp = async function(req, res) {
+  help.loginemp(req, res);
+};
 
 exports.signup = async function(req, res) {
     service.addUser(req, res);
