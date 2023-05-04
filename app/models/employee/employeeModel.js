@@ -1,19 +1,35 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+const ExperienceSchema = new Schema({
+  expcompany: {
+    type: String,
+  },
+  expduration: {
+    type: String,
+  },
+  explocation: {
+    type: String,
+  },
+  expdesignation: {
+    type: String,
+  },
+});
+
 const employeeSchema = new Schema({
-  company:{
-  type:mongoose.Schema.ObjectId,
-  ref:'hrUser'
+  company: {
+    type: mongoose.Schema.ObjectId,
+    ref: "hrUser",
   },
   uid: {
     type: Number,
-    required: true,
+    // required: true,
     unique: true,
   },
 
   name: {
     type: String,
-    required: true,
+    // required: true,
   },
   dateOfJoining: {
     type: Date,
@@ -25,11 +41,11 @@ const employeeSchema = new Schema({
   email: {
     type: String,
   },
-  professionalemail:{
-    type:String
+  professionalemail: {
+    type: String,
   },
-  password:{
-    type:String,
+  password: {
+    type: String,
   },
   designation: {
     type: String,
@@ -134,8 +150,8 @@ const employeeSchema = new Schema({
   matricPercent: {
     type: Number,
   },
-  matricpassing:{
-    type:Number
+  matricpassing: {
+    type: Number,
   },
   inter: {
     type: String,
@@ -143,8 +159,8 @@ const employeeSchema = new Schema({
   interPercent: {
     type: Number,
   },
-  interpassing:{
-    type:Number
+  interpassing: {
+    type: Number,
   },
   graduation: {
     type: String,
@@ -165,34 +181,8 @@ const employeeSchema = new Schema({
     type: String,
   },
 
-  // expcompany: {
-  //   type: String,
-  // },
-  // expduration: {
-  //   type: String,
-  // },
-  // explocation: {
-  //   type: String,
-  // },
-  // expdesignation: {
-  //   type: String,
-  //   enum: [
-  //     "Software Developer",
-  //     "Frontend Developer",
-  //     "Full Stack Developer",
-  //     "UI/UX Designer",
-  //     "Quality Analyst",
-  //   ],
-  // },
   jobdesignation: {
     type: String,
-    enum: [
-      "Software Developer",
-      "Frontend Developer",
-      "Full Stack Developer",
-      "UI/UX Designer",
-      "Quality Analyst",
-    ],
   },
   joiningdate: {
     type: Date,
@@ -202,61 +192,11 @@ const employeeSchema = new Schema({
     enum: ["active", "terminated", "resigned", "absconder"],
     default: "active",
   },
-Role:{
-  type:String,
+  Role: {
+    type: String,
+  },
 
-}
-
-
-
-   // expcompany1: {
-  //   type: String,
-  // },
-  // expduration1: {
-  //   type: String,
-  // },
-  // explocation1: {
-  //   type: String,
-  // },
-
-  // expdesignation1: {
-  //   type: String,
-  //   enum: [
-  //     "Software Developer",
-  //     "Frontend Developer",
-  //     "Full Stack Developer",
-  //     "UI/UX Designer",
-  //     "Quality Analyst",
-  //   ],
-  // },
- 
-  // joblocation1: {
-  //   type: String,
-  // },
-  // experience:[
-  //   {
-  //     company:{
-  //       type:String
-  //     },
-  //     duration:{
-  //       type:String
-  //     },
-  //     location:{
-  //       type:String
-  //     },
-  //     degination:{
-  //         type: String,
-  //   enum: [
-  //     "Software Developer",
-  //     "Frontend Developer",
-  //     "Full Stack Developer",
-  //     "UI/UX Designer",
-  //     "Quality Analyst",
-  //   ],
-  //     }
-
-  //   }
-  // ]
+  experienceItems: [ExperienceSchema],
 });
 
 employeeSchema.index({ name: "text" });

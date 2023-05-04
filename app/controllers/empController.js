@@ -9,6 +9,7 @@ const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
+const bcrypt = require("bcrypt");
 
 //Add employee
 //http://localhost:8000/api/create
@@ -28,9 +29,12 @@ const createEmp = async (req, res) => {
     location,
     url,
     hrid,
+    experienceDetails,
   } = req.body;
   console.log(req.body);
-  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
+  const professionalemail = `${name
+    .replace(/\s+/g, "")
+    .toLowerCase()}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -48,8 +52,7 @@ const createEmp = async (req, res) => {
         timing &&
         ctc &&
         job_type &&
-        location &&
-        url)
+        location)
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -70,14 +73,16 @@ const createEmp = async (req, res) => {
 
             const user = new User({
               email: professionalemail,
-              password: password,
+              password: hashedPass,
+              Role,
             });
+            user.save();
 
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
+            const text = `this is a professional email for hrmaven: username: ${professionalemail},\r\n password: ${password}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
 
@@ -118,6 +123,7 @@ const update = (req, res) => {
   }
 
   const id = req.params.id;
+  // const { experienceDetails } = req.body;
   EmployeeModel.findByIdAndUpdate(id, req.body)
     .then((data) => {
       if (!data) {
@@ -405,6 +411,67 @@ const getEmployees = async (req, res) => {
   }
 };
 
+//create Experience
+const experienceArray = async (req, res) => {
+  try {
+    const { experienceDetails } = req.body;
+    const modal = new EmployeeModel({ experienceDetails });
+    const savedModal = await modal.save();
+    res.json(savedModal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+//hs
+const dateWiseAttendance = async (req, res) => {
+  const mydate = req.headers.mydate;
+  const hrid = req.headers.hrid;
+  const attendance = await Employee.aggregate([
+    {
+      $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+          company: new ObjectId(hrid),
+        },
+    },
+    {
+      $lookup: {
+        from: "attendances",
+        localField: "_id",
+        foreignField: "empId",
+        as: "attendances",
+      },
+    },
+    {
+      $unwind: "$attendances",
+    },
+    {
+      $project: {
+        uid: 1,
+        name: 1,
+        date: "$attendances.date",
+        status: "$attendances.status",
+        in: "$attendances.punch_in",
+        out: "$attendances.punch_out",
+        designation: 1,
+      },
+    },
+    {
+      $match: {
+        date: {
+          $gte: new Date(mydate),
+        },
+      },
+    },
+  ]);
+  // console.log("date"+attendance);
+  res.send(attendance);
+};
+
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -418,4 +485,6 @@ module.exports = {
   getEmployees,
   employeedetail,
   getEmployeeMobile,
+  experienceArray,
+  dateWiseAttendance,
 };

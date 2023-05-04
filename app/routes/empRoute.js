@@ -38,5 +38,6 @@ router.delete("/:id", emplcontroller.deleteEmployee);
 router.get("/detail/fetch", verify, emplcontroller.employeedetail);
 router.get("/checkemail/:email", emplcontroller.getEmployeeEmail);
 router.get("/checkmobile/:mobile", emplcontroller.getEmployeeMobile);
+router.post("/addexp", emplcontroller.experienceArray);
 
 module.exports = router;
