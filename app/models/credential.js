@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
 const companySchema = new Schema({
   name: {
-    type: String
-    },
+    type: String,
+  },
   phone: {
     type: Number,
     required: true,
@@ -14,8 +14,8 @@ const companySchema = new Schema({
         const phoneRegex = /^((\+91-?)|0)?[0-9]{10}$/;
         return phoneRegex.test(value);
       },
-      message: 'Invalid phone number'
-    }
+      message: "Invalid phone number",
+    },
   },
   // noOfEmployee: {
   //   type: String,
@@ -34,60 +34,62 @@ const companySchema = new Schema({
   },
   profileimage: {
     type: String,
-    default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi"
-  }
+    default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi",
+  },
 });
 
-const userSchema = new Schema({
-  empId: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'employees'
-},
-  googleID: {
-    type: String,
+const userSchema = new Schema(
+  {
+    empId: {
+      type: mongoose.Schema.ObjectId,
+      ref: "employees",
+    },
+    googleID: {
+      type: String,
+    },
+    username: {
+      type: String,
+      required: false,
+      trim: true,
+      lowercase: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      minlength: 8,
+    },
+    confirm: {
+      type: String,
+    },
+    resetPasswordLink: {
+      type: String,
+    },
+    isResetPasswordLinkUsed: {
+      type: Boolean,
+      default: false,
+    },
+    personaldata: companySchema,
+    // company: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'Company',
+    // },
+    isFromSignupPage: {
+      type: Boolean,
+      default: false,
+    },
+    Role: {
+      type: String,
+      default: "HR",
+    },
   },
-  username: {
-    type: String,
-    required: false,
-    trim: true,
-    lowercase: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    minlength: 8,
-  },
- 
-  confirm: {
-    type: String,
-  },
-  resetPasswordLink: {
-    type: String,
-  },
-  isResetPasswordLinkUsed: {
-    type: Boolean,
-    default: false,
-  },
-  personaldata: companySchema,
-  // company: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'Company',
-  // },
-  isFromSignupPage: {
-    type: Boolean,
-    default: false,
-  },
-  Role:{
-    type:String,
-    default:"HR"
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 const User = mongoose.model('credit', userSchema);
 // const User = mongoose.model('hrUser', userSchema);
