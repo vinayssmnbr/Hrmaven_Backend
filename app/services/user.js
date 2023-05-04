@@ -40,7 +40,8 @@ userService.addUser = (req, res) => {
                                 message: 'User added successfully',
                                 user: savedUser,
                                 token: token,
-                                id:savedUser._id
+                                id:savedUser._id,
+                                role:"hr"
                             });
                         })
                         .catch(error => {

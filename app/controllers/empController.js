@@ -9,9 +9,10 @@ const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
+const bcrypt = require("bcryptjs");
+const Empcreditional = require('../models/empcredit');
 
-//Add employee
-//http://localhost:8000/api/create
+
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -30,7 +31,7 @@ const createEmp = async (req, res) => {
     hrid,
   } = req.body;
   console.log(req.body);
-  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
+  const professionalemail = `${name.replace(/\s+/g, "").toLowerCase()}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -68,16 +69,38 @@ const createEmp = async (req, res) => {
             });
             balance.save();
 
-            const user = new User({
+            const user = new Empcreditional({
               email: professionalemail,
-              password: password,
+              professional:professionalemail,
+              password: hashedPass,
             });
+            user.save();
 
+            const payload = {
+              email: email,
+              // set the expiry time to 5 minute from now
+              exp: Math.floor(Date.now() / 1000) + 5 * 60,
+            };
+            const secret = process.env.JWT_TOKEN_KEY;
+            const token = jwt.sign(payload, secret);
+            console.log("t:  ", token);
+            // const link = 'https://turneazy.com/resetpassword/' + token;
+            const link = `https://turneazy.com/resetpassword/${token}`;
+            // const link = `http://localhost:4200/resetpassword/${token}`;
+            await User.findOneAndUpdate(
+              { email: email },
+              {
+                resetPasswordLink: link,
+                // $push: { resetPasswordLinks: link },
+                isResetPasswordLinkUsed: false,
+              }
+            );
+            console.log(link);
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
+            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
 
@@ -242,12 +265,11 @@ const exportUsers = async (req, res) => {
 };
 
 const employeedetail = async (req, res) => {
-  let userId = req.user.userId;
+  let userId = req.headers.id;
   try {
-    let user = await User.findById(userId);
+    let user = await EmployeeModel.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({ professionalemail: user.email });
-    res.json({ response: data });
+    res.json({ response: user });
   } catch (err) {
     res.send({ err });
   }

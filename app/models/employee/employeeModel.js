@@ -24,9 +24,15 @@ const employeeSchema = new Schema({
   },
   email: {
     type: String,
+    unique: true,
+    lowercase: true,
+    trim: true,
   },
   professionalemail:{
-    type:String
+    type:String,
+    unique: true,
+    lowercase: true,
+    trim: true,
   },
   password:{
     type:String,
