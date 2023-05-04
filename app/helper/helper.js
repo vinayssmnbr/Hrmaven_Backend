@@ -4,10 +4,12 @@ const { User } = require("../models/credential");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const EmployeeModel = require("../models/employee/employeeModel");
-
+const Empcreditional = require('../models/empcredit');
 var mongoose = require("mongoose");
+var ObjectId = require("mongodb").ObjectId;
+
 exports.login = async function (req, res) {
-  var name = req.body.email;
+  var name = req.body.email.toLowerCase();
   var password = req.body.password;
 
   try {
@@ -39,9 +41,9 @@ exports.login = async function (req, res) {
           res.json({
             message: "login successful",
             _id: user._id,
-            role:user.Role,
+            role: "hr",
             token,
-            empId:user.empId
+            empId: user.empId
           });
         } else {
           res.json({
@@ -61,105 +63,167 @@ exports.login = async function (req, res) {
   }
 };
 
-exports.getUserProfile = async function (req, res) {
-  // const authHeader = req.headers['authorization'];
-  // const token = authHeader && authHeader.split(' ')[1];
+exports.loginemp = async function (req, res) {
+  var name = req.body.email.toLowerCase();
+  var password = req.body.password;
 
-  // if (!token) {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
-
-  // try {
-  //   var user;
-  //   const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-  //   if (decoded.userId) {
-  //     const user = await User.findById(decoded.userId);
-  //     res.send(user);
-  //     return;
-  //   } else {
-  //     const user = await User.findOne({ email: decoded.email });
-  //     res.send(user);
-  //     return;
-  //   }
-
-  // } catch (err) {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+  const employee = await EmployeeModel.findOne({ professionalemail: name });
+  if(employee==null){
+    res.json({
+      message: "Invalid",
+    });
+    return;
   }
+  console.log(employee)
+  if (employee.status == "active" && employee!=null) {
+    const user = await Empcreditional.findOne({
+      $or: [{ email: name }, { professional: name }],
+    });
 
-  try {
-    var user;
-    const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
-    if (decoded.userId) {
-      const user = await User.findById(decoded.userId).populate("personaldata");
-      res.send(user);
-      return;
-    } else {
-      const user = await User.findOne({ email: decoded.email }).populate(
-        "personaldata"
-      );
-      res.send(user);
-      return;
+    bcrypt.compare(password, user.password, function (err, result) {
+      if (err) {
+        res.json({
+          message: "error",
+        });
+      }
+      if (result) {
+        let token = jwt.sign(
+          { userId: user._id },
+          process.env.JWT_TOKEN_KEY,
+          {
+            expiresIn: "12h",
+          }
+        );
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 3600000,
+        });
+        res.json({
+          message: "login successful",
+          role: "employee",
+          token,
+          empId: employee._id
+        });
+      } else {
+        res.json({
+          message: "Invalid",
+        });
+      }
+    });
+  }
+  else {
+    res.json({
+      message: "Employee email or status invalid",
+    });
+  }
+}
+
+  exports.getUserProfile = async function (req, res) {
+    // const authHeader = req.headers['authorization'];
+    // const token = authHeader && authHeader.split(' ')[1];
+
+    // if (!token) {
+    //   return res.status(401).json({ message: "Unauthorized" });
+    // }
+
+    // try {
+    //   var user;
+    //   const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+    //   if (decoded.userId) {
+    //     const user = await User.findById(decoded.userId);
+    //     res.send(user);
+    //     return;
+    //   } else {
+    //     const user = await User.findOne({ email: decoded.email });
+    //     res.send(user);
+    //     return;
+    //   }
+
+    // } catch (err) {
+    //   return res.status(401).json({ message: "Unauthorized" });
+    // }
+    if(req.headers.role=='employee') {
+      const user = await EmployeeModel.find({_id:new ObjectId(req.headers.id)})
+      console.log()
+        res.send(user);
+        return;
     }
-  } catch (err) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-};
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
-exports.getUserPersonals = async function (req, res) {
-  const { email } = req.params;
-
-  try {
-    const user = await User.findOne({ email: email }).select("personaldata");
-    if (!user) {
-      return res.status(404).send({ message: "User not found" });
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const personaldata = user.personaldata;
-    const userId = user._id;
-
-    return res.status(200).send({ personaldata });
-  } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .send({ message: "Error fetching user personal data" });
-  }
-};
-
-exports.getUserPassword = async function (req, res) {
-  const userId = req.params.id;
-
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).send({ message: "User not found" });
+    try {
+      var user;
+      const decoded = jwt.verify(token, process.env.JWT_TOKEN_KEY);
+      if (decoded.userId) {
+        const user = await User.findById(decoded.userId).populate("personaldata");
+        res.send(user);
+        return;
+      } else {
+        const user = await User.findOne({ email: decoded.email }).populate(
+          "personaldata"
+        );
+        res.send(user);
+        return;
+      }
+    } catch (err) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
+  };
 
-    const password = user.password;
+  exports.getUserPersonals = async function (req, res) {
+    const { email } = req.params;
 
-    return res.status(200).send({ password });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send({ message: "Error fetching user password" });
-  }
-};
+    try {
+      const user = await User.findOne({ email: email }).select("personaldata");
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
 
-//to check that email exist or not
-exports.verify_email = async function (email) {
-  try {
-    var data = await User.find({ email: email });
-    if (data) {
-      return data;
-    } else {
-      return "";
+      const personaldata = user.personaldata;
+      const userId = user._id;
+
+      return res.status(200).send({ personaldata });
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .send({ message: "Error fetching user personal data" });
     }
-  } catch (err) {
-    return err;
-  }
-};
+  };
+
+  exports.getUserPassword = async function (req, res) {
+    const userId = req.params.id;
+
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+
+      const password = user.password;
+
+      return res.status(200).send({ password });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send({ message: "Error fetching user password" });
+    }
+  };
+
+  //to check that email exist or not
+  exports.verify_email = async function (email) {
+    try {
+      var data = await User.find({ email: email });
+      if (data) {
+        return data;
+      } else {
+        return "";
+      }
+    } catch (err) {
+      return err;
+    }
+  };

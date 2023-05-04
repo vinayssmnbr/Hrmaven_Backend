@@ -1,6 +1,7 @@
 const Attendance = require('../models/attendance');
 const Employee = require("../models/employee/employeeModel");
 var ObjectId = require('mongodb').ObjectId;
+const cron = require("node-cron");
 
 async function getAttendance(req, res, next) {
   try {
@@ -230,7 +231,7 @@ const dateWiseCard = async (req, res) => {
       {
         $project: {
           uid: 1,
-          url:"$url",
+          url: "$url",
           name: 1,
           designation: 1,
           date: "$attendance.date",
@@ -256,7 +257,7 @@ const dateWiseCard = async (req, res) => {
             name: "$name",
             designation: "$designation",
             empId: "$empId",
-            url:"$url"
+            url: "$url"
 
           },
           attendance: {
@@ -350,6 +351,11 @@ const dateWiseCard = async (req, res) => {
 
 const Attendancegraph = async (req, res) => {
   const hrid = req.headers.hrid;
+  if (!ObjectId.isValid(hrid)) {
+    // Handle the case when hrid is not valid, e.g., return an error response
+    res.status(400).json({ error: 'Invalid hrid' });
+    return;
+  }
   const record = await Employee.aggregate(
     [
       {
@@ -447,7 +453,11 @@ const employeerecord = async (req, res) => {
   const data = await Attendance.find({ empId: new ObjectId(id) });
   console.log(data);
   res.json({ response: data });
+  // res.json({message:'yeah'});
 }
+
+// cron.schedule("0 5 * * *", function() {
+//   });
 
 const intializeAttendanceDaily = async (req, res) => {
 
@@ -526,8 +536,42 @@ const attendanceMark = async (req, res) => {
 
 }
 
-// intializeAttendanceDaily();
+const punchin = async (req, res) => {
+  const id = req.headers.id;
+  var date = new Date();
+  var year = date.toLocaleString("default", { year: "numeric" });
+  var month = date.toLocaleString("default", { month: "2-digit" });
+  var day = date.toLocaleString("default", { day: "2-digit" });
+  var formattedDate = year + "-" + month + "-" + day;
+  var dd = formattedDate.toString();
+  const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(dd) } }, { status: "odd", punch_in: new Date() })
+  res.json({ result, time: date },);
+  // console.log('hit');
+  // res.json({message:"hit"});
+}
 
+const punchout = async (req, res) => {
+  const id = req.headers.id;
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.toISOString();
+  const result = await Attendance.findOne({ empId: new ObjectId(id), date: { $gte: new Date(date) } });
+  console.log(result);
+  var timeStart = new Date(result.punch_in).getHours();
+  var timeEnd = new Date().getHours();
+  var hourDiff = timeEnd - timeStart;
+  console.log(hourDiff);
+  if (hourDiff < 8 || result.punch_in == null) {
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "odd", punch_out: new Date() })
+    res.json(result);
+  }
+  else {
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "present", punch_out: new Date() })
+    res.json(result);
+  }
+}
+
+intializeAttendanceDaily();
 module.exports = {
   getreport,
   getAttendance,
@@ -542,5 +586,7 @@ module.exports = {
   employeerecord,
   intializeAttendanceDaily,
   attendanceMark,
-  markattendance
+  markattendance,
+  punchin,
+  punchout
 };

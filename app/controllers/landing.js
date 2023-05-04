@@ -11,6 +11,9 @@ const mailer = require("../../config/mail");
 exports.login = async function(req, res) {
     help.login(req, res);
 };
+exports.loginemp = async function(req, res) {
+  help.loginemp(req, res);
+};
 
 exports.signup = async function(req, res) {
     service.addUser(req, res);
@@ -92,7 +95,7 @@ try {
   let email = await tokenDecrypt(token);
   var database = await help.verify_email(email);
   console.log("database landing: ", database);
-  // console.log("token url:- https://turneazy.com/resetpassword/${token}: ", https://turneazy.com/resetpassword/${token})
+  // console.log("token url:- https://turneazy.com/resetpassword/${token}: ", `https://turneazy.com/resetpassword/${token}`)
   console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
   if (database.length != 0) {

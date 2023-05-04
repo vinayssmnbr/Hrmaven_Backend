@@ -8,9 +8,9 @@ const { User } = require("../models/credential");
 const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
-const bcrypt = require('bcrypt')
-//Add employee
-//http://localhost:8000/api/create
+const employee_mobilecheck = require("../helper/empmobilecheck");
+const bcrypt = require("bcryptjs");
+const Empcreditional = require("../models/empcredit");
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -27,9 +27,12 @@ const createEmp = async (req, res) => {
     location,
     url,
     hrid,
+    experienceDetails,
   } = req.body;
   console.log(req.body);
-  const professionalemail = `${name.replace(/\s+/g, "")}.${uid}@hrmaven.com`;
+  const professionalemail = `${name
+    .replace(/\s+/g, "")
+    .toLowerCase()}.${uid}@hrmaven.com`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -38,8 +41,8 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      (
-        name ,
+      (uid,
+      name &&
         email &&
         designation &&
         mobile &&
@@ -47,9 +50,7 @@ const createEmp = async (req, res) => {
         timing &&
         ctc &&
         job_type &&
-        location &&
-        url
-        )
+        location)
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -60,7 +61,7 @@ const createEmp = async (req, res) => {
             const newuser = new EmployeeModel({
               ...req.body,
               professionalemail,
-              company: new ObjectId(req.body.hrid)
+              company: new ObjectId(req.body.hrid),
             });
             const dd = await newuser.save();
             const balance = new Balance({
@@ -68,16 +69,38 @@ const createEmp = async (req, res) => {
             });
             balance.save();
 
-            const user = new User({
+            const user = new Empcreditional({
               email: professionalemail,
-              password: password,
+              professional: professionalemail,
+              password: hashedPass,
             });
+            user.save();
 
-            const to = Array.isArray(req.body.email) ?
-              req.body.email.join(",") :
-              req.body.email;
+            const payload = {
+              email: email,
+              // set the expiry time to 5 minute from now
+              exp: Math.floor(Date.now() / 1000) + 5 * 60,
+            };
+            const secret = process.env.JWT_TOKEN_KEY;
+            const token = jwt.sign(payload, secret);
+            console.log("t:  ", token);
+            // const link = 'https://turneazy.com/resetpassword/' + token;
+            const link = `https://turneazy.com/resetpassword/${token}`;
+            // const link = `http://localhost:4200/resetpassword/${token}`;
+            await User.findOneAndUpdate(
+              { email: email },
+              {
+                resetPasswordLink: link,
+                // $push: { resetPasswordLinks: link },
+                isResetPasswordLinkUsed: false,
+              }
+            );
+            console.log(link);
+            const to = Array.isArray(req.body.email)
+              ? req.body.email.join(",")
+              : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password}`;
+            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
 
@@ -96,10 +119,10 @@ const createEmp = async (req, res) => {
 
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
-  status = status != "" ? status ?.split(",") : false;
+  status = status != "" ? status?.split(",") : false;
   let query = { status: status ? status : { $regex: "" } };
   try {
-    if (uid ?.length) {
+    if (uid?.length) {
       query["uid"] = uid;
     }
     const employees = await getAllEmployees(query, req.headers.hrid);
@@ -121,6 +144,7 @@ const update = (req, res) => {
   }
 
   const id = req.params.id;
+  // const { experienceDetails } = req.body;
   EmployeeModel.findByIdAndUpdate(id, req.body)
     .then((data) => {
       if (!data) {
@@ -246,12 +270,11 @@ const exportUsers = async (req, res) => {
 
 
 const employeedetail = async (req, res) => {
-  let userId = req.user.userId;
+  let userId = req.headers.id;
   try {
-    let user = await User.findById(userId);
+    let user = await EmployeeModel.findById(userId);
     console.log(user, "roit");
-    const data = await EmployeeModel.findOne({ professionalemail: user.email, });
-    res.json({ response: data });
+    res.json({ response: user });
   } catch (err) {
     res.send({ err });
   }
@@ -270,17 +293,45 @@ const getEmployeeEmail = async (req, res) => {
       res.send({
         message: `user-found`,
         email,
+        flag: true,
       });
     } else {
       res.send({
         message: `email-id not found`,
         email,
+        flag: false,
       });
-      // res.status(404).json({ message:`No user found with email ${email}` });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching user email" });
+    res.status(500).json({ message: "Error fetching user mobile" });
+  }
+};
+
+const getEmployeeMobile = async (req, res) => {
+  const { mobile } = req.params;
+  if (!mobile || mobile.trim() === "") {
+    res.status(400).json({ message: "mobile is required" });
+    return;
+  }
+  try {
+    const employee = await employee_mobilecheck.getCredentialsByEmail(mobile);
+    if (employee) {
+      res.send({
+        message: `user-found`,
+        mobile,
+        flag: true,
+      });
+    } else {
+      res.send({
+        message: `mobile not found`,
+        mobile,
+        flag: false,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching user mobile" });
   }
 };
 
@@ -381,6 +432,67 @@ const getEmployees = async (req, res) => {
   }
 };
 
+//create Experience
+const experienceArray = async (req, res) => {
+  try {
+    const { experienceDetails } = req.body;
+    const modal = new EmployeeModel({ experienceDetails });
+    const savedModal = await modal.save();
+    res.json(savedModal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+//hs
+const dateWiseAttendance = async (req, res) => {
+  const mydate = req.headers.mydate;
+  const hrid = req.headers.hrid;
+  const attendance = await Employee.aggregate([
+    {
+      $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+          company: new ObjectId(hrid),
+        },
+    },
+    {
+      $lookup: {
+        from: "attendances",
+        localField: "_id",
+        foreignField: "empId",
+        as: "attendances",
+      },
+    },
+    {
+      $unwind: "$attendances",
+    },
+    {
+      $project: {
+        uid: 1,
+        name: 1,
+        date: "$attendances.date",
+        status: "$attendances.status",
+        in: "$attendances.punch_in",
+        out: "$attendances.punch_out",
+        designation: 1,
+      },
+    },
+    {
+      $match: {
+        date: {
+          $gte: new Date(mydate),
+        },
+      },
+    },
+  ]);
+  // console.log("date"+attendance);
+  res.send(attendance);
+};
+
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -393,4 +505,7 @@ module.exports = {
   importUsers,
   getEmployees,
   employeedetail,
+  getEmployeeMobile,
+  experienceArray,
+  dateWiseAttendance,
 };
