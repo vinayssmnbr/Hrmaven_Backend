@@ -90,7 +90,7 @@ const userSchema = new Schema({
   }
 }, { timestamps: true });
 
-const User = mongoose.model('hrUser', userSchema);
+const User = mongoose.model('credit', userSchema);
 // const Company = mongoose.model('personaldata', companySchema);
 
 module.exports = {

@@ -15,4 +15,6 @@ router.get("/date/report",attendanceController.Attendancegraph);
 router.get("/emp/attendance",attendanceController.employeerecord);
 router.get("/check/empattendance",attendanceController.attendanceMark);
 router.patch('/update/time',attendanceController.markattendance);
+router.patch('/emp/punchin',attendanceController.punchin);
+router.patch('/emp/punchout',attendanceController.punchout);
 module.exports = router;
