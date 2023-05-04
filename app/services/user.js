@@ -79,7 +79,7 @@ userService.putcompanydata = async(req, res)=>{
     res.status(200).json(updatedUser);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'An error occurred while updating the user' });
+    res.status(500).json({ message: 'An error occurred while adding the user' });
   }
 }
 
