@@ -351,6 +351,11 @@ const dateWiseCard = async (req, res) => {
 
 const Attendancegraph = async (req, res) => {
   const hrid = req.headers.hrid;
+  if (!ObjectId.isValid(hrid)) {
+    // Handle the case when hrid is not valid, e.g., return an error response
+    res.status(400).json({ error: 'Invalid hrid' });
+    return;
+  }
   const record = await Employee.aggregate(
     [
       {
