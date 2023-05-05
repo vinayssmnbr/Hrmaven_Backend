@@ -17,12 +17,20 @@ const attendanceSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["present", "absent", "leave",'odd']
+        enum: ["present", "absent", "leave",'odd','X']
     },
     date: {
         type: Date,
         required: true
     },
+    ip_in:{
+        type:String,
+        default:''
+    },
+    ip_out:{
+        type:String,
+        default:''
+    }
 });
 
 attendanceSchema.pre('save', function(next) {
