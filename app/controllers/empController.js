@@ -493,6 +493,8 @@ const dateWiseAttendance = async (req, res) => {
   res.send(attendance);
 };
 
+
+
 module.exports = {
   createEmp,
   deleteEmployee,
@@ -508,4 +510,5 @@ module.exports = {
   getEmployeeMobile,
   experienceArray,
   dateWiseAttendance,
+ 
 };
