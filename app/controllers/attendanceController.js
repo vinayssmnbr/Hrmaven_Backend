@@ -3,6 +3,7 @@ const Employee = require("../models/employee/employeeModel");
 var ObjectId = require('mongodb').ObjectId;
 const cron = require("node-cron");
 
+
 async function getAttendance(req, res, next) {
   try {
     const attendance = await Attendance.find();
@@ -531,27 +532,27 @@ const attendanceMark = async (req, res) => {
   }
   else {
     res.json({ in: check[0].punch_in, out: check[0].punch_out });
-
   }
 
 }
 
 const punchin = async (req, res) => {
-  const id = req.headers.id;
+  const id = req.body.id;
   var date = new Date();
+  console.log(req.body);
   var year = date.toLocaleString("default", { year: "numeric" });
   var month = date.toLocaleString("default", { month: "2-digit" });
   var day = date.toLocaleString("default", { day: "2-digit" });
   var formattedDate = year + "-" + month + "-" + day;
   var dd = formattedDate.toString();
-  const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(dd) } }, { status: "odd", punch_in: new Date() })
-  res.json({ result, time: date },);
+  const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(dd) } }, { status: "odd", punch_in: new Date(),ip_in:req.body.ip })
+  res.json({ result, time: date });
   // console.log('hit');
   // res.json({message:"hit"});
 }
 
 const punchout = async (req, res) => {
-  const id = req.headers.id;
+  const id = req.body.id;
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   date.toISOString();
@@ -562,12 +563,12 @@ const punchout = async (req, res) => {
   var hourDiff = timeEnd - timeStart;
   console.log(hourDiff);
   if (hourDiff < 8 || result.punch_in == null) {
-    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "odd", punch_out: new Date() })
-    res.json(result);
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "odd", punch_out: new Date(),ip_out:req.body.ip })
+    res.json({ result, time: date });
   }
   else {
-    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "present", punch_out: new Date() })
-    res.json(result);
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "present", punch_out: new Date(),ip_out:req.body.ip })
+    res.json({ result, time: date });
   }
 }
 
