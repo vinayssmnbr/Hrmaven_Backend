@@ -41,16 +41,16 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      (uid,
-      name &&
+      (
+      name ,
         email &&
         designation &&
         mobile &&
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type &&
-        location)
+        job_type 
+      )
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -111,9 +111,12 @@ const createEmp = async (req, res) => {
           }
         }
       });
+    }else{
+      res.status(400).send({msg:"some fields are missing", status:'fail'})
     }
   }
 };
+
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
@@ -264,6 +267,7 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
+
 
 const employeedetail = async (req, res) => {
   let userId = req.headers.id;

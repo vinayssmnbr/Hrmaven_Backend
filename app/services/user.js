@@ -32,7 +32,7 @@ userService.addUser = (req, res) => {
 
                     user.save()
                         .then(savedUser => {
-
+                          console.log(savedUser);
                             const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_TOKEN_KEY);
 
 
@@ -45,6 +45,7 @@ userService.addUser = (req, res) => {
                             });
                         })
                         .catch(error => {
+                          // console.log(savedUser);
                             res.json({
                                 message: 'An error occurred while saving the user',
                                 error: error
