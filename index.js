@@ -51,7 +51,7 @@ app.use("/getemployee", employeespecificdetails);
 app.use("/getemails", emailAll);
 app.use("/getusername", emailAll);
 
-app.use('/api', jobRoutes);
+// app.use('/api', jobRoutes);
 
 // Start the server
 app.listen(PORT, function (err) {
