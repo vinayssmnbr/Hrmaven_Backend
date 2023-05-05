@@ -42,13 +42,8 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-<<<<<<< HEAD
       (uid,
         name &&
-=======
-      (
-      name ,
->>>>>>> b9a53b5a51207b5e63127d3be7a9582fcdadb10f
         email &&
         designation &&
         mobile &&
@@ -124,7 +119,6 @@ const createEmp = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const newemployeeattendance = async (id) => {
 
   const date = new Date();
@@ -153,8 +147,6 @@ const newemployeeattendance = async (id) => {
   }
 
 }
-=======
->>>>>>> b9a53b5a51207b5e63127d3be7a9582fcdadb10f
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
