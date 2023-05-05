@@ -42,16 +42,21 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
+<<<<<<< HEAD
       (uid,
         name &&
+=======
+      (
+      name ,
+>>>>>>> b9a53b5a51207b5e63127d3be7a9582fcdadb10f
         email &&
         designation &&
         mobile &&
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type &&
-        location)
+        job_type 
+      )
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -113,10 +118,13 @@ const createEmp = async (req, res) => {
           }
         }
       });
+    }else{
+      res.status(400).send({msg:"some fields are missing", status:'fail'})
     }
   }
 };
 
+<<<<<<< HEAD
 const newemployeeattendance = async (id) => {
 
   const date = new Date();
@@ -145,6 +153,8 @@ const newemployeeattendance = async (id) => {
   }
 
 }
+=======
+>>>>>>> b9a53b5a51207b5e63127d3be7a9582fcdadb10f
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
@@ -295,6 +305,7 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
+
 
 const employeedetail = async (req, res) => {
   let userId = req.headers.id;
