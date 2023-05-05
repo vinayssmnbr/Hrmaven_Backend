@@ -126,6 +126,8 @@ app.use("/attendance", attendanceRoutes);
 app.use("/user", empRoutes);
 app.use("/getemployee", employeespecificdetails);
 app.use("/getemails", emailAll);
+app.use("/getusername", emailAll);
+
 app.use('/api', jobRoutes);
 
 // Start the server
