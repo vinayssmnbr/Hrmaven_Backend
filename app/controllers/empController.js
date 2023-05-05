@@ -41,16 +41,16 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      (uid,
-      name &&
+      (
+      name ,
         email &&
         designation &&
         mobile &&
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type &&
-        location)
+        job_type 
+      )
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
