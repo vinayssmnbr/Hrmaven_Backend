@@ -11,6 +11,7 @@ const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
+const Attendance = require("../models/attendance");
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -41,16 +42,15 @@ const createEmp = async (req, res) => {
     });
   } else {
     if (
-      (
-      name ,
+      (uid,
+      name &&
         email &&
         designation &&
         mobile &&
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type 
-      )
+        job_type)
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -103,7 +103,8 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-
+            console.log(saved_user);
+            newemployeeattendance(saved_user._id);
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -111,12 +112,38 @@ const createEmp = async (req, res) => {
           }
         }
       });
-    }else{
-      res.status(400).send({msg:"some fields are missing", status:'fail'})
+    } else {
+      res.status(400).send({ msg: "some fields are missing", status: "fail" });
     }
   }
 };
 
+const newemployeeattendance = async (id) => {
+  const date = new Date();
+  let today = date.getDate();
+  today = today + 1;
+  let i = 2;
+  while (i <= today) {
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
+    console.log(firstDay);
+    if (i < today) {
+      const attendance = new Attendance({
+        empId: new ObjectId(id),
+        date: new Date(firstDay),
+        status: "X",
+      });
+      await attendance.save();
+    } else {
+      const attendance = new Attendance({
+        empId: new ObjectId(id),
+        date: new Date(firstDay),
+        status: "absent",
+      });
+      await attendance.save();
+    }
+    i++;
+  }
+};
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
@@ -267,7 +294,6 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
-
 
 const employeedetail = async (req, res) => {
   let userId = req.headers.id;
@@ -432,65 +458,42 @@ const getEmployees = async (req, res) => {
   }
 };
 
-//create Experience
-const experienceArray = async (req, res) => {
+//EMPLOYEE SIDE DATA UPDATE
+const EmpSideUpdate = async (req, res) => {
+  const id = req.params.id;
+  const {
+    motherName,
+    fatherName,
+    gender,
+    nationality,
+    bloodGroup,
+    maritalStatus,
+    dateOfBirth,
+    mobile,
+    city,
+    state,
+    address,
+    bankname,
+    accountno,
+    adhaarno,
+    panno,
+    ifsc,
+    passport,
+    postalCode,
+  } = req.body;
   try {
-    const { experienceDetails } = req.body;
-    const modal = new EmployeeModel({ experienceDetails });
-    const savedModal = await modal.save();
-    res.json(savedModal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    const data = await EmployeeModel.findOneAndUpdate({ _id: id }, req.body);
+    if (!data == req.body) {
+      res.status(404).send({
+        message: `Cannot Update user with ${id}. Maybe user not found!`,
+      });
+    } else {
+      res.send("update success");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Error Update user information" });
   }
-};
-
-//hs
-const dateWiseAttendance = async (req, res) => {
-  const mydate = req.headers.mydate;
-  const hrid = req.headers.hrid;
-  const attendance = await Employee.aggregate([
-    {
-      $match:
-        /**
-         * query: The query in MQL.
-         */
-        {
-          company: new ObjectId(hrid),
-        },
-    },
-    {
-      $lookup: {
-        from: "attendances",
-        localField: "_id",
-        foreignField: "empId",
-        as: "attendances",
-      },
-    },
-    {
-      $unwind: "$attendances",
-    },
-    {
-      $project: {
-        uid: 1,
-        name: 1,
-        date: "$attendances.date",
-        status: "$attendances.status",
-        in: "$attendances.punch_in",
-        out: "$attendances.punch_out",
-        designation: 1,
-      },
-    },
-    {
-      $match: {
-        date: {
-          $gte: new Date(mydate),
-        },
-      },
-    },
-  ]);
-  // console.log("date"+attendance);
-  res.send(attendance);
 };
 
 module.exports = {
@@ -506,6 +509,5 @@ module.exports = {
   getEmployees,
   employeedetail,
   getEmployeeMobile,
-  experienceArray,
-  dateWiseAttendance,
+  EmpSideUpdate,
 };

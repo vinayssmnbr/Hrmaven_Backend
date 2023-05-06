@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const attendanceController = require('../controllers/attendanceController');
+const empside = require('../controllers/eside');
 
 router.get('/', attendanceController.getAttendance);
 router.post('/', attendanceController.createAttendance);
@@ -15,6 +16,7 @@ router.get("/date/report",attendanceController.Attendancegraph);
 router.get("/emp/attendance",attendanceController.employeerecord);
 router.get("/check/empattendance",attendanceController.attendanceMark);
 router.patch('/update/time',attendanceController.markattendance);
-router.patch('/emp/punchin',attendanceController.punchin);
-router.patch('/emp/punchout',attendanceController.punchout);
+router.post('/emp/punchin',attendanceController.punchin);
+router.post('/emp/punchout',attendanceController.punchout);
+router.get("/emp/donut",empside.leavedonut);
 module.exports = router;
