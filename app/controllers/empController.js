@@ -428,65 +428,42 @@ const getEmployees = async (req, res) => {
   }
 };
 
-//create Experience
-const experienceArray = async (req, res) => {
+//EMPLOYEE SIDE DATA UPDATE
+const EmpSideUpdate = async (req, res) => {
+  const id = req.params.id;
+  const {
+    motherName,
+    fatherName,
+    gender,
+    nationality,
+    bloodGroup,
+    maritalStatus,
+    dateOfBirth,
+    mobile,
+    city,
+    state,
+    address,
+    bankname,
+    accountno,
+    adhaarno,
+    panno,
+    ifsc,
+    passport,
+    postalCode,
+  } = req.body;
   try {
-    const { experienceDetails } = req.body;
-    const modal = new EmployeeModel({ experienceDetails });
-    const savedModal = await modal.save();
-    res.json(savedModal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    const data = await EmployeeModel.findOneAndUpdate({ _id: id }, req.body);
+    if (!data == req.body) {
+      res.status(404).send({
+        message: `Cannot Update user with ${id}. Maybe user not found!`,
+      });
+    } else {
+      res.send("update success");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Error Update user information" });
   }
-};
-
-//hs
-const dateWiseAttendance = async (req, res) => {
-  const mydate = req.headers.mydate;
-  const hrid = req.headers.hrid;
-  const attendance = await Employee.aggregate([
-    {
-      $match:
-        /**
-         * query: The query in MQL.
-         */
-        {
-          company: new ObjectId(hrid),
-        },
-    },
-    {
-      $lookup: {
-        from: "attendances",
-        localField: "_id",
-        foreignField: "empId",
-        as: "attendances",
-      },
-    },
-    {
-      $unwind: "$attendances",
-    },
-    {
-      $project: {
-        uid: 1,
-        name: 1,
-        date: "$attendances.date",
-        status: "$attendances.status",
-        in: "$attendances.punch_in",
-        out: "$attendances.punch_out",
-        designation: 1,
-      },
-    },
-    {
-      $match: {
-        date: {
-          $gte: new Date(mydate),
-        },
-      },
-    },
-  ]);
-  // console.log("date"+attendance);
-  res.send(attendance);
 };
 
 module.exports = {
@@ -502,6 +479,5 @@ module.exports = {
   getEmployees,
   employeedetail,
   getEmployeeMobile,
-  experienceArray,
-  dateWiseAttendance,
+  EmpSideUpdate,
 };
