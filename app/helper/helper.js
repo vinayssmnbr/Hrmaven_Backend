@@ -17,7 +17,7 @@ exports.login = async function (req, res) {
       $or: [{ email: name }, { username: name }],
     });
     if (user) {
-      const employee = await EmployeeModel.findOne({ professionalemail: name });
+      // const employee = await EmployeeModel.findOne({ professionalemail: name });
       // if (employee && employee.status === 'active') {
       bcrypt.compare(password, user.password, function (err, result) {
         if (err) {
@@ -41,6 +41,7 @@ exports.login = async function (req, res) {
           res.json({
             message: "login successful",
             _id: user._id,
+            username: user.username,
             role: "hr",
             token,
             empId: user.empId

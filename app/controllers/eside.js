@@ -1,5 +1,6 @@
 const EmployeeModel = require("../models/employee/employeeModel");
 var ObjectId = require('mongodb').ObjectId;
+const Attendance = require('../models/attendance');
 
 
 const leaveBalanceChart = async(req,res)=>{
@@ -64,7 +65,90 @@ const leaveHistory = async(req,res)=>{
 
 }
 
+const leavedonut = async(req,res)=>{
+  let id= req.headers.id;
+  const data = await Attendance.aggregate([
+    {
+      $match: {
+        empId: new ObjectId(id),
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $month: "$date",
+        },
+        attendance: {
+          $push: {
+            status: "$status",
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        total: {
+          $size: "$attendance",
+        },
+        leave: {
+          $size: {
+            $filter: {
+              input: "$attendance",
+              as: "item",
+              cond: {
+                $eq: ["$$item.status", "leave"],
+              },
+            },
+          },
+        },
+        absent: {
+          $size: {
+            $filter: {
+              input: "$attendance",
+              as: "item",
+              cond: {
+                $eq: ["$$item.status", "absent"],
+              },
+            },
+          },
+        },
+        present: {
+          $size: {
+            $filter: {
+              input: "$attendance",
+              as: "item",
+              cond: {
+                $eq: ["$$item.status", "present"],
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        month: "$_id",
+        _id: 0,
+        total: 1,
+        present: 1,
+        absent: 1,
+        leave: 1,
+      },
+    },
+    {
+      $sort:
+        {
+          month: 1,
+        },
+    },
+  ])
+
+  res.json(data);
+}
+
 module.exports = {
     leaveBalanceChart,
-    leaveHistory
+    leaveHistory,
+    leavedonut,
+
 };

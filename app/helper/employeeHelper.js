@@ -4,7 +4,6 @@ var ObjectId = require('mongodb').ObjectId;
 
 const getAllEmployees = async (q,companyz) => {
   try {
-    console.log(q);
     const employees = await EmployeeModel.find({company: new ObjectId(companyz)});
     return employees;
   } catch (err) {

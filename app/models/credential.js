@@ -17,23 +17,17 @@ const companySchema = new Schema({
       message: "Invalid phone number",
     },
   },
-  noOfEmployee: {
-    type: String,
-    enum: [
-      "0-50",
-      "50-100",
-      "100-150",
-      "150-200",
-      "200-250",
-      "250-300",
-      "300-350",
-    ],
-    default: "0-50",
+  // noOfEmployee: {
+  //   type: String,
+  //   enum: ["0-50", "50-100", "100-150", "150-200", "200-250","250-300","300-350"],
+  //   default: "0-50"
+  // },
+  domain:{
+    type: String
   },
   headOffice: {
-    type: String,
-    // enum: ["Leeds United-Kingdom", "London United-Kingdom", "Manchester United-Kingdom"],
-    // default: "Leeds United-Kingdom",
+    type: String
+   
   },
   description: {
     type: String,
@@ -97,7 +91,8 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("credit", userSchema);
+const User = mongoose.model('credit', userSchema);
+// const User = mongoose.model('hrUser', userSchema);
 // const Company = mongoose.model('personaldata', companySchema);
 
 module.exports = {

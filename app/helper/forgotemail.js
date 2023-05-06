@@ -12,4 +12,14 @@ findemailhelper.getCredentialsByEmail = async function(email) {
     }
 }
 
+findemailhelper.getCredentialsByUsername = async function(username) {
+    try {
+      const user = await User.findOne({ username: username });
+      return user;
+    } catch(error) {
+      console.log('Error in retrieving user by username:', error);
+      throw error;
+    }
+  };
+
 module.exports = findemailhelper;

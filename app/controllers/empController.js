@@ -11,6 +11,7 @@ const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
+const Attendance = require("../models/attendance");
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -49,8 +50,7 @@ const createEmp = async (req, res) => {
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type &&
-        location)
+        job_type)
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -103,7 +103,8 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-
+            console.log(saved_user);
+            newemployeeattendance(saved_user._id);
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -111,7 +112,36 @@ const createEmp = async (req, res) => {
           }
         }
       });
+    } else {
+      res.status(400).send({ msg: "some fields are missing", status: "fail" });
     }
+  }
+};
+
+const newemployeeattendance = async (id) => {
+  const date = new Date();
+  let today = date.getDate();
+  today = today + 1;
+  let i = 2;
+  while (i <= today) {
+    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
+    console.log(firstDay);
+    if (i < today) {
+      const attendance = new Attendance({
+        empId: new ObjectId(id),
+        date: new Date(firstDay),
+        status: "X",
+      });
+      await attendance.save();
+    } else {
+      const attendance = new Attendance({
+        empId: new ObjectId(id),
+        date: new Date(firstDay),
+        status: "absent",
+      });
+      await attendance.save();
+    }
+    i++;
   }
 };
 const getEmp = async (req, res) => {

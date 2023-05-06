@@ -17,5 +17,4 @@ router.get("/filter/leave",leaveController.leavefilter);
 // employee side leave route
 router.get("/emp/leave",empleave.leaveBalanceChart);
 router.get("/emp/history",empleave.leaveHistory);
-
 module.exports = router
