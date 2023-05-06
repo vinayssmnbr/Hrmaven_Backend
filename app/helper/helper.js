@@ -198,21 +198,44 @@ exports.loginemp = async function (req, res) {
   };
 
   exports.getUserPassword = async function (req, res) {
-    const userId = req.params.id;
+    // const userId = req.params.id;
 
+    // try {
+    //   const user = await User.findById(userId);
+    //   if (!user) {
+    //     return res.status(404).send({ message: "User not found" });
+    //   }
+
+    //   const password = user.password;
+
+    //   return res.status(200).send({ password });
+    // } catch (err) {
+    //   console.error(err);
+    //   return res.status(500).send({ message: "Error fetching user password" });
+    // }.
+
+    const { oldpassword } = req.body;
+    const email = req.params.email;
+  
     try {
-      const user = await User.findById(userId);
+      const user = await User.findOne({ email });
       if (!user) {
         return res.status(404).send({ message: "User not found" });
       }
-
-      const password = user.password;
-
-      return res.status(200).send({ password });
+  
+      const passwordMatch = await bcrypt.compare(oldpassword, user.password);
+  
+      if (!passwordMatch) {
+        return res.status(401).send({ message: "Incorrect password" });
+      }
+  
+      return res.status(200).send({ message: "Password matches" });
     } catch (err) {
       console.error(err);
       return res.status(500).send({ message: "Error fetching user password" });
     }
+  
+          
   };
 
   //to check that email exist or not

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const verify = require("../middlewares/authentication");
 const landing = require("../controllers/landing");
+const helper = require('../helper/helper')
 
 router.get("/auth", verify.verify, landing.auth);
 // router.post('/login',authentication.verify,landing.login);
@@ -15,6 +16,7 @@ router.post('/forgotpassword', landing.forgot);
 
 router.post('/resetpassword',landing.reset);
 // router.get('/resetpassword',landing.reset);
+router.post('/pwdmgt/:email', landing.getUserProfilepwd);
 
 router.post('/resetpasswordaccount/:email',landing.resett);
 
