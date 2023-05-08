@@ -59,7 +59,7 @@ userService.addUser = (req, res) => {
 
 userService.putcompanydata = async(req, res)=>{
   const { email } = req.params;
-  const { name, phone, domain, headOffice, description,profileimage } = req.body;
+  const { name, phone, domain, headOffice, description,url } = req.body;
 
   try {
     const updatedUser = await User.findOneAndUpdate(
@@ -71,7 +71,7 @@ userService.putcompanydata = async(req, res)=>{
           'personaldata.domain': domain,
           'personaldata.headOffice': headOffice,
           'personaldata.description': description,
-          'personaldata.profileimage':profileimage
+          'personaldata.url':url
         }
       },
       { new: true }
@@ -89,7 +89,7 @@ userService.updateCompany = async (req, res) => {
   const { email } = req.params;
   const update = {};
   
-  const fieldsToUpdate = [ 'phone', 'headOffice', 'description', 'profileimage'];
+  const fieldsToUpdate = [ 'phone', 'headOffice', 'description', 'url'];
   
   for (const field of fieldsToUpdate) {
     if (req.body[field]) {
