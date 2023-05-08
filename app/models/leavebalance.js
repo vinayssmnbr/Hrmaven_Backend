@@ -14,11 +14,7 @@ const leavebalance = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    urgent: {
-        type: Number,
-        default: 0
-    },
-    earned: {
+    compensatory: {
         type: Number,
         default: 0
     }

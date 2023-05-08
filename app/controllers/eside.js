@@ -28,8 +28,7 @@ const leaveBalanceChart = async(req,res)=>{
                 $project: {
                     uid: 1,
                     medical: "$balance.medical",
-                    urgent: "$balance.urgent",
-                    earned: "$balance.earned",
+                    compensatory: "$balance.compensatory",
                     casual: "$balance.casual",
                 },
             },
@@ -60,7 +59,6 @@ const leaveHistory = async(req,res)=>{
               },
             },
           ])
-          console.log(data);
           res.json({response:data});
 
 }

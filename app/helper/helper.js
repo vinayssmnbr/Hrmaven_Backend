@@ -75,7 +75,6 @@ exports.loginemp = async function (req, res) {
     });
     return;
   }
-  console.log(employee)
   if (employee.status == "active" && employee!=null) {
     const user = await Empcreditional.findOne({
       $or: [{ email: name }, { professional: name }],
@@ -146,7 +145,6 @@ exports.loginemp = async function (req, res) {
     // }
     if(req.headers.role=='employee') {
       const user = await EmployeeModel.find({_id:new ObjectId(req.headers.id)})
-      console.log()
         res.send(user);
         return;
     }

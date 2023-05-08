@@ -13,7 +13,6 @@ const User = require("../models/credential");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(express.static(path.resolve(__dirname, "public")));
-console.log(__dirname);
 
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
