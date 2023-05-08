@@ -99,17 +99,12 @@ async function getreport(req, res, next) {
 }
 
 async function updateleavestatus(req, res) {
-
-  console.log(req.body);
-  const empdata = await Employee.find({ uid: req.body.uid });
-  console.log(empdata);
-  const id = empdata._id;
-
-
+  console.log(req.body.empId);
   try {
     req.body.Array.map(async (value) => {
+
       const attendance = new Attendance({
-        empId: id,
+        empId:new ObjectId(req.body.empId),
         status: 'leave',
         date: value
       })
@@ -184,6 +179,8 @@ const dateWiseAttendance = async (req, res) => {
           in: "$attendances.punch_in",
           out: "$attendances.punch_out",
           designation: 1,
+          ip_in:"$attendances.ip_in",
+          ip_out:"$attendances.ip_out"
         },
       },
       {
@@ -195,7 +192,7 @@ const dateWiseAttendance = async (req, res) => {
       },
     ]
   )
-  // console.log("date"+attendance);
+
   res.send(attendance);
 }
 
@@ -207,8 +204,6 @@ const dateWiseCard = async (req, res) => {
   const year = d.getFullYear();
   let firstday = new Date(year, m, 1);
   let lastday = new Date(year, m + 1, 0);
-  // console.log(firstday);
-  // console.log(lastday);
 
   const attendance = await Employee.aggregate(
     [
@@ -452,13 +447,32 @@ const Attendancegraph = async (req, res) => {
 const employeerecord = async (req, res) => {
   const id = req.headers.id;
   const data = await Attendance.find({ empId: new ObjectId(id) });
-  console.log(data);
   res.json({ response: data });
-  // res.json({message:'yeah'});
 }
 
-// cron.schedule("0 5 * * *", function() {
-//   });
+cron.schedule('0 1 * * *', function() {
+  intializeAttendanceDaily();
+  },{
+    scheduled: true,
+    timezone: "Asia/Kolkata"
+  });
+
+
+console.log('schedule');
+cron.schedule('* 20 * * * ',function() {
+ console.log('schedule');
+ completeofffice();
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
+});
+
+const completeofffice = async()=>{
+  const data = await Attendance.updateMany({$or:[{status:{$eq:'X'}},{status:{$eq:'odd'}}]},{status:"absent"});
+  console.log(data);
+  console.log('office complete');
+
+}
 
 const intializeAttendanceDaily = async (req, res) => {
 
@@ -482,7 +496,7 @@ const intializeAttendanceDaily = async (req, res) => {
       {
         _id: 0,
         empId: "$_id",
-        status: "absent",
+        status: "X",
         date: new Date(),
         from: "",
         to: "",
@@ -522,12 +536,10 @@ const attendanceMark = async (req, res) => {
   today = today.toString();
   tomorrow = tomorrow.toString();
   const check = await Attendance.find({ date: { $gte: new Date(today), $lt: new Date(tomorrow) }, empId: new ObjectId(id) });
-  console.log("check", check);
   if (check.length == 0) {
-    console.log("iflse");
     res.json({ response: 'noresponse' });
   }
-  else if (check[0].status == 'absent' || check[0].status == 'leave') {
+  else if (check[0].status == 'absent' || check[0].status == 'leave' || check[0].status=='X') {
     res.json({ in: "----", out: "-----" });
   }
   else {
@@ -539,7 +551,6 @@ const attendanceMark = async (req, res) => {
 const punchin = async (req, res) => {
   const id = req.body.id;
   var date = new Date();
-  console.log(req.body);
   var year = date.toLocaleString("default", { year: "numeric" });
   var month = date.toLocaleString("default", { month: "2-digit" });
   var day = date.toLocaleString("default", { day: "2-digit" });
@@ -547,8 +558,6 @@ const punchin = async (req, res) => {
   var dd = formattedDate.toString();
   const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(dd) } }, { status: "odd", punch_in: new Date(),ip_in:req.body.ip })
   res.json({ result, time: date });
-  // console.log('hit');
-  // res.json({message:"hit"});
 }
 
 const punchout = async (req, res) => {
@@ -557,11 +566,10 @@ const punchout = async (req, res) => {
   date.setHours(0, 0, 0, 0);
   date.toISOString();
   const result = await Attendance.findOne({ empId: new ObjectId(id), date: { $gte: new Date(date) } });
-  console.log(result);
+
   var timeStart = new Date(result.punch_in).getHours();
   var timeEnd = new Date().getHours();
   var hourDiff = timeEnd - timeStart;
-  console.log(hourDiff);
   if (hourDiff < 8 || result.punch_in == null) {
     const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "odd", punch_out: new Date(),ip_out:req.body.ip })
     res.json({ result, time: date });
@@ -571,6 +579,7 @@ const punchout = async (req, res) => {
     res.json({ result, time: date });
   }
 }
+
 
 intializeAttendanceDaily();
 module.exports = {

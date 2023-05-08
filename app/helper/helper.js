@@ -75,7 +75,6 @@ exports.loginemp = async function (req, res) {
     });
     return;
   }
-  console.log(employee);
   if (employee.status == "active" && employee != null) {
     const user = await Empcreditional.findOne({
       $or: [{ email: name }, { professional: name }],
