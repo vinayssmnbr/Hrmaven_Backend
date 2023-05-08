@@ -12,6 +12,7 @@ const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
 const Attendance = require("../models/attendance");
+// const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -495,6 +496,33 @@ const EmpSideUpdate = async (req, res) => {
     res.status(500).send({ message: "Error Update user information" });
   }
 };
+const resetpassword = async (req, res) => {
+  var newpassword = req.body.password;
+  var confirmPassword = req.body.confirm;
+  var token = req.header("auth-token");
+  var hashedPassword;
+  var hashedConfirm;
+
+  let email = req.params.email;
+  console.log(email);
+  if (email.length != 0) {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(newpassword, salt);
+    const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+    console.log(email);
+    console.log(hashedConfirm);
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { password: hashedPassword }
+    );
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { confirm: hashedConfirm }
+    );
+    res.send("changeit");
+  }
+};
 
 module.exports = {
   createEmp,
@@ -510,4 +538,5 @@ module.exports = {
   employeedetail,
   getEmployeeMobile,
   EmpSideUpdate,
+  resetpassword,
 };
