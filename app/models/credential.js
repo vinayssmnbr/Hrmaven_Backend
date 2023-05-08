@@ -32,9 +32,9 @@ const companySchema = new Schema({
   description: {
     type: String,
   },
-  profileimage: {
-    type: String,
-    default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi",
+  url: {
+    type: String
+    // default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi",
   },
 });
 
