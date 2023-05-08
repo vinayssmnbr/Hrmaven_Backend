@@ -12,49 +12,83 @@ userService.addUser = (req, res) => {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
-        confirm: req.body.confirm,
+        // confirm: req.body.confirm,
                 isFromSignupPage: true // set the flag to true
 
     });
-
-
     bcrypt.hash(user.password, 10, function(err, hashedPass) {
-        if (err) {
-            res.json({ error: err });
-        } else {
-            user.password = hashedPass;
-            bcrypt.hash(user.confirm, 10, function(err, hashedConfirm) {
-                if (err) {
-                    res.json({ error: err });
-                } else {
-                    user.confirm = hashedConfirm;
+      if (err) {
+          res.json({ error: err });
+      } else {
+          user.password = hashedPass;
+  
+          user.save()
+              .then(savedUser => {
+                console.log(savedUser);
+                  const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_TOKEN_KEY);
+  
+  
+                  res.json({
+                      message: 'User added successfully',
+                      user: savedUser,
+                      token: token,
+                      _id:savedUser._id,
+                      role:"hr"
+                  });
+              })
+              .catch(error => {
+                // console.log(savedUser);
+                console.log("error singup:",error)
+                  res.json({
+                      message: 'An error occurred while saving the user',
+                      error: error
+                  });
+              });
+      }
+  });
+  
 
 
-                    user.save()
-                        .then(savedUser => {
-                          console.log(savedUser);
-                            const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_TOKEN_KEY);
+    // bcrypt.hash(user.password, 10, function(err, hashedPass) {
+    //     if (err) {
+    //         res.json({ error: err });
+    //     } else {
+    //         user.password = hashedPass;
+    //         bcrypt.hash(user.confirm, 10, function(err, hashedConfirm) {
+    //             if (err) {
+    //               console.log("error singup:",err)
+    //                 res.json({ error: err });
+    //             } else {
+    //                 user.confirm = hashedConfirm;
 
 
-                            res.json({
-                                message: 'User added successfully',
-                                user: savedUser,
-                                token: token,
-                                id:savedUser._id,
-                                role:"hr"
-                            });
-                        })
-                        .catch(error => {
-                          // console.log(savedUser);
-                            res.json({
-                                message: 'An error occurred while saving the user',
-                                error: error
-                            });
-                        });
-                }
-            });
-        }
-    });
+    //                 user.save()
+    //                     .then(savedUser => {
+    //                       console.log(savedUser);
+    //                         const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_TOKEN_KEY);
+
+
+    //                         res.json({
+    //                             message: 'User added successfully',
+    //                             user: savedUser,
+    //                             token: token,
+    //                             _id:savedUser._id,
+    //                             role:"hr"
+    //                         });
+    //                     })
+    //                     .catch(error => {
+    //                       // console.log(savedUser);
+    //                       console.log("error singup:",error)
+    //                         res.json({
+    //                             message: 'An error occurred while saving the user',
+    //                             error: error
+    //                         });
+    //                     });
+    //             }
+    //         });
+    //     }
+    // });
+
 };
 
 userService.putcompanydata = async(req, res)=>{
