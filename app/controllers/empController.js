@@ -12,6 +12,7 @@ const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
 const Attendance = require('../models/attendance');
+const mongoose = require('mongoose')
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -206,7 +207,10 @@ const deleteEmployee = (req, res) => {
 
 const generateUid = async (req, res) => {
   try {
-    let doc = await EmployeeModel.find().sort({ uid: -1 });
+  let hrid = req.headers.hrid;
+    console.log(hrid,'hrid')
+    let doc = await EmployeeModel.find({company:new mongoose.Types.ObjectId(hrid)}
+    ).sort({ uid: -1 });
     let uid = 22000;
     if (Array.isArray(doc) && doc[0]) {
       uid = +doc[0].uid + 1;
@@ -214,6 +218,7 @@ const generateUid = async (req, res) => {
     console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
+    console.log(error)
     res.send({
       msg: "error",
     });
@@ -523,6 +528,44 @@ const dateWiseAttendance = async (req, res) => {
   res.send(attendance);
 };
 
+const EmpSideUpdate = async (req, res) => {
+  const id = req.params.id;
+  const {
+    motherName,
+    fatherName,
+    gender,
+    nationality,
+    bloodGroup,
+    maritalStatus,
+    dateOfBirth,
+    mobile,
+    city,
+    state,
+    address,
+    bankname,
+    accountno,
+    adhaarno,
+    panno,
+    ifsc,
+    passport,
+    postalCode,
+  } = req.body;
+  try {
+    const data = await EmployeeModel.findOneAndUpdate({ _id: id }, req.body);
+    if (!data == req.body) {
+      res.status(404).send({
+        message: `Cannot Update user with ${id}. Maybe user not found!`,
+      });
+    } else {
+      res.send("update success");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ message: "Error Update user information" });
+  }
+};
+
+
 
 
 module.exports = {
@@ -540,5 +583,6 @@ module.exports = {
   getEmployeeMobile,
   experienceArray,
   dateWiseAttendance,
+  EmpSideUpdate,
  
 };
