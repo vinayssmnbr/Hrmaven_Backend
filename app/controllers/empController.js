@@ -520,8 +520,12 @@ const resetpassword = async (req, res) => {
       { email: email },
       { confirm: hashedConfirm }
     );
-    res.send("changeit");
+    res.send("Password Changes Successfully");
   }
+};
+
+const oldpasswordcheck = async (req, res) => {
+  employee_emailcheck.getolpassword(req, res);
 };
 
 module.exports = {
@@ -539,4 +543,5 @@ module.exports = {
   getEmployeeMobile,
   EmpSideUpdate,
   resetpassword,
+  oldpasswordcheck,
 };
