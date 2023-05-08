@@ -232,7 +232,7 @@ exports.loginemp = async function (req, res) {
       return res.status(200).send({ message: "Password matches" });
     } catch (err) {
       console.error(err);
-      return res.status(500).send({ message: "Error fetching user password" });
+      return res.status(404).send({ message: "Error fetching user password" });
     }
   
           
