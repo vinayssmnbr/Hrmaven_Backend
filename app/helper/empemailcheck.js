@@ -14,9 +14,8 @@ findemailhelper.getCredentialsByEmail = async function (email) {
   }
 };
 
-
 //OLD PASSWORD AMTCH
-const getolpassword = async (req, res) => {
+findemailhelper.getolpassword = async (req, res) => {
   const { oldpassword } = req.body;
   const email = req.params.email;
   try {
@@ -38,4 +37,4 @@ const getolpassword = async (req, res) => {
   }
 };
 
-module.exports = { findemailhelper, getolpassword };
+module.exports = findemailhelper;
