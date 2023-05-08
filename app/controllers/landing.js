@@ -55,7 +55,7 @@ exports.getUserProfilepwd = async function(req, res) {
    
   };  
 
-  exports.getUserProfileId = async function(req, res) {
+exports.getUserProfileId = async function(req, res) {
 
     help.getUserProfileId(req, res);
    
@@ -150,28 +150,56 @@ try {
 
 exports.resett = async function(req, res){
 
-    var newpassword = req.body.password;
-  var confirmPassword = req.body.confirm;
-  var token = req.header("auth-token");
-  var hashedPassword;
-  var hashedConfirm;
+  //   var newpassword = req.body.password;
+  // var confirmPassword = req.body.confirm;
+  // var token = req.header("auth-token");
+  // if (!newpassword || !confirmPassword || newpassword.trim() === '' || confirmPassword.trim() === '') {
+  //   return res.status(400).send("Invalid password inputs");
+  // }
+  // var hashedPassword;
+  // var hashedConfirm;
+  
 
-  let email = req.params.email
-   let database = await help.verify_email(email);
+  // let email = req.params.email
+  //  let database = await help.verify_email(email);
 
-  console.log(database);
-  if (database.length != 0) {
-      const saltRounds = 10;
-      const salt = await bcrypt.genSalt(saltRounds);
-      const hashedPassword = await bcrypt.hash(newpassword, salt);
-      const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-      console.log(database[0].email);
-      console.log(hashedConfirm);
-      await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
-      await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
-      res.send("changeit");
+  // console.log(database);
+  // if (database.length != 0) {
+  //     const saltRounds = 10;
+  //     const salt = await bcrypt.genSalt(saltRounds);
+  //     const hashedPassword = await bcrypt.hash(newpassword, salt);
+  //     const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+  //     console.log(database[0].email);
+  //     console.log(hashedConfirm);
+  //     await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+  //     await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+  //     res.send("changeit");
 
-  }
+  // }
+  
+var newpassword = req.body.password;
+var confirmPassword = req.body.confirm;
+var token = req.header("auth-token");
+
+if (!newpassword || !confirmPassword || newpassword.trim() === '' || confirmPassword.trim() === '') {
+  return res.status(400).send("Invalid password inputs");
+}
+
+let email = req.params.email
+let database = await help.verify_email(email);
+
+if (database.length === 0) {
+  return res.status(404).send("Email not found");
+}
+
+const saltRounds = 10;
+const salt = await bcrypt.genSalt(saltRounds);
+const hashedPassword = await bcrypt.hash(newpassword, salt);
+const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+
+await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword })
+await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm })
+res.send("changeit");
 
 }
 
