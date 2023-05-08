@@ -64,6 +64,7 @@ const createEmp = async (req, res) => {
             const dd = await newuser.save();
             const balance = new Balance({
               empId: dd._id,
+              
             });
             balance.save();
 
