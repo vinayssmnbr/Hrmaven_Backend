@@ -14,6 +14,8 @@ const Empcreditional = require("../models/empcredit");
 const Attendance = require('../models/attendance');
 const mongoose = require('mongoose');
 
+const Attendance = require("../models/attendance");
+// const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -374,12 +376,12 @@ const getEmployeeMobile = async (req, res) => {
 };
 
 // const exportUsers = async (req, res) => {
-//   // console.log("inside")
+//   console.log("inside")
 //   try {
 //     let users = [];
 //     var userData = await EmployeeModel.find({});
-//     // let userData = req.body.userData // this.selectedEmployess
-//     //  console.log('user', userData)
+//     let userData = req.body.userData // this.selectedEmployess
+//      console.log('user', userData)
 //     userData.forEach((employees) => {
 //       const {
 //         id,
@@ -413,7 +415,7 @@ const getEmployeeMobile = async (req, res) => {
 //   }
 // }
 
-// first file of importUsers
+//first file of importUsers
 
 // const importUsers = async (req, res) => {
 //   try {
@@ -567,6 +569,37 @@ const EmpSideUpdate = async (req, res) => {
     res.status(500).send({ message: "Error Update user information" });
   }
 };
+const resetpassword = async (req, res) => {
+  var newpassword = req.body.password;
+  var confirmPassword = req.body.confirm;
+  var token = req.header("auth-token");
+  var hashedPassword;
+  var hashedConfirm;
+
+  let email = req.params.email;
+  console.log(email);
+  if (email.length != 0) {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(newpassword, salt);
+    const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+    console.log(email);
+    console.log(hashedConfirm);
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { password: hashedPassword }
+    );
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { confirm: hashedConfirm }
+    );
+    res.send("Password Changes Successfully");
+  }
+};
+
+const oldpasswordcheck = async (req, res) => {
+  employee_emailcheck.getolpassword(req, res);
+};
 
 
 
@@ -587,5 +620,6 @@ module.exports = {
   experienceArray,
   dateWiseAttendance,
   EmpSideUpdate,
- 
+  resetpassword,
+  oldpasswordcheck,
 };
