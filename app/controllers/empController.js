@@ -11,7 +11,7 @@ const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
-const Attendance = require('../models/attendance');
+// const Attendance = require('../models/attendance');
 const mongoose = require('mongoose');
 
 const Attendance = require("../models/attendance");
