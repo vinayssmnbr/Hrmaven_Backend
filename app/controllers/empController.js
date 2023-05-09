@@ -12,7 +12,8 @@ const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
 const Attendance = require('../models/attendance');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -224,6 +225,8 @@ const generateUid = async (req, res) => {
     });
   }
 };
+
+
 
 //first file of ExportUsers
 
