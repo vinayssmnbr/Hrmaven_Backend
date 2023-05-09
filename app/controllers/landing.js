@@ -95,12 +95,12 @@ try {
   let email = await tokenDecrypt(token);
   var database = await help.verify_email(email);
   console.log("database landing: ", database);
-  console.log("token url:-  ", `https://turneazy.com/resetpassword/${token}`)
-  // console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
+  // console.log("token url:-  ", `https://turneazy.com/resetpassword/${token}`)
+  console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
   if (database.length != 0) {
-    const user = await User.findOne({ resetPasswordLink: ` https://turneazy.com/resetpassword/${token}` });
-    // const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
+    // const user = await User.findOne({ resetPasswordLink: ` https://turneazy.com/resetpassword/${token}` });
+    const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
 
     if (!newpassword && !confirmPassword && user && user.isResetPasswordLinkUsed) {
       throw new Error("Reset password link has already been used");
