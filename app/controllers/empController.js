@@ -11,10 +11,9 @@ const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
-// const Attendance = require('../models/attendance');
-const mongoose = require('mongoose');
-
 const Attendance = require("../models/attendance");
+const mongoose = require("mongoose");
+
 // const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
@@ -47,15 +46,14 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-        name &&
+      name &&
         email &&
         designation &&
         mobile &&
         dateOfJoining &&
         timing &&
         ctc &&
-        job_type 
-      )
+        job_type)
     ) {
       const password = "Hrmaven@123";
       bcrypt.hash(password, 10, async (err, hashedPass) => {
@@ -110,6 +108,7 @@ const createEmp = async (req, res) => {
             const saved_user = await EmployeeModel.findOne({ email: email });
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
+            await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -117,16 +116,15 @@ const createEmp = async (req, res) => {
           }
         }
       });
-    }else{
-      res.status(400).send({msg:"some fields are missing", status:'fail'})
+    } else {
+      res.status(400).send({ msg: "some fields are missing", status: "fail" });
     }
   }
 };
 
 const newemployeeattendance = async (id) => {
-
   const date = new Date();
-  let  today = date.getDate();
+  let today = date.getDate();
   today = today + 1;
   let i = 2;
   while (i <= today) {
@@ -136,21 +134,20 @@ const newemployeeattendance = async (id) => {
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
-        status: "X"
+        status: "X",
       });
       await attendance.save();
     } else {
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
-        status: "absent"
+        status: "absent",
       });
       await attendance.save();
     }
     i++;
   }
-
-}
+};
 const getEmp = async (req, res) => {
   let { search, status, uid, email } = req.query;
   status = status != "" ? status?.split(",") : false;
@@ -210,25 +207,23 @@ const deleteEmployee = (req, res) => {
 
 const generateUid = async (req, res) => {
   try {
-  let hrid = req.headers.hrid;
-    console.log(hrid,'hrid')
-    let doc = await EmployeeModel.find({company:new mongoose.Types.ObjectId(hrid)}
-    ).sort({ uid: -1 });
-    let uid = 22000;
-    if (Array.isArray(doc) && doc[0]) {
-      uid = +doc[0].uid + 1;
-    }
+    let hrid = req.headers.hrid;
+    // let doc = await EmployeeModel.find().sort({ uid: -1 });
+    let doc = await User.findById(hrid);
+    console.log(doc);
+    // if (Array.isArray(doc) && doc[0]) {
+    //   uid = +doc[0].uid + 1;
+    // }
+    var uid = doc.uid;
     console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.send({
       msg: "error",
     });
   }
 };
-
-
 
 //first file of ExportUsers
 
@@ -307,7 +302,6 @@ const exportUsers = async (req, res) => {
     res.send({ status: 400, success: false, msg: error.message });
   }
 };
-
 
 const employeedetail = async (req, res) => {
   let userId = req.headers.id;
@@ -492,12 +486,12 @@ const dateWiseAttendance = async (req, res) => {
   const attendance = await Employee.aggregate([
     {
       $match:
-      /**
-       * query: The query in MQL.
-       */
-      {
-        company: new ObjectId(hrid),
-      },
+        /**
+         * query: The query in MQL.
+         */
+        {
+          company: new ObjectId(hrid),
+        },
     },
     {
       $lookup: {
@@ -600,9 +594,6 @@ const resetpassword = async (req, res) => {
 const oldpasswordcheck = async (req, res) => {
   employee_emailcheck.getolpassword(req, res);
 };
-
-
-
 
 module.exports = {
   createEmp,

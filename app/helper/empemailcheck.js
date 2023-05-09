@@ -1,13 +1,17 @@
 const EmployeeModel = require("../models/employee/employeeModel");
 const Empcreditional = require("../models/empcredit");
 const bcrypt = require("bcryptjs");
+const { User } = require("../models/credential");
 
 const findemailhelper = {};
 
 findemailhelper.getCredentialsByEmail = async function (email) {
   try {
-    const user = await EmployeeModel.findOne({ email: email });
-    return user;
+    const employee = await EmployeeModel.findOne({ email: email });
+    const user = await User.findOne({ email: email });
+    if (employee || user) {
+      return true;
+    }
   } catch (error) {
     console.log("Error in retrieving user by email:", error);
     throw error;
@@ -27,10 +31,12 @@ findemailhelper.getolpassword = async (req, res) => {
     const passwordMatch = await bcrypt.compare(oldpassword, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).send({ message: "Incorrect password" });
+      return res
+        .status(401)
+        .send({ message: "Incorrect password", flag: false });
     }
 
-    return res.status(200).send({ message: "Password matches" });
+    return res.status(200).send({ message: "Password matches", flag: true });
   } catch (err) {
     console.error(err);
     return res.status(404).send({ message: "Error fetching user password" });
