@@ -12,6 +12,9 @@ const employee_mobilecheck = require("../helper/empmobilecheck");
 const bcrypt = require("bcryptjs");
 const Empcreditional = require("../models/empcredit");
 const Attendance = require("../models/attendance");
+const mongoose = require("mongoose");
+
+// const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
   console.log("inside");
@@ -105,6 +108,7 @@ const createEmp = async (req, res) => {
             const saved_user = await EmployeeModel.findOne({ email: email });
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
+            await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -203,14 +207,18 @@ const deleteEmployee = (req, res) => {
 
 const generateUid = async (req, res) => {
   try {
-    let doc = await EmployeeModel.find().sort({ uid: -1 });
-    let uid = 22000;
-    if (Array.isArray(doc) && doc[0]) {
-      uid = +doc[0].uid + 1;
-    }
+    let hrid = req.headers.hrid;
+    // let doc = await EmployeeModel.find().sort({ uid: -1 });
+    let doc = await User.findById(hrid);
+    console.log(doc);
+    // if (Array.isArray(doc) && doc[0]) {
+    //   uid = +doc[0].uid + 1;
+    // }
+    var uid = doc.uid;
     console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
+    console.log(error);
     res.send({
       msg: "error",
     });
@@ -362,12 +370,12 @@ const getEmployeeMobile = async (req, res) => {
 };
 
 // const exportUsers = async (req, res) => {
-//   // console.log("inside")
+//   console.log("inside")
 //   try {
 //     let users = [];
 //     var userData = await EmployeeModel.find({});
-//     // let userData = req.body.userData // this.selectedEmployess
-//     //  console.log('user', userData)
+//     let userData = req.body.userData // this.selectedEmployess
+//      console.log('user', userData)
 //     userData.forEach((employees) => {
 //       const {
 //         id,
@@ -401,7 +409,7 @@ const getEmployeeMobile = async (req, res) => {
 //   }
 // }
 
-// first file of importUsers
+//first file of importUsers
 
 // const importUsers = async (req, res) => {
 //   try {
@@ -458,7 +466,67 @@ const getEmployees = async (req, res) => {
   }
 };
 
-//EMPLOYEE SIDE DATA UPDATE
+//create Experience
+const experienceArray = async (req, res) => {
+  try {
+    const { experienceDetails } = req.body;
+    const modal = new EmployeeModel({ experienceDetails });
+    const savedModal = await modal.save();
+    res.json(savedModal);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+//hs
+const dateWiseAttendance = async (req, res) => {
+  const mydate = req.headers.mydate;
+  const hrid = req.headers.hrid;
+  const attendance = await Employee.aggregate([
+    {
+      $match:
+        /**
+         * query: The query in MQL.
+         */
+        {
+          company: new ObjectId(hrid),
+        },
+    },
+    {
+      $lookup: {
+        from: "attendances",
+        localField: "_id",
+        foreignField: "empId",
+        as: "attendances",
+      },
+    },
+    {
+      $unwind: "$attendances",
+    },
+    {
+      $project: {
+        uid: 1,
+        name: 1,
+        date: "$attendances.date",
+        status: "$attendances.status",
+        in: "$attendances.punch_in",
+        out: "$attendances.punch_out",
+        designation: 1,
+      },
+    },
+    {
+      $match: {
+        date: {
+          $gte: new Date(mydate),
+        },
+      },
+    },
+  ]);
+  // console.log("date"+attendance);
+  res.send(attendance);
+};
+
 const EmpSideUpdate = async (req, res) => {
   const id = req.params.id;
   const {
@@ -495,6 +563,37 @@ const EmpSideUpdate = async (req, res) => {
     res.status(500).send({ message: "Error Update user information" });
   }
 };
+const resetpassword = async (req, res) => {
+  var newpassword = req.body.password;
+  var confirmPassword = req.body.confirm;
+  var token = req.header("auth-token");
+  var hashedPassword;
+  var hashedConfirm;
+
+  let email = req.params.email;
+  console.log(email);
+  if (email.length != 0) {
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(newpassword, salt);
+    const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
+    console.log(email);
+    console.log(hashedConfirm);
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { password: hashedPassword }
+    );
+    await Empcreditional.findOneAndUpdate(
+      { email: email },
+      { confirm: hashedConfirm }
+    );
+    res.send("Password Changes Successfully");
+  }
+};
+
+const oldpasswordcheck = async (req, res) => {
+  employee_emailcheck.getolpassword(req, res);
+};
 
 module.exports = {
   createEmp,
@@ -509,5 +608,9 @@ module.exports = {
   getEmployees,
   employeedetail,
   getEmployeeMobile,
+  experienceArray,
+  dateWiseAttendance,
   EmpSideUpdate,
+  resetpassword,
+  oldpasswordcheck,
 };

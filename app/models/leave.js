@@ -34,11 +34,11 @@ const leaveSchema = new mongoose.Schema({
     },
     category :{
         type:String,
-        enum:["casual","medical","urgent","earned"],
+        enum:["casual","medical","short","compensatory","half 1","half 2"],
         default:"casual"
     },
     duration:{
-        type:Number,
+        type:String,
         default:0
     },
     message:{
@@ -47,7 +47,7 @@ const leaveSchema = new mongoose.Schema({
     },
     document:{
         type:String,
-        default:"https://vein.stonybrookmedicine.edu/sites/default/files/Adult_Patient_Demographic_Form.pdf"
+        default:""
     }
 
 

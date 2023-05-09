@@ -5,6 +5,7 @@ const { setDefaultResultOrder } = require("dns/promises");
 // to get all employee leave
 var ObjectId = require('mongodb').ObjectId;
 var balance = require('../models/leavebalance');
+const leavebalance = require("../models/leavebalance");
 
 const leave_all = async (req, res) => {
 
@@ -47,10 +48,6 @@ const updateStatus = async (req, res) => {
 //Add leave data
 
 const leave_create = async (req, res) => {
-  console.log("yeah");
-  console.log(req.body);
-  console.log(req.headers);
-
   const leave_var = new Leave({
     empId: req.body.id,
     appliedOn: req.body.appliedon,
@@ -65,7 +62,7 @@ const leave_create = async (req, res) => {
   try {
     // res.send("created")
     const saveLeave = await leave_var.save();
-    res.send({ saveLeave: "yeah" })
+    res.send({ saveLeave });
   } catch (error) {
     console.log(error)
     res.status(400).send(error);
@@ -73,7 +70,7 @@ const leave_create = async (req, res) => {
 }
 
 const pendingsFetch = async (req, res) => {
-  console.log("pending");
+
 }
 
 const leavegraph = async (req, res) => {
@@ -117,7 +114,7 @@ const leavegraph = async (req, res) => {
       },
     ]
   );
-  res.json({graph:graphcontent});
+  res.json({ graph: graphcontent });
 
 }
 
@@ -133,9 +130,6 @@ const leavecontent = async (req, res) => {
 
   // Generate yyyy-mm-dd date string
   var today = year + "-" + month + "-" + day
-  console.log(today);
-
-
   const data = await EmployeeModel.aggregate([
     {
       $match: {
@@ -154,7 +148,18 @@ const leavecontent = async (req, res) => {
       },
     },
     {
+      $lookup: {
+        from: "leavebalances",
+        localField: "_id",
+        foreignField: "empId",
+        as: "balance",
+      },
+    },
+    {
       $unwind: "$result",
+    },
+    {
+      $unwind: "$balance",
     },
     {
       $group: {
@@ -173,6 +178,9 @@ const leavecontent = async (req, res) => {
             _id: "$result._id",
             message: "$result.message",
             select: false,
+            url: "$result.document",
+            duration: "$result.duration",
+            balance: "$balance",
           },
         },
       },
@@ -187,12 +195,6 @@ const leavecontent = async (req, res) => {
               $and: [
                 {
                   $eq: ["$$item.status", "pending"],
-                },
-                {
-                  $gte: [
-                    "$$item.from",
-                    new Date("2023-04-01"),
-                  ],
                 },
               ],
             },
@@ -209,10 +211,31 @@ const leaveupdatestatus = async (req, res) => {
   try {
 
     const doc = await Leave.findById(req.headers.id);
-    console.log(doc);
     doc.status = req.headers.status;
     doc.message = req.headers.message;
+    var duration = Number(doc.duration);
+    console.log(typeof (+doc.duration));
+    console.log(typeof (parseInt(doc.duration)));
     doc.save();
+    if ((req.headers.status == 'accept') && (doc.category == 'casual')) {
+      var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'casual': -duration } });
+      console.log("update inc");
+    }
+
+    else if ((req.headers.status == 'accept') && (doc.category == 'compensatory')) {
+      var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'compensatory': -duration } });
+      console.log("update inc");
+    }
+
+    else if ((req.headers.status == 'accept') && (doc.category == 'medical')) {
+      var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'medical': -duration } });
+      console.log("update inc");
+    }
+
+
+
+
+
     res.json({ reponse: 'update' });
   }
   catch (e) {
@@ -224,7 +247,7 @@ const leavefilter = async (req, res) => {
   let from = "";
   let to = "";
   let category = [];
-  console.log(req.headers);
+  let hrid = req.headers.hrid;
   if (req.headers.from == '') {
     from = "2023-01-01";
   } else {
@@ -236,87 +259,182 @@ const leavefilter = async (req, res) => {
   } else {
     to = req.headers.to;
   }
+  let data;
   if (req.headers.category == 'all') {
-    category.push("casual");
-    category.push("medical");
-    category.push("urgent");
-    category.push("earned");
-  }
-  else {
-    category.push(req.headers.category);
-  }
-
-
-  const data = await Leave.aggregate([
-    {
-      $match: {
-        from: {
-          $gte: new Date(from),
-        },
-        to: {
-          $lte: new Date(to),
-        },
-        category: {
-          $in: category,
+    data = await EmployeeModel.aggregate([
+      {
+        $match: {
+          company: new ObjectId(
+            hrid
+          ),
         },
       },
-    },
-    {
-      $lookup: {
-        from: "employees",
-        localField: "empId",
-        foreignField: "_id",
-        as: "result",
+      {
+        $lookup: {
+          from: "employeeleaves",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
       },
-    },
-    {
-      $unwind: "$result",
-    },
-    {
-      $group: {
-        _id: "$status",
-        leave: {
-          $push: {
-            status: "$status",
-            appliedOn: "$appliedOn",
-            from: "$from",
-            to: "$to",
-            reason: "$reason",
-            category: "$category",
-            _id: "$_id",
-            message: "$message",
-            uid: "$result.uid",
-            name: "$result.name",
-            select: false,
+      {
+        $lookup: {
+          from: "leavebalances",
+          localField: "_id",
+          foreignField: "empId",
+          as: "balance",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
+      {
+        $unwind: "$balance",
+      },
+      {
+        $match: {
+          "result.category": {
+            $in: ['casual', 'medical', 'compensatory', 'half 1', 'half 2', 'short'],
+          },
+          "result.from": {
+            $gte: new Date(from),
+          },
+          "result.to": {
+            $lte: new Date(to),
           },
         },
       },
-    },
-    {
-      $addFields: {
-        pending: {
-          $filter: {
-            input: "$leave",
-            as: "item",
-            cond: {
-              $and: [
-                {
-                  $eq: ["$$item.status", "pending"],
-                },
-                {
-                  $gte: [
-                    "$$item.from",
-                    new Date("2023-04-01"),
-                  ],
-                },
-              ],
+      {
+        $group: {
+          _id: "$result.status",
+          leave: {
+            $push: {
+              uid: "$uid",
+              name: "$name",
+              empId: "$_id",
+              status: "$result.status",
+              appliedOn: "$result.appliedOn",
+              from: "$result.from",
+              to: "$result.to",
+              reason: "$result.reason",
+              category: "$result.category",
+              _id: "$result._id",
+              message: "$result.message",
+              select: false,
+              url: "$result.document",
+              duration: "$result.duration",  
+              balance: "$balance",
             },
           },
         },
       },
-    },
-  ])
-
+      {
+        $addFields: {
+          pending: {
+            $filter: {
+              input: "$leave",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "pending"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ])
+  }
+  else {
+    data = await EmployeeModel.aggregate([
+      {
+        $match: {
+          company: new ObjectId(
+            hrid
+          ),
+        },
+      },
+      {
+        $lookup: {
+          from: "employeeleaves",
+          localField: "_id",
+          foreignField: "empId",
+          as: "result",
+        },
+      },
+      {
+        $lookup: {
+          from: "leavebalances",
+          localField: "_id",
+          foreignField: "empId",
+          as: "balance",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
+      {
+        $unwind: "$balance",
+      },
+      {
+        $match: {
+          "result.category": {
+            $eq: req.headers.category,
+          },
+          "result.from": {
+            $gte: new Date(from),
+          },
+          "result.to": {
+            $lte: new Date(to),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$result.status",
+          leave: {
+            $push: {
+              uid: "$uid",
+              name: "$name",
+              empId: "$_id",
+              status: "$result.status",
+              appliedOn: "$result.appliedOn",
+              from: "$result.from",
+              to: "$result.to",
+              reason: "$result.reason",
+              category: "$result.category",
+              _id: "$result._id",
+              message: "$result.message",
+              select: false,
+              url: "$result.document",
+              duration: "$result.duration",
+              balance: "$balance",
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          pending: {
+            $filter: {
+              input: "$leave",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "pending"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ])
+  }
+  console.log('filter ', data);
   res.json({ result: data });
 
 }
@@ -332,6 +450,6 @@ module.exports = {
   leavecontent,
   leaveupdatestatus,
   leavefilter,
- 
+
 
 }

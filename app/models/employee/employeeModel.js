@@ -24,7 +24,6 @@ const employeeSchema = new Schema({
   uid: {
     type: Number,
     // required: true,
-    unique: true,
   },
 
   name: {
@@ -134,6 +133,12 @@ const employeeSchema = new Schema({
       "ICICI Bank",
       "Others",
     ],
+  },
+  otherbankname: {
+    type: String,
+    required: function () {
+      return this.bankname === "Others";
+    },
   },
   accountno: {
     type: Number,

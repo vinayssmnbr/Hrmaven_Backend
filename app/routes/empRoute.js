@@ -13,7 +13,6 @@ const User = require("../models/credential");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(express.static(path.resolve(__dirname, "public")));
-console.log(__dirname);
 
 var storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -39,4 +38,6 @@ router.get("/detail/fetch", verify, emplcontroller.employeedetail);
 router.get("/checkemail/:email", emplcontroller.getEmployeeEmail);
 router.get("/checkmobile/:mobile", emplcontroller.getEmployeeMobile);
 router.patch("/empsideupdate/:id", emplcontroller.EmpSideUpdate);
+router.post("/emppwd/:email", emplcontroller.resetpassword);
+router.post("/empoldpwd/:email", emplcontroller.oldpasswordcheck);
 module.exports = router;
