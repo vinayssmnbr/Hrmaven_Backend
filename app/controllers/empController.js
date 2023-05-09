@@ -106,6 +106,7 @@ const createEmp = async (req, res) => {
             const saved_user = await EmployeeModel.findOne({ email: email });
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
+            await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -204,11 +205,14 @@ const deleteEmployee = (req, res) => {
 
 const generateUid = async (req, res) => {
   try {
-    let doc = await EmployeeModel.find().sort({ uid: -1 });
-    let uid = 22000;
-    if (Array.isArray(doc) && doc[0]) {
-      uid = +doc[0].uid + 1;
-    }
+    let hrid = req.headers.hrid;
+    // let doc = await EmployeeModel.find().sort({ uid: -1 });
+    let doc = await User.findById(hrid);
+    console.log(doc);
+    // if (Array.isArray(doc) && doc[0]) {
+    //   uid = +doc[0].uid + 1;
+    // }
+    var uid = doc.uid;
     console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {

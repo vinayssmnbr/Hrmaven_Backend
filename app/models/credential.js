@@ -22,18 +22,17 @@ const companySchema = new Schema({
   //   enum: ["0-50", "50-100", "100-150", "150-200", "200-250","250-300","300-350"],
   //   default: "0-50"
   // },
-  domain:{
-    type: String
+  domain: {
+    type: String,
   },
   headOffice: {
-    type: String
-   
+    type: String,
   },
   description: {
     type: String,
   },
   url: {
-    type: String
+    type: String,
     // default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi",
   },
 });
@@ -87,11 +86,16 @@ const userSchema = new Schema(
       type: String,
       default: "HR",
     },
+    uid: {
+      type: Number,
+      default: 22000,
+    },
   },
+
   { timestamps: true }
 );
 
-const User = mongoose.model('credit', userSchema);
+const User = mongoose.model("credit", userSchema);
 // const User = mongoose.model('hrUser', userSchema);
 // const Company = mongoose.model('personaldata', companySchema);
 

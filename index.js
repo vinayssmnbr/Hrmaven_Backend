@@ -1,22 +1,20 @@
-
-
 require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const session = require("express-session");
 const Database = require("./config/hrDB");
 const Landing = require("./app/routes/landing");
 
 // Employee Management System Routes
-const empRoutes = require('./app/routes/empRoute');
-const attendanceRoutes = require('./app/routes/attendanceRoutes');
+const empRoutes = require("./app/routes/empRoute");
+const attendanceRoutes = require("./app/routes/attendanceRoutes");
 const authRoutes = require("./app/routes/authRoute");
-const employeespecificdetails = require('./app/routes/employeespecific');
+const employeespecificdetails = require("./app/routes/employeespecific");
 const leaveRoute = require("./app/routes/leaveRoute");
-const jobRoutes = require('./app/routes/jobRoutes');
-const emailAll = require('./app/routes/findemail');
+const jobRoutes = require("./app/routes/jobRoutes");
+const emailAll = require("./app/routes/findemail");
 
 // Database Connection
 Database.connection;
@@ -28,17 +26,19 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.options('*', cors());
+app.options("*", cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Session
-app.use(session({
-  secret: "vinay",
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true },
-}));
+app.use(
+  session({
+    secret: "vinay",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true },
+  })
+);
 
 // Routes
 app.use("", Landing);
