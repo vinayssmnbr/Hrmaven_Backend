@@ -121,6 +121,11 @@ const leavegraph = async (req, res) => {
 
 const leavecontent = async (req, res) => {
   const hrid = req.headers.hrid;
+  if (!ObjectId.isValid(hrid)) {
+    // Handle the case when hrid is not valid, e.g., return an error response
+    res.status(400).json({ error: 'Invalid hrid' });
+    return;
+  }
 
   var date = new Date();
   // Get year, month, and day part from the date
