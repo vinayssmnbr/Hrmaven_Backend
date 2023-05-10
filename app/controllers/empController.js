@@ -9,7 +9,7 @@ const Balance = require("../models/leavebalance");
 var ObjectId = require("mongodb").ObjectId;
 const employee_emailcheck = require("../helper/empemailcheck");
 const employee_mobilecheck = require("../helper/empmobilecheck");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const Empcreditional = require("../models/empcredit");
 const Attendance = require("../models/attendance");
 const mongoose = require("mongoose");
@@ -183,7 +183,7 @@ const update = (req, res) => {
           message: `Cannot Update user with ${id}. Maybe user not found!`,
         });
       } else {
-        res.send("update success");
+        res.send({ message: "update success" });
       }
     })
     .catch((err) => {
@@ -556,7 +556,7 @@ const EmpSideUpdate = async (req, res) => {
         message: `Cannot Update user with ${id}. Maybe user not found!`,
       });
     } else {
-      res.send("update success");
+      res.send({ message: "update success" });
     }
   } catch (err) {
     console.log(err);
@@ -587,7 +587,7 @@ const resetpassword = async (req, res) => {
       { email: email },
       { confirm: hashedConfirm }
     );
-    res.send("Password Changes Successfully");
+    res.send({ message: "Password Changes Successfully" });
   }
 };
 
