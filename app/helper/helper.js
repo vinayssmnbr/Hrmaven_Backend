@@ -12,6 +12,7 @@ exports.login = async function (req, res) {
   var name = req.body.email.toLowerCase();
   var password = req.body.password;
 
+
   try {
     const user = await User.findOne({
       $or: [{ email: name }, { username: name }],
@@ -45,6 +46,7 @@ exports.login = async function (req, res) {
             role: "hr",
             token,
             empId: user.empId,
+            personalDataSubmitted: user.personalDataSubmitted // Add this line
           });
         } else {
           res.json({
@@ -173,7 +175,7 @@ exports.getUserProfile = async function (req, res) {
 };
 
 exports.getUserPersonals = async function (req, res) {
-  const { email } = req.params;
+  const  email  = req.params.email;
 
   try {
     const user = await User.findOne({ email: email }).select("personaldata");

@@ -78,11 +78,11 @@ const userSchema = new Schema(
     //   type: Schema.Types.ObjectId,
     //   ref: 'Company',
     // },
-    isFromSignupPage: {
+    personalDataSubmitted: {
       type: Boolean,
       default: false,
     },
-    Role: {
+        Role: {
       type: String,
       default: "HR",
     },

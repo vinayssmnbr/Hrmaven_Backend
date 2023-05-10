@@ -13,7 +13,6 @@ userService.addUser = (req, res) => {
         email: req.body.email,
         password: req.body.password,
         // confirm: req.body.confirm,
-                isFromSignupPage: true // set the flag to true
 
     });
     bcrypt.hash(user.password, 10, function(err, hashedPass) {
@@ -33,7 +32,8 @@ userService.addUser = (req, res) => {
                       user: savedUser,
                       token: token,
                       _id:savedUser._id,
-                      role:"hr"
+                      role:"hr",
+                      personalDataSubmitted: user.personalDataSubmitted // Add this line
                   });
               })
               .catch(error => {
@@ -105,7 +105,8 @@ userService.putcompanydata = async(req, res)=>{
           'personaldata.domain': domain,
           'personaldata.headOffice': headOffice,
           'personaldata.description': description,
-          'personaldata.url':url
+          'personaldata.url':url,
+          'personalDataSubmitted': true,
         }
       },
       { new: true }
