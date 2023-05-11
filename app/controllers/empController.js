@@ -114,13 +114,10 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-<<<<<<< HEAD
             newemployeeattendance(saved_user._id,req.body.dateOfJoining);
-=======
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
             await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
->>>>>>> 07219c5db94e499df5dec76a21af99d8349ad658
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             console.log(error, "error");
@@ -134,7 +131,6 @@ const createEmp = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 const newemployeeattendance = async (id,join) => {
   const date = new Date(join);
   let  today = date.getDate();
@@ -143,17 +139,6 @@ const newemployeeattendance = async (id,join) => {
     var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
 
     if (i <= today) {
-=======
-const newemployeeattendance = async (id) => {
-  const date = new Date();
-  let today = date.getDate();
-  today = today + 1;
-  let i = 2;
-  while (i <= today) {
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
-    console.log(firstDay);
-    if (i < today) {
->>>>>>> 07219c5db94e499df5dec76a21af99d8349ad658
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
@@ -161,18 +146,7 @@ const newemployeeattendance = async (id) => {
       });
       console.log(firstDay);
       await attendance.save();
-<<<<<<< HEAD
     } 
-=======
-    } else {
-      const attendance = new Attendance({
-        empId: new ObjectId(id),
-        date: new Date(firstDay),
-        status: "absent",
-      });
-      await attendance.save();
-    }
->>>>>>> 07219c5db94e499df5dec76a21af99d8349ad658
     i++;
   }
 };
