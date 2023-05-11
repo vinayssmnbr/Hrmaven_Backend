@@ -6,6 +6,8 @@ const help = require('../helper/helper');
 const auth = require('../middlewares/authentication');
 const service = require('../services/user')
 const mailer = require("../../config/mail");
+const Empcreditional = require("../models/empcredit");
+
 
 
 exports.login = async function(req, res) {
@@ -94,7 +96,7 @@ console.log("newpassword: ", newpassword);
 try {
   let email = await tokenDecrypt(token);
   var database = await help.verify_email(email);
-  console.log("database landing: ", database);
+  console.log("database landingggggg: ", database);
   // console.log("token url:-  ", `https://turneazy.com/resetpassword/${token}`)
   console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
@@ -129,9 +131,10 @@ try {
     }
 
     res.send("changeit");
-  } else {
-    res.status(400).send({ message: "invalid linkkkk" });
   }
+  //  else {
+  //   res.status(400).send({ message: "invalid linkkkk" });
+  // }
 } catch (error) {
   console.error("error111: ", error);
   if (error.message === "Reset password link has already been used") {
@@ -147,6 +150,53 @@ try {
 
 
 }
+
+exports.resetemp = async function(req, res) {
+  var newpassword = req.body.password;
+  
+  var token = req.header("auth-token");
+
+  try {
+    let email = await tokenDecrypt(token);
+    var databaseemp = await help.verify_emp_email(email);
+    console.log("databaseemp landing1111: ", databaseemp);
+    console.log("token url emp: ", `http://localhost:4200/resetpasswordemp/${token}`);
+        
+    if (databaseemp.length != 0) {
+      const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `http://localhost:4200/resetpasswordemp/${token}` });
+    // const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `https://turneazy.com/resetpasswordemp/${token}` });
+      if (!newpassword && empcreditional && empcreditional.isEmpResetPasswordLinkUsed) {
+        throw new Error("Reset password link has already been used");
+      }
+    
+      if (newpassword) {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hashedPassword = await bcrypt.hash(newpassword, salt);
+    
+        await Empcreditional.findOneAndUpdate({ email: databaseemp[0].email }, { password: hashedPassword });
+        await Empcreditional.findOneAndUpdate({ email: databaseemp[0].email }, { isEmpResetPasswordLinkUsed: true });
+      }
+    
+      if (empcreditional && empcreditional.isEmpResetPasswordLinkUsed) {
+        throw new Error("Reset password link has already been used");
+      }
+    
+      res.send("changeitemp");
+    }
+  } catch (error) {
+    console.error("error: ", error);
+    if (error.message === "Reset password link has already been used") {
+      res.status(400).send({ message: error.message });
+    } else if (error.message === "Link has expired") {
+      res.status(400).json({ message: "Link has expired" });
+    }
+  }
+
+
+};
+
+
 
 exports.resett = async function(req, res){
 

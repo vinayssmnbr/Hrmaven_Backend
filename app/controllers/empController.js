@@ -77,33 +77,31 @@ const createEmp = async (req, res) => {
               professional: professionalemail,
               password: hashedPass,
             });
+            console.log('after new Empcreditiona email: professionalemail', user);
             user.save();
-
             const payload = {
-              email: email,
+              email: professionalemail,
               // set the expiry time to 5 minute from now
               exp: Math.floor(Date.now() / 1000) + 5 * 60,
             };
             const secret = process.env.JWT_TOKEN_KEY;
             const token = jwt.sign(payload, secret);
-            console.log("t:  ", token);
-            // const link = 'https://turneazy.com/resetpassword/' + token;
-            const link = `https://turneazy.com/resetpassword/${token}`;
-            // const link = `http://localhost:4200/resetpassword/${token}`;
+            // const link = `https://turneazy.com/resetpasswordemp/${token}`;
+            const link = `http://localhost:4200/resetpasswordemp/${token}`;
             await User.findOneAndUpdate(
               { email: email },
               {
                 resetPasswordLink: link,
-                // $push: { resetPasswordLinks: link },
-                isResetPasswordLinkUsed: false,
+                isEmpResetPasswordLinkUsed: false,
               }
             );
             console.log(link);
+           
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
+            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
             console.log(saved_user);

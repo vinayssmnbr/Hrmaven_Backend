@@ -247,3 +247,16 @@ exports.verify_email = async function (email) {
     return err;
   }
 };
+exports.verify_emp_email = async function (email) {
+  try {
+    var data = await Empcreditional.find({ email: email });
+    console.log("data helper: ", data);
+    if (data) {
+      return data;
+    } else {
+      return "";
+    }
+  } catch (err) {
+    return err;
+  }
+};

@@ -9,6 +9,10 @@ const empcredit = new mongoose.Schema
       lowercase: true,
       trim: true,
     },
+    isEmpResetPasswordLinkUsed: {
+      type: Boolean,
+      default: false,
+    },  
     password: {
       type: String,
       minlength: 8,
@@ -20,6 +24,9 @@ const empcredit = new mongoose.Schema
         lowercase: true,
         trim: true,
       },
+      resetPasswordLink:{
+        type: String
+      }
 
 });
 module.exports = mongoose.model("emp_credit", empcredit)

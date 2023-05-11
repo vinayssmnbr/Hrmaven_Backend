@@ -40,4 +40,7 @@ router.get("/checkmobile/:mobile", emplcontroller.getEmployeeMobile);
 router.patch("/empsideupdate/:id", emplcontroller.EmpSideUpdate);
 router.post("/emppwd/:email", emplcontroller.resetpassword);
 router.post("/empoldpwd/:email", emplcontroller.oldpasswordcheck);
+
+
+
 module.exports = router;
