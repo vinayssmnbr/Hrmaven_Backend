@@ -100,7 +100,7 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n password:${password},\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-            newemployeeattendance(saved_user._id);
+            newemployeeattendance(saved_user._id,req.body.dateOfJoining);
             res.send({ status: "Success", message: "Added Successfully" });
           } catch (error) {
             res.send({ status: "failed", message: "unable to Added", error });
@@ -113,32 +113,22 @@ const createEmp = async (req, res) => {
   }
 };
 
-const newemployeeattendance = async (id) => {
-  const date = new Date();
+const newemployeeattendance = async (id,join) => {
+  const date = new Date(join);
   let  today = date.getDate();
-
   let i = 1;
   while (i <= today) {
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
+    var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
 
-    if (i < today) {
+    if (i <= today) {
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
         status: "X",
       });
+      console.log(firstDay);
       await attendance.save();
-
-    } else {
-      const attendance = new Attendance({
-        empId: new ObjectId(id),
-        date: new Date(firstDay),
-        status: "X"
-      });
-      await attendance.save();
-
-
-    }
+    } 
     i++;
   }
 };

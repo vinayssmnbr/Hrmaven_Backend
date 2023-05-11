@@ -58,6 +58,7 @@ const leave_create = async (req, res) => {
     category: req.body.category,
     duration: req.body.duration,
     document: req.body.url,
+    type:req.body.type
   });
   try {
     // res.send("created")
@@ -181,6 +182,7 @@ const leavecontent = async (req, res) => {
             url: "$result.document",
             duration: "$result.duration",
             balance: "$balance",
+            type:"$result.type"
           },
         },
       },
@@ -217,17 +219,26 @@ const leaveupdatestatus = async (req, res) => {
     console.log(typeof (+doc.duration));
     console.log(typeof (parseInt(doc.duration)));
     doc.save();
-    if ((req.headers.status == 'accept') && (doc.category == 'casual')) {
+    if ((req.headers.status == 'accept') && (doc.type == 'Half Day Leave')) {
+      var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'casual': -0.5 } });
+      console.log("update inc");
+    }
+    else if ((req.headers.status == 'accept') && (doc.category == 'Casual Leave') && (doc.type == 'Full Day Leave'))  {
       var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'casual': -duration } });
       console.log("update inc");
     }
+    else   if ((req.headers.status == 'accept') && (doc.type == 'Short Leave')) {
+      var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'casual': -0.25 } });
+      console.log("update inc");
+    }
 
-    else if ((req.headers.status == 'accept') && (doc.category == 'compensatory')) {
+
+    else if ((req.headers.status == 'accept') && (doc.category == 'Compensatory Leave')) {
       var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'compensatory': -duration } });
       console.log("update inc");
     }
 
-    else if ((req.headers.status == 'accept') && (doc.category == 'medical')) {
+    else if ((req.headers.status == 'accept') && (doc.category == 'Medical Leave')) {
       var data = await leavebalance.findOneAndUpdate({ empId: new ObjectId(doc.empId) }, { $inc: { 'medical': -duration } });
       console.log("update inc");
     }
@@ -294,7 +305,7 @@ const leavefilter = async (req, res) => {
       {
         $match: {
           "result.category": {
-            $in: ['casual', 'medical', 'compensatory', 'half 1', 'half 2', 'short'],
+            $in: ['Casual Leave', 'Medical Leave', 'Compensatory Leave',],
           },
           "result.from": {
             $gte: new Date(from),
@@ -324,6 +335,7 @@ const leavefilter = async (req, res) => {
               url: "$result.document",
               duration: "$result.duration",  
               balance: "$balance",
+              type:"$result.type"
             },
           },
         },
@@ -411,6 +423,7 @@ const leavefilter = async (req, res) => {
               url: "$result.document",
               duration: "$result.duration",
               balance: "$balance",
+              type:"$result.type"
             },
           },
         },

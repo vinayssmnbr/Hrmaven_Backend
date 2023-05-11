@@ -34,8 +34,8 @@ const leaveSchema = new mongoose.Schema({
     },
     category :{
         type:String,
-        enum:["casual","medical","short","compensatory","half 1","half 2"],
-        default:"casual"
+        enum:["Casual Leave","Medical Leave","Compensatory Leave"],
+        default:"Casual Leave"
     },
     duration:{
         type:String,
@@ -46,6 +46,10 @@ const leaveSchema = new mongoose.Schema({
         default:""
     },
     document:{
+        type:String,
+        default:""
+    },
+    type:{
         type:String,
         default:""
     }
