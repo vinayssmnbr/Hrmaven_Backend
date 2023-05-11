@@ -32,11 +32,17 @@ const createEmp = async (req, res) => {
     url,
     hrid,
     experienceDetails,
+    domain,
   } = req.body;
   console.log(req.body);
+  const domainname = await User.findById(hrid);
+  const domainz = domainname.personaldata.domain;
+  console.log("cdf", domainz);
+
   const professionalemail = `${name
     .replace(/\s+/g, "")
-    .toLowerCase()}.${uid}@hrmaven.com`;
+    .toLowerCase()}.${uid}@${domainz}`;
+  console.log("abcde", professionalemail);
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -65,6 +71,7 @@ const createEmp = async (req, res) => {
               ...req.body,
               professionalemail,
               company: new ObjectId(req.body.hrid),
+              domain: new ObjectId(req.body.hrid),
             });
             const dd = await newuser.save();
             const balance = new Balance({
@@ -77,7 +84,10 @@ const createEmp = async (req, res) => {
               professional: professionalemail,
               password: hashedPass,
             });
-            console.log('after new Empcreditiona email: professionalemail', user);
+            console.log(
+              "after new Empcreditiona email: professionalemail",
+              user
+            );
             user.save();
             const payload = {
               email: professionalemail,
@@ -96,7 +106,7 @@ const createEmp = async (req, res) => {
               }
             );
             console.log(link);
-           
+
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
