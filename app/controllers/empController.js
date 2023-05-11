@@ -93,8 +93,8 @@ const createEmp = async (req, res) => {
             };
             const secret = process.env.JWT_TOKEN_KEY;
             const token = jwt.sign(payload, secret);
-            // const link = `https://turneazy.com/resetpasswordemp/${token}`;
-            const link = `http://localhost:4200/resetpasswordemp/${token}`;
+            const link = `https://turneazy.com/resetpasswordemp/${token}`;
+            // const link = `http://localhost:4200/resetpasswordemp/${token}`;
             await User.findOneAndUpdate(
               { email: email },
               {
