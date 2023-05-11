@@ -38,11 +38,9 @@ const createEmp = async (req, res) => {
   const domainname = await User.findById(hrid);
   const domainz = domainname.personaldata.domain;
   console.log("cdf", domainz);
-
   const professionalemail = `${name
     .replace(/\s+/g, "")
     .toLowerCase()}.${uid}@${domainz}`;
-  console.log("abcde", professionalemail);
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -71,7 +69,6 @@ const createEmp = async (req, res) => {
               ...req.body,
               professionalemail,
               company: new ObjectId(req.body.hrid),
-              domain: new ObjectId(req.body.hrid),
             });
             const dd = await newuser.save();
             const balance = new Balance({
