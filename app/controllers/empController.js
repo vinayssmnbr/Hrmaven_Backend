@@ -111,6 +111,7 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
+            newemployeeattendance(saved_user._id,req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
             await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
@@ -127,29 +128,22 @@ const createEmp = async (req, res) => {
   }
 };
 
-const newemployeeattendance = async (id) => {
-  const date = new Date();
-  let today = date.getDate();
-  today = today + 1;
-  let i = 2;
+const newemployeeattendance = async (id,join) => {
+  const date = new Date(join);
+  let  today = date.getDate();
+  let i = 1;
   while (i <= today) {
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
-    console.log(firstDay);
-    if (i < today) {
+    var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
+
+    if (i <= today) {
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
         status: "X",
       });
+      console.log(firstDay);
       await attendance.save();
-    } else {
-      const attendance = new Attendance({
-        empId: new ObjectId(id),
-        date: new Date(firstDay),
-        status: "absent",
-      });
-      await attendance.save();
-    }
+    } 
     i++;
   }
 };

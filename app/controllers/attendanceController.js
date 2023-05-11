@@ -146,6 +146,13 @@ async function getEmployeeAttendance(req, res) {
 const dateWiseAttendance = async (req, res) => {
   const mydate = req.headers.mydate;
   const hrid = req.headers.hrid;
+  let today = new Date(mydate);
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
   const attendance = await Employee.aggregate(
     [
       {
@@ -185,9 +192,7 @@ const dateWiseAttendance = async (req, res) => {
       },
       {
         $match: {
-          date: {
-            $gte: new Date(mydate),
-          },
+          date: { $gte: new Date(today), $lt: new Date(tomorrow)}
         },
       },
     ]
@@ -549,34 +554,38 @@ const attendanceMark = async (req, res) => {
 }
 
 const punchin = async (req, res) => {
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
   const id = req.body.id;
-  var date = new Date();
-  var year = date.toLocaleString("default", { year: "numeric" });
-  var month = date.toLocaleString("default", { month: "2-digit" });
-  var day = date.toLocaleString("default", { day: "2-digit" });
-  var formattedDate = year + "-" + month + "-" + day;
-  var dd = formattedDate.toString();
-  const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(dd) } }, { status: "odd", punch_in: new Date(),ip_in:req.body.ip })
-  res.json({ result, time: date });
+  const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id),date: { $gte: new Date(today), $lt: new Date(tomorrow)}}, { status: "odd", punch_in: new Date(),ip_in:req.body.ip })
+  res.json({ result, time: today });
 }
 
 const punchout = async (req, res) => {
   const id = req.body.id;
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  date.toISOString();
-  const result = await Attendance.findOne({ empId: new ObjectId(id), date: { $gte: new Date(date) } });
-
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
+  const result = await Attendance.findOne({ empId: new ObjectId(id),date: { $gte: new Date(today), $lt: new Date(tomorrow)}});
   var timeStart = new Date(result.punch_in).getHours();
   var timeEnd = new Date().getHours();
   var hourDiff = timeEnd - timeStart;
   if (hourDiff < 8 || result.punch_in == null) {
-    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "odd", punch_out: new Date(),ip_out:req.body.ip })
-    res.json({ result, time: date });
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id),date: { $gte: new Date(today), $lt: new Date(tomorrow)}}, { status: "odd", punch_out: new Date(),ip_out:req.body.ip })
+    res.json({ result, time: today });
   }
   else {
-    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id), date: { $gte: new Date(date) } }, { status: "present", punch_out: new Date(),ip_out:req.body.ip })
-    res.json({ result, time: date });
+    const result = await Attendance.findOneAndUpdate({ empId: new ObjectId(id),date: { $gte: new Date(today), $lt: new Date(tomorrow)}}, { status: "present", punch_out: new Date(),ip_out:req.body.ip })
+    res.json({ result, time: today });
   }
 }
 

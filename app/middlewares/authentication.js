@@ -47,8 +47,8 @@ exports.tokenParser = async function (req, res, next) {
   const token = jwt.sign(payload, secret);
   console.log("t:  ", token);
   // const link = 'https://turneazy.com/resetpassword/' + token;
-  // const link = `https://turneazy.com/resetpassword/${token}`;
-  const link = `http://localhost:4200/resetpassword/${token}`;
+  const link = `https://turneazy.com/resetpassword/${token}`;
+  // const link = `http://localhost:4200/resetpassword/${token}`;
   await User.findOneAndUpdate(
     { email: email },
     {
@@ -139,7 +139,8 @@ exports.empTokenParser = async function (req, res, next) {
   const token = jwt.sign(payload, secret);
 
   // Generate the reset password link and save it to the database
-  const link = `http://localhost:4200/resetpasswordemp/${token}`;
+    const link = `https://turneazy.com/resetpasswordemp/${token}`;
+  // const link = `http://localhost:4200/resetpasswordemp/${token}`;
   try {
     const empCredential = await Empcreditional.findOneAndUpdate(
       { email: validatedEmail },
