@@ -8,6 +8,7 @@ const empcredit = new mongoose.Schema
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     isEmpResetPasswordLinkUsed: {
       type: Boolean,
@@ -23,6 +24,7 @@ const empcredit = new mongoose.Schema
         unique: true,
         lowercase: true,
         trim: true,
+        index: true,
       },
       resetPasswordLink:{
         type: String

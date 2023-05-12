@@ -42,6 +42,7 @@ const userSchema = new Schema(
     empId: {
       type: mongoose.Schema.ObjectId,
       ref: "employees",
+      index: true,
     },
     googleID: {
       type: String,
@@ -58,6 +59,7 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
     password: {
       type: String,
