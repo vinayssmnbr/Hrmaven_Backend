@@ -227,7 +227,7 @@ exports.getUserPassword = async function (req, res) {
       return res.status(401).send({ message: "Incorrect password" });
     }
 
-    return res.status(200).send({ message: "Password matches" });
+    return res.status(200).send({ message: "Password matches",password: oldpassword });
   } catch (err) {
     console.error(err);
     return res.status(404).send({ message: "Error fetching user password" });
