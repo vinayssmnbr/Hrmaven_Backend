@@ -76,7 +76,7 @@ const employeeSchema = new Schema({
   },
   job_type: {
     type: String,
-    enum: ["Full-Time Permanent", "Part-Time Employement", "Internship"],
+    enum: ["Full-Time", "Part-Time", "Internship"],
   },
   location: {
     type: String,

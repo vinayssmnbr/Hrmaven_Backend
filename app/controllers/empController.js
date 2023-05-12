@@ -32,11 +32,15 @@ const createEmp = async (req, res) => {
     url,
     hrid,
     experienceDetails,
+    domain,
   } = req.body;
   console.log(req.body);
+  const domainname = await User.findById(hrid);
+  const domainz = domainname.personaldata.domain;
+  console.log("cdf", domainz);
   const professionalemail = `${name
     .replace(/\s+/g, "")
-    .toLowerCase()}.${uid}@hrmaven.com`;
+    .toLowerCase()}.${uid}@${domainz}`;
   const user = await EmployeeModel.findOne({ email: email });
   if (user) {
     res.send({
@@ -77,7 +81,10 @@ const createEmp = async (req, res) => {
               professional: professionalemail,
               password: hashedPass,
             });
-            console.log('after new Empcreditiona email: professionalemail', user);
+            console.log(
+              "after new Empcreditiona email: professionalemail",
+              user
+            );
             user.save();
             const payload = {
               email: professionalemail,
@@ -86,8 +93,8 @@ const createEmp = async (req, res) => {
             };
             const secret = process.env.JWT_TOKEN_KEY;
             const token = jwt.sign(payload, secret);
-            // const link = `https://turneazy.com/resetpasswordemp/${token}`;
-            const link = `http://localhost:4200/resetpasswordemp/${token}`;
+            const link = `https://turneazy.com/resetpasswordemp/${token}`;
+            // const link = `http://localhost:4200/resetpasswordemp/${token}`;
             await User.findOneAndUpdate(
               { email: email },
               {
@@ -96,7 +103,7 @@ const createEmp = async (req, res) => {
               }
             );
             console.log(link);
-           
+
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
@@ -104,6 +111,7 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
+            newemployeeattendance(saved_user._id,req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
             await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
@@ -120,29 +128,22 @@ const createEmp = async (req, res) => {
   }
 };
 
-const newemployeeattendance = async (id) => {
-  const date = new Date();
-  let today = date.getDate();
-  today = today + 1;
-  let i = 2;
+const newemployeeattendance = async (id,join) => {
+  const date = new Date(join);
+  let  today = date.getDate();
+  let i = 1;
   while (i <= today) {
-    var firstDay = new Date(date.getFullYear(), date.getMonth(), i);
-    console.log(firstDay);
-    if (i < today) {
+    var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
+
+    if (i <= today) {
       const attendance = new Attendance({
         empId: new ObjectId(id),
         date: new Date(firstDay),
         status: "X",
       });
+      console.log(firstDay);
       await attendance.save();
-    } else {
-      const attendance = new Attendance({
-        empId: new ObjectId(id),
-        date: new Date(firstDay),
-        status: "absent",
-      });
-      await attendance.save();
-    }
+    } 
     i++;
   }
 };
