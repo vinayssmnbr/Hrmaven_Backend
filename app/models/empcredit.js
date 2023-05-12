@@ -28,7 +28,11 @@ const empcredit = new mongoose.Schema
       },
       resetPasswordLink:{
         type: String
-      }
+      },
+    firstVisit:{
+      type:Boolean,
+      default:true,
+    }
 
 });
 module.exports = mongoose.model("emp_credit", empcredit)

@@ -24,7 +24,7 @@ const employeeSchema = new Schema({
   },
   uid: {
     type: Number,
-    index: true,
+    // index: true,
     // required: true,
   },
 

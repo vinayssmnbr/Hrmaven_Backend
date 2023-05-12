@@ -82,6 +82,15 @@ exports.loginemp = async function (req, res) {
       $or: [{ email: name }, { professional: name }],
     });
 
+    let firstVisit=false;
+    if(user.firstVisit==true)
+    {
+      firstVisit=true;
+      await Empcreditional.findOneAndUpdate({
+        $or: [{ email: name }, { professional: name }],
+      },{firstVisit:false});
+    }
+
     bcrypt.compare(password, user.password, function (err, result) {
       if (err) {
         res.json({
@@ -102,6 +111,7 @@ exports.loginemp = async function (req, res) {
           role: "employee",
           token,
           empId: employee._id,
+          firstVisit:firstVisit
         });
       } else {
         res.json({
