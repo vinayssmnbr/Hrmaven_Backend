@@ -91,6 +91,8 @@ userService.addUser = (req, res) => {
 
 };
 
+
+
 userService.putcompanydata = async(req, res)=>{
   const { email } = req.params;
   const { name, phone, domain, headOffice, description,url } = req.body;
@@ -124,7 +126,7 @@ userService.updateCompany = async (req, res) => {
   const { email } = req.params;
   const update = {};
   
-  const fieldsToUpdate = [ 'phone', 'headOffice', 'description', 'url'];
+  const fieldsToUpdate = [ 'phone', 'headOffice', 'description', 'url', 'personalemail'];
   
   for (const field of fieldsToUpdate) {
     if (req.body[field]) {

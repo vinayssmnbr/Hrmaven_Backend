@@ -21,6 +21,7 @@ exports.signup = async function(req, res) {
     service.addUser(req, res);
 };
 
+
 exports.addpersonals = async function(req, res) {
   service.addPersonals(req, res);
 };

@@ -224,10 +224,10 @@ exports.getUserPassword = async function (req, res) {
     const passwordMatch = await bcrypt.compare(oldpassword, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).send({ message: "Incorrect password" });
+      return res.status(401).send({ message: "Incorrect password", flag:false });
     }
 
-    return res.status(200).send({ message: "Password matches",password: oldpassword });
+    return res.status(200).send({ password: oldpassword, message: "Password matches", flag:true  });
   } catch (err) {
     console.error(err);
     return res.status(404).send({ message: "Error fetching user password" });

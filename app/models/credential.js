@@ -28,6 +28,9 @@ const companySchema = new Schema({
   headOffice: {
     type: String,
   },
+  personalemail:{
+    type: String,
+  },
   description: {
     type: String,
   },
