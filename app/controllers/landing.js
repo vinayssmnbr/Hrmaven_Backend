@@ -91,18 +91,16 @@ var newpassword = req.body.password;
 var confirmPassword = req.body.confirm;
 
 var token = req.header("auth-token");
-console.log("newpassword: ", newpassword);
 
 try {
   let email = await tokenDecrypt(token);
   var database = await help.verify_email(email);
-  console.log("database landingggggg: ", database);
   // console.log("token url:-  ", `https://turneazy.com/resetpassword/${token}`)
   console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
   if (database.length != 0) {
-    // const user = await User.findOne({ resetPasswordLink: ` https://turneazy.com/resetpassword/${token}` });
-    const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
+    const user = await User.findOne({ resetPasswordLink: ` https://turneazy.com/resetpassword/${token}` });
+    // const user = await User.findOne({ resetPasswordLink: `http://localhost:4200/resetpassword/${token}` });
 
     if (!newpassword && !confirmPassword && user && user.isResetPasswordLinkUsed) {
       throw new Error("Reset password link has already been used");
@@ -111,22 +109,14 @@ try {
     if (newpassword && confirmPassword) {
       const saltRounds = 10;
       const salt = await bcrypt.genSalt(saltRounds);
-      console.log("newpassword: ", newpassword);
       const hashedPassword = await bcrypt.hash(newpassword, salt);
       const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-      console.log("newpassword: ", hashedConfirm);
-
-      console.log("database[0].email: ", database[0].email);
-      console.log("hashedConfirm: ", hashedConfirm);
-
       await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword });
       await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm });
       await User.findOneAndUpdate({ email: database[0].email }, { isResetPasswordLinkUsed: true });
     }
 
     if (user && user.isResetPasswordLinkUsed) {
-      console.log("user: ", user);
-      console.log("user1: ", user.isResetPasswordLinkUsed);
       throw new Error("Reset password link has already been used");
     }
 
@@ -163,8 +153,8 @@ exports.resetemp = async function(req, res) {
     console.log("token url emp: ", `http://localhost:4200/resetpasswordemp/${token}`);
         
     if (databaseemp.length != 0) {
-      const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `http://localhost:4200/resetpasswordemp/${token}` });
-    // const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `https://turneazy.com/resetpasswordemp/${token}` });
+    // const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `http://localhost:4200/resetpasswordemp/${token}` });
+    const empcreditional = await Empcreditional.findOne({ resetPasswordLink: `https://turneazy.com/resetpasswordemp/${token}` });
       if (!newpassword && empcreditional && empcreditional.isEmpResetPasswordLinkUsed) {
         throw new Error("Reset password link has already been used");
       }

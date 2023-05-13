@@ -17,7 +17,6 @@ const mongoose = require("mongoose");
 // const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
-  console.log("inside");
   const {
     uid,
     name,
@@ -36,7 +35,6 @@ const createEmp = async (req, res) => {
   console.log(req.body);
   const domainname = await User.findById(hrid);
   const domainz = domainname.personaldata.domain;
-  console.log("cdf", domainz);
   const professionalemail = `${name
     .replace(/\s+/g, "")
     .toLowerCase()}.${uid}@${domainz}`;
@@ -80,10 +78,6 @@ const createEmp = async (req, res) => {
               professional: professionalemail,
               password: hashedPass,
             });
-            console.log(
-              "after new Empcreditiona email: professionalemail",
-              user
-            );
             user.save();
             const payload = {
               email: professionalemail,
@@ -92,8 +86,8 @@ const createEmp = async (req, res) => {
             };
             const secret = process.env.JWT_TOKEN_KEY;
             const token = jwt.sign(payload, secret);
-            // const link = `https://turneazy.com/resetpasswordemp/${token}`;
-            const link = `http://localhost:4200/resetpasswordemp/${token}`;
+            const link = `https://turneazy.com/resetpasswordemp/${token}`;
+            // const link = `http://localhost:4200/resetpasswordemp/${token}`;
             await User.findOneAndUpdate(
               { email: email },
               {
@@ -101,7 +95,6 @@ const createEmp = async (req, res) => {
                 isEmpResetPasswordLinkUsed: false,
               }
             );
-            console.log(link);
 
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
@@ -210,12 +203,10 @@ const generateUid = async (req, res) => {
     let hrid = req.headers.hrid;
     // let doc = await EmployeeModel.find().sort({ uid: -1 });
     let doc = await User.findById(hrid);
-    console.log(doc);
     // if (Array.isArray(doc) && doc[0]) {
     //   uid = +doc[0].uid + 1;
     // }
     var uid = doc.uid;
-    console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
     console.log(error);
@@ -228,13 +219,9 @@ const generateUid = async (req, res) => {
 //first file of ExportUsers
 
 const exportUsers = async (req, res) => {
-  console.log("inside");
   try {
     let users = [];
     let usersData = req.body.data;
-
-    console.log(req.body);
-    console.log("adarsh", usersData);
     usersData.forEach((employees) => {
       const {
         uid,
@@ -307,7 +294,6 @@ const employeedetail = async (req, res) => {
   let userId = req.headers.id;
   try {
     let user = await EmployeeModel.findById(userId);
-    console.log(user, "roit");
     res.json({ response: user });
   } catch (err) {
     res.send({ err });
@@ -428,7 +414,6 @@ const getEmployeeMobile = async (req, res) => {
 
 const importUsers = async (req, res) => {
   try {
-    console.log(req.file.path);
     var userData = [];
     csv()
       .fromFile(req.file.path)
@@ -443,7 +428,6 @@ const importUsers = async (req, res) => {
 
         await EmployeeModel.insertMany(userData);
 
-        console.log(response);
         res.send({ status: 200, success: true, msg: "csv imported" });
       });
   } catch (error) {
@@ -522,14 +506,11 @@ const resetpassword = async (req, res) => {
   var hashedConfirm;
 
   let email = req.params.email;
-  console.log(email);
   if (email.length != 0) {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(newpassword, salt);
     const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-    console.log(email);
-    console.log(hashedConfirm);
     await Empcreditional.findOneAndUpdate(
       { email: email },
       { password: hashedPassword }

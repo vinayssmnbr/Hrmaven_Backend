@@ -99,7 +99,6 @@ async function getreport(req, res, next) {
 }
 
 async function updateleavestatus(req, res) {
-  console.log(req.body.empId);
   try {
     req.body.Array.map(async (value) => {
 
@@ -463,7 +462,6 @@ cron.schedule('0 1 * * *', function() {
   });
 
 
-console.log('schedule');
 cron.schedule('* 20 * * * ',function() {
  console.log('schedule');
  completeofffice();
@@ -473,8 +471,14 @@ cron.schedule('* 20 * * * ',function() {
 });
 
 const completeofffice = async()=>{
-  const data = await Attendance.updateMany({$or:[{status:{$eq:'X'}},{status:{$eq:'odd'}}]},{status:"absent"});
-  console.log(data);
+  let today = new Date();
+  let tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(0, 0, 0, 0);
+  tomorrow.setHours(0, 0, 0, 0);
+  today = today.toString();
+  tomorrow = tomorrow.toString();
+  const data = await Attendance.updateMany({date: { $gte: new Date(today), $lt: new Date(tomorrow) },$or:[{status:{$eq:'X'}},{status:{$eq:'odd'}}]},{status:"absent"});
   console.log('office complete');
 
 }
@@ -512,7 +516,6 @@ const intializeAttendanceDaily = async (req, res) => {
 
     const check = await Attendance.find({ date: { $gte: new Date(today), $lt: new Date(tomorrow) }, empId: new ObjectId(it.empId) });
     if (check.length == 0) {
-      console.log("not found");
       await Attendance.create(it);
     }
   })

@@ -35,9 +35,11 @@ const employeeSchema = new Schema({
   company: {
     type: mongoose.Schema.ObjectId,
     ref: "hrUser",
+    index: true,
   },
   uid: {
     type: Number,
+    // index: true,
     // required: true,
   },
 
@@ -57,12 +59,14 @@ const employeeSchema = new Schema({
     unique: true,
     lowercase: true,
     trim: true,
+    index: true,
   },
   professionalemail: {
     type: String,
     unique: true,
     lowercase: true,
     trim: true,
+    index: true,
   },
   password: {
     type: String,

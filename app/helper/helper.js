@@ -82,6 +82,15 @@ exports.loginemp = async function (req, res) {
       $or: [{ email: name }, { professional: name }],
     });
 
+    let firstVisit=false;
+    if(user.firstVisit==true)
+    {
+      firstVisit=true;
+      await Empcreditional.findOneAndUpdate({
+        $or: [{ email: name }, { professional: name }],
+      },{firstVisit:false});
+    }
+
     bcrypt.compare(password, user.password, function (err, result) {
       if (err) {
         res.json({
@@ -102,6 +111,7 @@ exports.loginemp = async function (req, res) {
           role: "employee",
           token,
           empId: employee._id,
+          firstVisit:firstVisit
         });
       } else {
         res.json({
@@ -144,7 +154,6 @@ exports.getUserProfile = async function (req, res) {
     const user = await EmployeeModel.find({
       _id: new ObjectId(req.headers.id),
     });
-    console.log();
     res.send(user);
     return;
   }
@@ -250,7 +259,6 @@ exports.verify_email = async function (email) {
 exports.verify_emp_email = async function (email) {
   try {
     var data = await Empcreditional.find({ email: email });
-    console.log("data helper: ", data);
     if (data) {
       return data;
     } else {

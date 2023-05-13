@@ -23,7 +23,6 @@ userService.addUser = (req, res) => {
   
           user.save()
               .then(savedUser => {
-                console.log(savedUser);
                   const token = jwt.sign({ userId: savedUser._id }, process.env.JWT_TOKEN_KEY);
   
   
@@ -33,7 +32,8 @@ userService.addUser = (req, res) => {
                       token: token,
                       _id:savedUser._id,
                       role:"hr",
-                      personalDataSubmitted: user.personalDataSubmitted // Add this line
+                      personalDataSubmitted: user.personalDataSubmitted,
+                      first:true // Add this line
                   });
               })
               .catch(error => {
