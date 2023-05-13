@@ -4,7 +4,8 @@ const leavebalance = new mongoose.Schema({
 
     empId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'employees'
+        ref: 'employees',
+        index: true,
     },
     casual: {
         type: Number,

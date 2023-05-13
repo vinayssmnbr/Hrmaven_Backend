@@ -92,12 +92,10 @@ var newpassword = req.body.password;
 var confirmPassword = req.body.confirm;
 
 var token = req.header("auth-token");
-console.log("newpassword: ", newpassword);
 
 try {
   let email = await tokenDecrypt(token);
   var database = await help.verify_email(email);
-  console.log("database landingggggg: ", database);
   // console.log("token url:-  ", `https://turneazy.com/resetpassword/${token}`)
   console.log("token url: ", `http://localhost:4200/resetpassword/${token}`);
 
@@ -112,22 +110,14 @@ try {
     if (newpassword && confirmPassword) {
       const saltRounds = 10;
       const salt = await bcrypt.genSalt(saltRounds);
-      console.log("newpassword: ", newpassword);
       const hashedPassword = await bcrypt.hash(newpassword, salt);
       const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-      console.log("newpassword: ", hashedConfirm);
-
-      console.log("database[0].email: ", database[0].email);
-      console.log("hashedConfirm: ", hashedConfirm);
-
       await User.findOneAndUpdate({ email: database[0].email }, { password: hashedPassword });
       await User.findOneAndUpdate({ email: database[0].email }, { confirm: hashedConfirm });
       await User.findOneAndUpdate({ email: database[0].email }, { isResetPasswordLinkUsed: true });
     }
 
     if (user && user.isResetPasswordLinkUsed) {
-      console.log("user: ", user);
-      console.log("user1: ", user.isResetPasswordLinkUsed);
       throw new Error("Reset password link has already been used");
     }
 

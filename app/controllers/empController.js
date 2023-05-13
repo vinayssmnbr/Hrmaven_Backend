@@ -17,7 +17,6 @@ const mongoose = require("mongoose");
 // const {empcredit}=require("../models/empcredit")
 
 const createEmp = async (req, res) => {
-  console.log("inside");
   const {
     uid,
     name,
@@ -31,13 +30,11 @@ const createEmp = async (req, res) => {
     location,
     url,
     hrid,
-    experienceDetails,
     domain,
   } = req.body;
   console.log(req.body);
   const domainname = await User.findById(hrid);
   const domainz = domainname.personaldata.domain;
-  console.log("cdf", domainz);
   const professionalemail = `${name
     .replace(/\s+/g, "")
     .toLowerCase()}.${uid}@${domainz}`;
@@ -81,10 +78,6 @@ const createEmp = async (req, res) => {
               professional: professionalemail,
               password: hashedPass,
             });
-            console.log(
-              "after new Empcreditiona email: professionalemail",
-              user
-            );
             user.save();
             const payload = {
               email: professionalemail,
@@ -102,7 +95,6 @@ const createEmp = async (req, res) => {
                 isEmpResetPasswordLinkUsed: false,
               }
             );
-            console.log(link);
 
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
@@ -111,7 +103,7 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-            newemployeeattendance(saved_user._id,req.body.dateOfJoining);
+            newemployeeattendance(saved_user._id, req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
             await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
@@ -128,12 +120,14 @@ const createEmp = async (req, res) => {
   }
 };
 
-const newemployeeattendance = async (id,join) => {
+const newemployeeattendance = async (id, join) => {
   const date = new Date(join);
-  let  today = date.getDate();
+  let today = date.getDate();
   let i = 1;
   while (i <= today) {
-    var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
+    var firstDay = new Date(
+      new Date(date.getFullYear(), date.getMonth(), i).setHours(19)
+    );
 
     if (i <= today) {
       const attendance = new Attendance({
@@ -143,7 +137,7 @@ const newemployeeattendance = async (id,join) => {
       });
       console.log(firstDay);
       await attendance.save();
-    } 
+    }
     i++;
   }
 };
@@ -209,12 +203,10 @@ const generateUid = async (req, res) => {
     let hrid = req.headers.hrid;
     // let doc = await EmployeeModel.find().sort({ uid: -1 });
     let doc = await User.findById(hrid);
-    console.log(doc);
     // if (Array.isArray(doc) && doc[0]) {
     //   uid = +doc[0].uid + 1;
     // }
     var uid = doc.uid;
-    console.log(uid, "uid");
     res.send({ uid });
   } catch (error) {
     console.log(error);
@@ -227,13 +219,9 @@ const generateUid = async (req, res) => {
 //first file of ExportUsers
 
 const exportUsers = async (req, res) => {
-  console.log("inside");
   try {
     let users = [];
     let usersData = req.body.data;
-
-    console.log(req.body);
-    console.log("adarsh", usersData);
     usersData.forEach((employees) => {
       const {
         uid,
@@ -306,7 +294,6 @@ const employeedetail = async (req, res) => {
   let userId = req.headers.id;
   try {
     let user = await EmployeeModel.findById(userId);
-    console.log(user, "roit");
     res.json({ response: user });
   } catch (err) {
     res.send({ err });
@@ -427,7 +414,6 @@ const getEmployeeMobile = async (req, res) => {
 
 const importUsers = async (req, res) => {
   try {
-    console.log(req.file.path);
     var userData = [];
     csv()
       .fromFile(req.file.path)
@@ -442,7 +428,6 @@ const importUsers = async (req, res) => {
 
         await EmployeeModel.insertMany(userData);
 
-        console.log(response);
         res.send({ status: 200, success: true, msg: "csv imported" });
       });
   } catch (error) {
@@ -477,55 +462,6 @@ const experienceArray = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-//hs
-const dateWiseAttendance = async (req, res) => {
-  const mydate = req.headers.mydate;
-  const hrid = req.headers.hrid;
-  const attendance = await Employee.aggregate([
-    {
-      $match:
-        /**
-         * query: The query in MQL.
-         */
-        {
-          company: new ObjectId(hrid),
-        },
-    },
-    {
-      $lookup: {
-        from: "attendances",
-        localField: "_id",
-        foreignField: "empId",
-        as: "attendances",
-      },
-    },
-    {
-      $unwind: "$attendances",
-    },
-    {
-      $project: {
-        uid: 1,
-        name: 1,
-        date: "$attendances.date",
-        status: "$attendances.status",
-        in: "$attendances.punch_in",
-        out: "$attendances.punch_out",
-        designation: 1,
-      },
-    },
-    {
-      $match: {
-        date: {
-          $gte: new Date(mydate),
-        },
-      },
-    },
-  ]);
-  // console.log("date"+attendance);
-  res.send(attendance);
-};
-
 const EmpSideUpdate = async (req, res) => {
   const id = req.params.id;
   const {
@@ -570,14 +506,11 @@ const resetpassword = async (req, res) => {
   var hashedConfirm;
 
   let email = req.params.email;
-  console.log(email);
   if (email.length != 0) {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(newpassword, salt);
     const hashedConfirm = await bcrypt.hash(confirmPassword, salt);
-    console.log(email);
-    console.log(hashedConfirm);
     await Empcreditional.findOneAndUpdate(
       { email: email },
       { password: hashedPassword }
@@ -608,7 +541,6 @@ module.exports = {
   employeedetail,
   getEmployeeMobile,
   experienceArray,
-  dateWiseAttendance,
   EmpSideUpdate,
   resetpassword,
   oldpasswordcheck,

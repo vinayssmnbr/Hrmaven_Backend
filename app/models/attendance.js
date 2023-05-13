@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const attendanceSchema = new mongoose.Schema({
     empId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'employee'
+        ref: 'employee',
+        index: true,
     },
    
     punch_in: {
@@ -17,11 +18,13 @@ const attendanceSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["present", "absent", "leave",'odd','X']
+        enum: ["present", "absent", "leave",'odd','X'],
+        index: true,
     },
     date: {
         type: Date,
-        required: true
+        required: true,
+        index: true,
     },
     ip_in:{
         type:String,

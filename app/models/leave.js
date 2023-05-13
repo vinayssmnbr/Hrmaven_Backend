@@ -4,11 +4,13 @@ const leaveSchema = new mongoose.Schema({
 
     company:{
         type:mongoose.Schema.ObjectId,
-        ref:'hrUser'
+        ref:'hrUser',
+        index: true,
     },
     empId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'employees'
+        ref: 'employees',
+        index: true,
     },
     appliedOn:
     {
@@ -17,11 +19,13 @@ const leaveSchema = new mongoose.Schema({
     },
     from: {
         type: Date,
-        default:""
+        default:"",
+        index: true,
     },
     to: {
         type: Date,
-        default:""
+        default:"",
+        index: true,
     },
     reason: {
         type: String,
@@ -31,11 +35,13 @@ const leaveSchema = new mongoose.Schema({
         type: String,
         enum: ["accept", "reject", "pending"],
         default: "pending",
+        index: true,
     },
     category :{
         type:String,
         enum:["Casual Leave","Medical Leave","Compensatory Leave"],
-        default:"Casual Leave"
+        default:"Casual Leave",
+        index: true,
     },
     duration:{
         type:String,
