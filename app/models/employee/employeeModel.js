@@ -16,6 +16,21 @@ const ExperienceSchema = new Schema({
   },
 });
 
+const EducationSchema = new Schema({
+  college: {
+    type: String,
+  },
+  stream: {
+    type: String,
+  },
+  passing: {
+    type: Number,
+  },
+  cgpa: {
+    type: Number,
+  },
+});
+
 const employeeSchema = new Schema({
   company: {
     type: mongoose.Schema.ObjectId,
@@ -140,9 +155,6 @@ const employeeSchema = new Schema({
   },
   otherbankname: {
     type: String,
-    required: function () {
-      return this.bankname === "Others";
-    },
   },
   accountno: {
     type: Number,
@@ -159,43 +171,6 @@ const employeeSchema = new Schema({
   passport: {
     type: String,
   },
-  matric: {
-    type: String,
-  },
-  matricPercent: {
-    type: Number,
-  },
-  matricpassing: {
-    type: Number,
-  },
-  inter: {
-    type: String,
-  },
-  interPercent: {
-    type: Number,
-  },
-  interpassing: {
-    type: Number,
-  },
-  graduation: {
-    type: String,
-  },
-  graduationStream: {
-    Type: String,
-  },
-  graduationCgpa: {
-    type: Number,
-  },
-  pg: {
-    type: String,
-  },
-  pgStream: {
-    type: String,
-  },
-  pgCgpa: {
-    type: String,
-  },
-
   jobdesignation: {
     type: String,
   },
@@ -212,6 +187,7 @@ const employeeSchema = new Schema({
   },
 
   experienceItems: [ExperienceSchema],
+  educationItems: [EducationSchema],
 });
 
 employeeSchema.index({ name: "text" });
