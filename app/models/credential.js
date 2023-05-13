@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const companySchema = new Schema({
   name: {
     type: String,
+    default:""
   },
   phone: {
     type: Number,
@@ -24,15 +25,19 @@ const companySchema = new Schema({
   // },
   domain: {
     type: String,
+    default:"hrmaven.com"
   },
   headOffice: {
     type: String,
+    default:""
   },
   description: {
     type: String,
+    default:""
   },
   url: {
     type: String,
+    default:""
     // default: "https://cdn.filestackcontent.com/5lob9pNSSEG08bQX0eNi",
   },
 });
