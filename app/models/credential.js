@@ -91,7 +91,7 @@ const userSchema = new Schema(
     uid: {
       type: Number,
       default: 22000,
-    },
+    }
   },
 
   { timestamps: true }

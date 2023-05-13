@@ -154,7 +154,6 @@ exports.getUserProfile = async function (req, res) {
     const user = await EmployeeModel.find({
       _id: new ObjectId(req.headers.id),
     });
-    console.log();
     res.send(user);
     return;
   }
@@ -260,7 +259,6 @@ exports.verify_email = async function (email) {
 exports.verify_emp_email = async function (email) {
   try {
     var data = await Empcreditional.find({ email: email });
-    console.log("data helper: ", data);
     if (data) {
       return data;
     } else {
