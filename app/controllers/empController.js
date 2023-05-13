@@ -31,7 +31,6 @@ const createEmp = async (req, res) => {
     location,
     url,
     hrid,
-    experienceDetails,
     domain,
   } = req.body;
   console.log(req.body);
@@ -111,7 +110,7 @@ const createEmp = async (req, res) => {
             const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
-            newemployeeattendance(saved_user._id,req.body.dateOfJoining);
+            newemployeeattendance(saved_user._id, req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
             await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
@@ -128,12 +127,14 @@ const createEmp = async (req, res) => {
   }
 };
 
-const newemployeeattendance = async (id,join) => {
+const newemployeeattendance = async (id, join) => {
   const date = new Date(join);
-  let  today = date.getDate();
+  let today = date.getDate();
   let i = 1;
   while (i <= today) {
-    var firstDay = new Date(new Date(date.getFullYear(), date.getMonth(), i).setHours(19))
+    var firstDay = new Date(
+      new Date(date.getFullYear(), date.getMonth(), i).setHours(19)
+    );
 
     if (i <= today) {
       const attendance = new Attendance({
@@ -143,7 +144,7 @@ const newemployeeattendance = async (id,join) => {
       });
       console.log(firstDay);
       await attendance.save();
-    } 
+    }
     i++;
   }
 };
@@ -477,55 +478,6 @@ const experienceArray = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-//hs
-const dateWiseAttendance = async (req, res) => {
-  const mydate = req.headers.mydate;
-  const hrid = req.headers.hrid;
-  const attendance = await Employee.aggregate([
-    {
-      $match:
-        /**
-         * query: The query in MQL.
-         */
-        {
-          company: new ObjectId(hrid),
-        },
-    },
-    {
-      $lookup: {
-        from: "attendances",
-        localField: "_id",
-        foreignField: "empId",
-        as: "attendances",
-      },
-    },
-    {
-      $unwind: "$attendances",
-    },
-    {
-      $project: {
-        uid: 1,
-        name: 1,
-        date: "$attendances.date",
-        status: "$attendances.status",
-        in: "$attendances.punch_in",
-        out: "$attendances.punch_out",
-        designation: 1,
-      },
-    },
-    {
-      $match: {
-        date: {
-          $gte: new Date(mydate),
-        },
-      },
-    },
-  ]);
-  // console.log("date"+attendance);
-  res.send(attendance);
-};
-
 const EmpSideUpdate = async (req, res) => {
   const id = req.params.id;
   const {
@@ -608,7 +560,6 @@ module.exports = {
   employeedetail,
   getEmployeeMobile,
   experienceArray,
-  dateWiseAttendance,
   EmpSideUpdate,
   resetpassword,
   oldpasswordcheck,
