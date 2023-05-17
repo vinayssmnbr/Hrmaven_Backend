@@ -12,7 +12,6 @@ exports.login = async function (req, res) {
   var name = req.body.email.toLowerCase();
   var password = req.body.password;
 
-
   try {
     const user = await User.findOne({
       $or: [{ email: name }, { username: name }],
@@ -46,7 +45,7 @@ exports.login = async function (req, res) {
             role: "hr",
             token,
             empId: user.empId,
-            personalDataSubmitted: user.personalDataSubmitted // Add this line
+            personalDataSubmitted: user.personalDataSubmitted, // Add this line
           });
         } else {
           res.json({
@@ -82,13 +81,15 @@ exports.loginemp = async function (req, res) {
       $or: [{ email: name }, { professional: name }],
     });
 
-    let firstVisit=false;
-    if(user.firstVisit==true)
-    {
-      firstVisit=true;
-      await Empcreditional.findOneAndUpdate({
-        $or: [{ email: name }, { professional: name }],
-      },{firstVisit:false});
+    let firstVisit = false;
+    if (user.firstVisit == true) {
+      firstVisit = true;
+      await Empcreditional.findOneAndUpdate(
+        {
+          $or: [{ email: name }, { professional: name }],
+        },
+        { firstVisit: false }
+      );
     }
 
     bcrypt.compare(password, user.password, function (err, result) {
@@ -111,7 +112,7 @@ exports.loginemp = async function (req, res) {
           role: "employee",
           token,
           empId: employee._id,
-          firstVisit:firstVisit
+          firstVisit: firstVisit,
         });
       } else {
         res.json({
@@ -184,7 +185,7 @@ exports.getUserProfile = async function (req, res) {
 };
 
 exports.getUserPersonals = async function (req, res) {
-  const  email  = req.params.email;
+  const email = req.params.email;
 
   try {
     const user = await User.findOne({ email: email }).select("personaldata");
@@ -233,10 +234,14 @@ exports.getUserPassword = async function (req, res) {
     const passwordMatch = await bcrypt.compare(oldpassword, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).send({ message: "Incorrect password", flag:false });
+      return res
+        .status(401)
+        .send({ message: "Incorrect password", flag: false });
     }
 
-    return res.status(200).send({ password: oldpassword, message: "Password matches", flag:true  });
+    return res
+      .status(200)
+      .send({ password: oldpassword, message: "Password matches", flag: true });
   } catch (err) {
     console.error(err);
     return res.status(404).send({ message: "Error fetching user password" });
