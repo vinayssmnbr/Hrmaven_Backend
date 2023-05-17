@@ -478,7 +478,7 @@ const completeofffice = async()=>{
   tomorrow.setHours(0, 0, 0, 0);
   today = today.toString();
   tomorrow = tomorrow.toString();
-  const data = await Attendance.updateMany({date: { $gte: new Date(today), $lt: new Date(tomorrow) },$or:[{status:{$eq:'X'}},{status:{$eq:'odd'}}]},{status:"absent"});
+  const data = await Attendance.updateMany({date: { $gte: new Date(today), $lt: new Date(tomorrow) },$or:[{status:{$eq:'X'}},{status:{$eq:'X'}}]},{status:"absent"});
   console.log('office complete');
 
 }
