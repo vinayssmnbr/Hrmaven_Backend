@@ -47,7 +47,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-      name &&
+        name &&
         email &&
         designation &&
         mobile &&
