@@ -31,6 +31,9 @@ const companySchema = new Schema({
     type: String,
     default:""
   },
+  personalemail:{
+    type: String,
+  },
   description: {
     type: String,
     default:""

@@ -47,7 +47,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-      name &&
+        name &&
         email &&
         designation &&
         mobile &&
@@ -100,7 +100,72 @@ const createEmp = async (req, res) => {
               ? req.body.email.join(",")
               : req.body.email;
             const subject = "Your data submitted";
-            const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
+            // const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
+            const text = `<head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="x-apple-disable-message-reformatting">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <title>Newsletter</title>
+           
+          
+          </head>
+          
+          <body style="text-align: center; margin: 0; padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0; -webkit-text-size-adjust: 100%; color: #00000" align="center">
+            <div style="text-align: center;  width:100% height:100%  background-color: #fff;">
+                <table align="center" style=" text-align: justify; vertical-align: top; width: 100%; height:100%; background-color: #ffffff;" width="600">
+                  <tbody>
+                    <tr>
+                      <tr>
+                        <td style="display:flex; align-items:center; justify-content:center; margin-top:50px; gap:5px;">
+                          <a href="https://turneazy.com/login" style="color: #2f2c9f; font-weight:700; font-size:24px; text-decoration:none" ><img src="https://turneazy.com/assets/images/logo.png" alt="" style="height:30px; width:30px;">
+                            HRmaven
+                          </a>
+                        </td>
+                        </tr>
+                      <td style="width: 596px; vertical-align: top; padding: 30px 60px; >
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton', font-weight: 400; text-decoration: none; color: #444444;">Dear ${req.body.name},</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton',  font-weight: 400; text-decoration: none; color: #444444;">On behalf of the entire team at HRMaven, I would like to extend you a warm welcome to our organization! We are thrilled to have you join our team and are looking forward to your contributions.</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton'; font-weight: 400; text-decoration: none; color: #444444;">As you settle into your new position, please know that we are here to help you at every step of the way. Whether you have questions about your benefits, need assistance with a project, or simply want to connect with your colleagues, our HR team is always here to help.</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton',  font-weight: 400; text-decoration: none; color: #444444;">
+                          We believe that open communication and transparency are the keys to a successful workplace, and we encourage you to share your ideas, feedback, and suggestions with us. Your input is essential to help us continue to grow and improve as an organization.</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton', font-weight: 400; text-decoration: none; color: #2f2c9f;">Kindly use the below given credentials for your login:</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton',  font-weight: 400; text-decoration: none; margin-top:-10px; color: #2f2c9f;;">Professional Email: ${professionalemail}</p>
+          
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton', font-weight: 400; margin-top:40px; text-decoration: none; color: #444444;">The credentials given to you are just default credentials. Kindly reset your password immediately by using the link given below:</p>
+          
+                        <p style="font-size: 14px; cursor:pointer; line-height: 100%; font-family: 'Neuton' font-weight: 400; text-decoration: none; margin-top: -10px; color: #444444;"><a style="color:#8BAFFF;" href="${link}">Reset Link</a></p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton' font-weight: 400; text-decoration: none; margin-top: 50px; color: #444444;">Best regards,</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton'; font-weight: 400; margin-top: -10px;  text-decoration: none; color: #444444;">${domainname.personaldata.name} HR Manager at HRMaven</p>
+          
+                        <p style="font-size: 14px; line-height: 100%; font-family: 'Neuton' font-weight: 400; margin-top: -10px; text-decoration: none; color: #444444;">Contact no. +91 9875463210</p>
+          
+                        <!--               <p style="font-size: 15px; line-height: 24px; font-family: 'Helvetica', Arial, sans-serif; font-weight: 400; text-decoration: none; color: #919293;">You can download this template <a target="_blank" style="text-decoration: underline; color: #000000;" href="https://fullsphere.co.uk/misc/free-template/html-email-template.zip" download="HTML Email Template"><u>here</u></a></p> -->
+          
+                      </td>
+                    <tr >
+                      <td style="padding-bottom: 50px">
+                        <a href="https://turneazy.com/login" target="_blank" style=" width: 100%; display: flex; justify-content:center; align-items:center; text-decoration:none;">
+          
+                          <span style="background-color:#2f2c9f; padding: 10px 16px; border-radius: 6px; color: #fff; font-size: 12px; font-weight: 700;">LOGIN NOW</span>
+          
+                        </a>
+                      </td>
+                    </tr>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+          </body>`;
             await sendMail.mail(to, subject, text);
             const saved_user = await EmployeeModel.findOne({ email: email });
             newemployeeattendance(saved_user._id, req.body.dateOfJoining);
