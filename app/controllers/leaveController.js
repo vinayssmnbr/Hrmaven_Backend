@@ -210,6 +210,7 @@ const leavecontent = async (req, res) => {
       },
     },
   ]);
+  console.log('data',data);
   res.send(data);
 }
 

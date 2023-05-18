@@ -16,7 +16,7 @@ const leaveRoute = require("./app/routes/leaveRoute");
 const jobRoutes = require("./app/routes/jobRoutes");
 const emailAll = require("./app/routes/findemail");
 const jobvacancies = require("./app/routes/jobvacanciesRoutes");
-
+const candidate=require("./app/routes/candidateRoutes")
 // Database Connection
 Database.connection;
 
@@ -52,6 +52,7 @@ app.use("/getemployee", employeespecificdetails);
 app.use("/getemails", emailAll);
 app.use("/getusername", emailAll);
 app.use("/job/", jobvacancies);
+app.use("/candid", candidate);
 
 // app.use('/api', jobRoutes);
 
