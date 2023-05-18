@@ -11,8 +11,9 @@ const vacancies = async (req, res) => {
     location,
     experience,
     ctc,
-    job_type,
     skill,
+    job_type,
+    list,
     job_description,
     hrid,
   } = req.body;
@@ -43,26 +44,15 @@ const vacancies = async (req, res) => {
   }
 };
 
-const recruitermodal = async (req, res) => {
-  const { jobId, name, url, email } = req.body;
+const vacancieDetails = async (req, res) => {
   try {
-    const Recruiter = new recruiter({
-      ...req.body,
-      jobId: new ObjectId(req.body.jobId),
-      empId: new ObjectId(req.body.empId),
-    });
-    const rec = await Recruiter.save();
-    const employee = await recruiter
-      .find({ _id: req.body.empId })
-      .populate("empId");
-    console.log(employee);
-
-    res.send({ status: "Success", message: "Added Successfully" });
+    const vacancieData = await jobvacancies.find();
+    res.json(vacancieData);
   } catch (error) {
     console.log(error);
     res.send({
-      message: "error",
+      msg: "Data can not find",
     });
   }
 };
-module.exports = { vacancies, recruitermodal };
+module.exports = { vacancies, vacancieDetails };

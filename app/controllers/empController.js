@@ -47,7 +47,7 @@ const createEmp = async (req, res) => {
   } else {
     if (
       (uid,
-        name &&
+      name &&
         email &&
         designation &&
         mobile &&
@@ -99,7 +99,7 @@ const createEmp = async (req, res) => {
             const to = Array.isArray(req.body.email)
               ? req.body.email.join(",")
               : req.body.email;
-            const subject = "Your data submitted";
+            const subject = `Welcome to ${domainname.username}`;
             // const text = `this is a professional email for hrmaven: username:${professionalemail},\r\n,\r\n resetlink:${link}`;
             const text = `<head>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -171,8 +171,11 @@ const createEmp = async (req, res) => {
             newemployeeattendance(saved_user._id, req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
-            await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
-            res.send({ status: "Success", message: "Added Successfully" });
+            User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
+            await res.send({
+              status: "Success",
+              message: "Added Successfully",
+            });
           } catch (error) {
             console.log(error, "error");
             res.send({ status: "failed", message: "unable to Added", error });
