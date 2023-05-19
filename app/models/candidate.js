@@ -8,7 +8,7 @@ const candidateSchema = new Schema({
         ref: "jobvacancies",
       },
 
-    candidate_name: {
+      candidateName: {
         type: String
     },
 
@@ -17,25 +17,25 @@ const candidateSchema = new Schema({
         // required: true,
     },
 
-    contact_number: {
+    contactnumber: {
         type: Number,
-        required: true,
+        // required: true,
 
     },
     email: {
         type: String,
-        unique: true,
+        // unique: true,
         lowercase: true,
         trim: true,
-        index: true
+        // index: true
     },
 
-    applied_date: {
+    applieddate: {
         type: Date,
         // required: true,
     },
 
-    resume: {
+    url: {
         type: String,
 
     },
