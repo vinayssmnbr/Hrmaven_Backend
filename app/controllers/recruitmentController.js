@@ -45,9 +45,13 @@ const vacancies = async (req, res) => {
 };
 
 const vacancieDetails = async (req, res) => {
+  let userId = req.headers.hrid;
   try {
-    const vacancieData = await jobvacancies.find();
-    res.json(vacancieData);
+    const vacancieData = await jobvacancies.find({
+      hrId: new ObjectId(userId),
+    });
+
+    res.json({ response: vacancieData });
   } catch (error) {
     console.log(error);
     res.send({
