@@ -59,4 +59,33 @@ const vacancieDetails = async (req, res) => {
     });
   }
 };
-module.exports = { vacancies, vacancieDetails };
+
+const employeeDetail = async(req,res)=>{
+  let userId = req.headers.hrid;
+  const data = await EmployeeModel.aggregate([
+    {
+      $match:
+        
+        {
+          company: new ObjectId(
+            userId
+          ),
+        },
+    },
+    {
+      $project:
+       
+        {
+          name: 1,
+          url: 1,
+          professionalemail: 1,
+          designation: 1,
+          _id: 1,
+        },
+    }
+  ])
+
+  res.json({data});
+}
+
+module.exports = { vacancies, vacancieDetails,employeeDetail };
