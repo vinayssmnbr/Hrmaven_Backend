@@ -12,6 +12,12 @@ const recruiterSchema = new Schema({
   name: {
     type: String,
   },
+  professionalemail:{
+    type:String,
+  },
+  designation:{
+    type:String
+  }
 });
 
 const jobVacanciesSchema = new Schema({
