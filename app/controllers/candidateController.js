@@ -1,24 +1,23 @@
 const candidateModal = require("../models/candidate");
-const candidate = require("../models/candidate");
 var ObjectId = require("mongodb").ObjectId;
 // const Data=require()
 
 const candidates = async (req, res) => {
     const {
-      candidate_name,
-      candidate_Id,
-      contact_number,
-      email,
-      applied_date,
-      resume,
-      status,
-      jobId,
-     
+    jobId,
+    candidateName,
+    candidate_Id,
+    contactnumber,
+    email,
+    applieddate,
+    url,
+    status,
+
     } = req.body;
   
     try {
 
-      const data = new candidate({
+      const data = new candidateModal({
        ...req.body,
        jobId:new ObjectId(req.body.jobId)
       
@@ -33,6 +32,7 @@ const candidates = async (req, res) => {
     }
   };
 
+  //for update
 
   const updated = async (req, res) => {
     try {
@@ -114,6 +114,25 @@ const candidates = async (req, res) => {
       res.status(500).json({ message: "Error fetching user mobile" });
     }
   };
+
+//for getall data
+
+  const getCandidate = async (req, res) => {
+    let userId = req.headers.jobid;
+    // let id=req.headers.id
+    try {
+      const Candidate = await candidateModal.find({
+        jobId: new ObjectId(userId),
+      });
+      res.json(Candidate);
+    } catch (error) {
+      console.log(error);
+      res.send({
+        msg: "Data can not find",
+      });
+    }
+  };
+  
   
 
-module.exports = { candidates,updated ,getCandidateMobile,getCandidateEmail};
+module.exports = { candidates,updated ,getCandidateMobile,getCandidateEmail,getCandidate};
