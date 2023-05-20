@@ -14,7 +14,7 @@ const google = async (req, res) => {
           process.env.JWT_TOKEN_KEY
         );
 
-        return { token };
+        return { token,user};
       } else {
         return "email doen not exist";
       }
