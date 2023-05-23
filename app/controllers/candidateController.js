@@ -29,7 +29,7 @@ const candidates = async (req, res) => {
 
     const dataSave = await data.save();
     console.log(dataSave);
-    jobvacancies.findByIdAndUpdate(jobid,{ $inc: { uid: 1 } });
+    jobvacancies.findByIdAndUpdate(jobId,{ $inc: { uid: 1 } });
     res.send({ status: "Success", message: "Added Successfully" });
   } catch (error) {
     console.log(error);
@@ -111,31 +111,32 @@ const getCandidateEmail = async (req, res) => {
 //for get candidate mobile
 
 const getCandidateMobile = async (req, res) => {
-  const { mobile } = req.params;
-  if (!mobile || mobile.trim() === "") {
-    res.status(400).json({ message: "mobile is required" });
+  const { contactnumber } = req.params;
+  if (!contactnumber || contactnumber.trim() === "") {
+    res.status(400).json({ message: "contactnumber is required" });
     return;
   }
   try {
-    const candidate = await candidate_mobilecheck.getCredentialsByEmail(mobile);
-    if (candidate) {
+    const employee = await candidate_mobilecheck.getCredentialsBymobile(contactnumber);
+    if (employee) {
       res.send({
-        message: `user-found`,
-        mobile,
+        message: 'user-found',
+        contactnumber,
         flag: true,
       });
     } else {
       res.send({
-        message: `mobile not found`,
-        mobile,
+        message: 'contactnumber not found',
+        contactnumber,
         flag: false,
       });
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Error fetching user mobile" });
+    res.status(500).json({ message: "Error fetching user contactnumber" });
   }
 };
+
 
 //for getall data
 
