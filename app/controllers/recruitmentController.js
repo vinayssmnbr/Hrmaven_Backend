@@ -1,6 +1,5 @@
 const jobvacancies = require("../models/jobVacancies");
 var ObjectId = require("mongodb").ObjectId;
-const recruiter = require("../models/recruiterModal");
 const EmployeeModel = require("../models/employee/employeeModel");
 
 const vacancies = async (req, res) => {
@@ -24,17 +23,6 @@ const vacancies = async (req, res) => {
     });
     const dataSave = await data.save();
     console.log(dataSave);
-    // const employee = await EmployeeModel.findOne({ email: req.body.email });
-    // const empId = employee ? employee._id : null;
-    // dataSave.empId = empId;
-    // await dataSave.save();
-    // const Recruiter = new recruiter({
-    //   jobId: new ObjectId(dataSave._id),
-    //   email: data._id,
-    //   name: data.name,
-    // });
-    // const recruitersave = await Recruiter.save();
-    // console.log("bch", recruitersave);
     res.send({ status: "Success", message: "Added Successfully" });
   } catch (error) {
     console.log(error);
@@ -60,32 +48,26 @@ const vacancieDetails = async (req, res) => {
   }
 };
 
-const employeeDetail = async(req,res)=>{
+const employeeDetail = async (req, res) => {
   let userId = req.headers.hrid;
   const data = await EmployeeModel.aggregate([
     {
-      $match:
-        
-        {
-          company: new ObjectId(
-            userId
-          ),
-        },
+      $match: {
+        company: new ObjectId(userId),
+      },
     },
     {
-      $project:
-       
-        {
-          name: 1,
-          url: 1,
-          professionalemail: 1,
-          designation: 1,
-          _id: 1,
-        },
-    }
-  ])
+      $project: {
+        name: 1,
+        url: 1,
+        professionalemail: 1,
+        designation: 1,
+        _id: 1,
+      },
+    },
+  ]);
 
-  res.json({data});
-}
+  res.json({ data });
+};
 
-module.exports = { vacancies, vacancieDetails,employeeDetail };
+module.exports = { vacancies, vacancieDetails, employeeDetail };
