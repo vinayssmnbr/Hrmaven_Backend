@@ -171,7 +171,7 @@ const createEmp = async (req, res) => {
             newemployeeattendance(saved_user._id, req.body.dateOfJoining);
             console.log(saved_user);
             newemployeeattendance(saved_user._id);
-            User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
+            await User.findByIdAndUpdate(hrid, { $inc: { uid: 1 } });
             await res.send({
               status: "Success",
               message: "Added Successfully",
