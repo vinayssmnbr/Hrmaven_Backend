@@ -25,6 +25,7 @@ const candidates = async (req, res) => {
   
       const dataSave = await data.save();
       console.log(dataSave);
+      User.findByIdAndUpdate(jobid, { $inc: { uid: 1 } });
       res.send({ status: "Success", message: "Added Successfully" });
     } catch (error) {
       console.log(error);
@@ -54,6 +55,23 @@ const candidates = async (req, res) => {
     } catch (err) {
       console.log(err);
       res.status(500).send({ message: "Error updating user information" });
+    }
+  };
+
+  //for generate uid
+
+  const generatecanUid = async (req, res) => {
+    try {
+      let jobid = req.headers.jobid;
+      let doc = await User.findById(jobid);
+     
+      var uid = doc.uid;
+      res.send({ uid });
+    } catch (error) {
+      console.log(error);
+      res.send({
+        msg: "error",
+      });
     }
   };
   
@@ -121,6 +139,7 @@ const candidates = async (req, res) => {
     let userId = req.headers.jobid;
     // let id=req.headers.id
     try {
+      console.log(userId);
       const Candidate = await candidateModal.find({
         jobId: new ObjectId(userId),
       });
@@ -135,4 +154,4 @@ const candidates = async (req, res) => {
   
   
 
-module.exports = { candidates,updated ,getCandidateMobile,getCandidateEmail,getCandidate};
+module.exports = { candidates,updated ,getCandidateMobile,getCandidateEmail,getCandidate,generatecanUid};
