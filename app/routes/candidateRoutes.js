@@ -8,4 +8,5 @@ router.patch("/update/:id", candidateController.updated);
 router.get("/checkedmail/:email", candidateController.getCandidateEmail);
 router.get("/checkedmobile/:mobile", candidateController.getCandidateMobile);
 router.get("/findcandidate",candidateController.getCandidate);
+router.get("/candiduid", candidateController.generatecanUid);
 module.exports = router;

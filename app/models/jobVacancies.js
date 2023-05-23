@@ -67,6 +67,11 @@ const jobVacanciesSchema = new Schema({
     type: String,
   },
   recruiter: [recruiterSchema],
+
+  uid:{
+    type:Number,
+    default:100
+  }
 });
 
 const jobVacanciesModal = mongoose.model("jobvacancies", jobVacanciesSchema);

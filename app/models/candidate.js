@@ -45,6 +45,10 @@ const candidateSchema = new Schema({
         enum: ["resume received", "shortlisted", "interview", "hired", "rejected", "archive"],
         default: "resume received",
     },
+    
+    uid:{
+    type:Number
+    },
 
 })
 
