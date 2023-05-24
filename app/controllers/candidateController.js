@@ -29,7 +29,7 @@ const candidates = async (req, res) => {
 
     const dataSave = await data.save();
     console.log(dataSave);
-    jobvacancies.findByIdAndUpdate(jobId,{ $inc: { uid: 1 } });
+    await jobvacancies.findByIdAndUpdate(jobId,{ $inc: { uid: 1 } });
     res.send({ status: "Success", message: "Added Successfully" });
   } catch (error) {
     console.log(error);
