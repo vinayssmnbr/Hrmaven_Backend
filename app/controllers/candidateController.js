@@ -15,21 +15,18 @@ const candidates = async (req, res) => {
     applieddate,
     url,
     status,
-    uid
-
+    uid,
   } = req.body;
 
   try {
-
     const data = new candidateModal({
       ...req.body,
-      jobId: new ObjectId(req.body.jobId)
-
+      jobId: new ObjectId(req.body.jobId),
     });
 
     const dataSave = await data.save();
     console.log(dataSave);
-    jobvacancies.findByIdAndUpdate(jobId,{ $inc: { uid: 1 } });
+    await jobvacancies.findByIdAndUpdate(jobId, { $inc: { uid: 1 } });
     res.send({ status: "Success", message: "Added Successfully" });
   } catch (error) {
     console.log(error);
@@ -42,7 +39,9 @@ const candidates = async (req, res) => {
 const updated = async (req, res) => {
   try {
     if (!req.body) {
-      return res.status(400).send({ message: "Data to be updated cannot be empty" });
+      return res
+        .status(400)
+        .send({ message: "Data to be updated cannot be empty" });
     }
 
     const id = req.params.id;
@@ -117,16 +116,18 @@ const getCandidateMobile = async (req, res) => {
     return;
   }
   try {
-    const employee = await candidate_mobilecheck.getCredentialsBymobile(contactnumber);
+    const employee = await candidate_mobilecheck.getCredentialsBymobile(
+      contactnumber
+    );
     if (employee) {
       res.send({
-        message: 'user-found',
+        message: "user-found",
         contactnumber,
         flag: true,
       });
     } else {
       res.send({
-        message: 'contactnumber not found',
+        message: "contactnumber not found",
         contactnumber,
         flag: false,
       });
@@ -136,7 +137,6 @@ const getCandidateMobile = async (req, res) => {
     res.status(500).json({ message: "Error fetching user contactnumber" });
   }
 };
-
 
 //for getall data
 
@@ -161,4 +161,12 @@ const oldpasswordcheck = async (req, res) => {
   candidate_emailcheck.getolpassword(req, res);
 };
 
-module.exports = { candidates, updated, getCandidateMobile, getCandidateEmail, getCandidate, generatecanUid, oldpasswordcheck };
+module.exports = {
+  candidates,
+  updated,
+  getCandidateMobile,
+  getCandidateEmail,
+  getCandidate,
+  generatecanUid,
+  oldpasswordcheck,
+};

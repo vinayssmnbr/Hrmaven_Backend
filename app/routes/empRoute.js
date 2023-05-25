@@ -33,15 +33,12 @@ router.get("/uid", emplcontroller.generateUid);
 router.post("/export", emplcontroller.exportUsers);
 router.get("/:id", emplcontroller.getsEmp);
 router.patch("/update/:id", emplcontroller.update);
-router.delete("/:id", emplcontroller.deleteEmployee);
+router.delete("/delete/:id", emplcontroller.deleteEmployee);
 router.get("/detail/fetch", verify, emplcontroller.employeedetail);
 router.get("/checkemail/:email", emplcontroller.getEmployeeEmail);
 router.get("/checkmobile/:mobile", emplcontroller.getEmployeeMobile);
 router.patch("/empsideupdate/:id", emplcontroller.EmpSideUpdate);
 router.post("/emppwd/:email", emplcontroller.resetpassword);
 router.post("/empoldpwd/:email", emplcontroller.oldpasswordcheck);
-
-
-
 
 module.exports = router;
