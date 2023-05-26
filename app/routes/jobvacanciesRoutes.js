@@ -5,4 +5,5 @@ const jobvacanciesController = require("../controllers/recruitmentController");
 router.post("/vacancies", jobvacanciesController.vacancies);
 router.get("/recdata", jobvacanciesController.vacancieDetails);
 router.get("/jobemail", jobvacanciesController.employeeDetail);
+router.get("/fetchjob",jobvacanciesController.fetchjobVancancies);
 module.exports = router;

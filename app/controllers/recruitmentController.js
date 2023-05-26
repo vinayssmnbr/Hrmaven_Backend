@@ -70,4 +70,29 @@ const employeeDetail = async (req, res) => {
   res.json({ data });
 };
 
-module.exports = { vacancies, vacancieDetails, employeeDetail };
+const fetchjobVancancies = async (req,res)=>{
+  let userId = req.headers.id;
+  const data = await EmployeeModel.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: "jobvacancies",
+        localField: "company",
+        foreignField: "hrId",
+        as: "job",
+      },
+    },
+    {
+      $project: {
+        job: 1,
+      },
+    },
+  ])
+  res.json({data});
+}
+
+module.exports = { vacancies, vacancieDetails, employeeDetail,fetchjobVancancies };
