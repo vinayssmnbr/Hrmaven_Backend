@@ -6,6 +6,10 @@ const candidateSchema = new Schema({
     type: mongoose.Schema.ObjectId,
     ref: "jobvacancies",
   },
+  empId: {
+    type: mongoose.Schema.ObjectId,
+    ref: "employees",
+  },
 
   candidateName: {
     type: String,
@@ -32,18 +36,17 @@ const candidateSchema = new Schema({
     type: String,
   },
 
-    applieddate: {
-        type: Date,
-        // required: true,
-    },
+  applieddate: {
+    type: Date,
+    // required: true,
+  },
 
-    url: {
-        type: String,
-
-    },  
-    uid:{
-    type:Number
-    },
+  url: {
+    type: String,
+  },
+  uid: {
+    type: Number,
+  },
   status: {
     type: String,
     default: "Resume Received",

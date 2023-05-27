@@ -16,12 +16,14 @@ const candidates = async (req, res) => {
     url,
     status,
     uid,
+    empId,
   } = req.body;
 
   try {
     const data = new candidateModal({
       ...req.body,
       jobId: new ObjectId(req.body.jobId),
+      empId: new ObjectId(req.body.empId),
     });
 
     const dataSave = await data.save();
@@ -142,11 +144,13 @@ const getCandidateMobile = async (req, res) => {
 
 const getCandidate = async (req, res) => {
   let userId = req.headers.jobid;
+  let empId = req.headers.empid;
   // let id=req.headers.id
   try {
     console.log(userId);
     const Candidate = await candidateModal.find({
       jobId: new ObjectId(userId),
+      empId: new ObjectId(empId),
     });
     res.json(Candidate);
   } catch (error) {

@@ -70,7 +70,7 @@ const employeeDetail = async (req, res) => {
   res.json({ data });
 };
 
-const fetchjobVancancies = async (req,res)=>{
+const fetchjobVancancies = async (req, res) => {
   let userId = req.headers.id;
   const data = await EmployeeModel.aggregate([
     {
@@ -91,8 +91,13 @@ const fetchjobVancancies = async (req,res)=>{
         job: 1,
       },
     },
-  ])
-  res.json({data});
-}
+  ]);
+  res.json({ data });
+};
 
-module.exports = { vacancies, vacancieDetails, employeeDetail,fetchjobVancancies };
+module.exports = {
+  vacancies,
+  vacancieDetails,
+  employeeDetail,
+  fetchjobVancancies,
+};
