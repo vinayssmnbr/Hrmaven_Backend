@@ -143,16 +143,12 @@ const getCandidateMobile = async (req, res) => {
 //for getall data
 
 const getCandidate = async (req, res) => {
-  let userId = req.headers.jobid;
-  let empId = req.headers.empid;
-  // let id=req.headers.id
+  let jobId = req.headers.jobid;
   try {
-    console.log(userId);
     const Candidate = await candidateModal.find({
-      jobId: new ObjectId(userId),
-      empId: new ObjectId(empId),
+      jobId: new ObjectId(jobId)
     });
-    res.json(Candidate);
+    res.json({Candidate});
   } catch (error) {
     console.log(error);
     res.send({
@@ -160,10 +156,33 @@ const getCandidate = async (req, res) => {
     });
   }
 };
+const fetchReferCandidate = async(req,res)=>{
 
+  const id = req.headers.id;
+  const jobid = req.headers.jobid
+  const data = await candidateModal.aggregate([
+    {
+      $match: {
+        jobId: new ObjectId(
+          jobid
+        ),
+        empId: new ObjectId(
+          id
+        ),
+      },
+    },
+  ])
+  res.json({data});
+}
 const oldpasswordcheck = async (req, res) => {
   candidate_emailcheck.getolpassword(req, res);
 };
+
+// const fetchCandidateByHR= async(req,res)=>{
+//   const id = req.headers.id;
+//   const data = await candidateModel.find({jobId= new ObjectId(u)});
+//   res.json{data};
+// }
 
 module.exports = {
   candidates,
@@ -173,4 +192,5 @@ module.exports = {
   getCandidate,
   generatecanUid,
   oldpasswordcheck,
+  fetchReferCandidate
 };

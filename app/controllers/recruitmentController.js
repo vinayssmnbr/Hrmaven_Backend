@@ -1,6 +1,7 @@
 const jobvacancies = require("../models/jobVacancies");
 var ObjectId = require("mongodb").ObjectId;
 const EmployeeModel = require("../models/employee/employeeModel");
+const candidateModal = require('../models/candidate');
 
 const vacancies = async (req, res) => {
   const {
@@ -95,9 +96,12 @@ const fetchjobVancancies = async (req, res) => {
   res.json({ data });
 };
 
+
+
 module.exports = {
   vacancies,
   vacancieDetails,
   employeeDetail,
   fetchjobVancancies,
+  
 };
