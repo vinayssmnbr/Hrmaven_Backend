@@ -9,4 +9,5 @@ router.get("/checkedmobile/:contactnumber", candidateController.getCandidateMobi
 router.get("/findcandidate",candidateController.getCandidate);
 router.get("/candiduid", candidateController.generatecanUid);
 router.get("/fetchcandidate/refer",candidateController.fetchReferCandidate);
+
 module.exports = router;

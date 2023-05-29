@@ -96,12 +96,149 @@ const fetchjobVancancies = async (req, res) => {
   res.json({ data });
 };
 
+const activityfeed = async(req,res)=>{
+  const hrid = req.headers.hrid;
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  today = today.toString();
+  const data =await jobvacancies.aggregate([
+    {
+      $match: {
+        hrId: new ObjectId(
+          hrid
+        ),
+      },
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "job",
+      },
+    },
+    {
+      $unwind: "$job",
+    },
+    {
+      $match: {
+        "job.applieddate":{ $gte: new Date(today)},
+      },
+    },
+    {
+      $project: {
+        job_title: 1,
+        _id: 0,
+        candidate: "$job.candidateName",
+        date:"$job.applieddate",
+      },
+    },
+  ])
+  res.json({data});
+}
 
-
+const dynamicrecord = async(req,res)=>{
+  const hrid= req.headers.hrid;
+  const data =await jobvacancies.aggregate([
+    {
+      $match: {
+        hrId: new ObjectId(
+          hrid
+        ),
+      },
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "job",
+      },
+    },
+    {
+      $unwind: "$job",
+    },
+    {
+      $group: {
+        _id: "$hrId",
+        job: {
+          $push: "$job",
+        },
+      },
+    },
+    {
+      $project: {
+        job: 1,
+        _id: 0,
+      },
+    },
+    {
+      $addFields: {
+        hired: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "Hired"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        reject: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: [
+                      "$$item.status",
+                      "Rejected",
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        shortlisted: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: [
+                      "$$item.status",
+                      "Shortlisted",
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        total: {
+          $size: "$job",
+        },
+      },
+    },
+  ])
+  res.json({data});
+}
 module.exports = {
   vacancies,
   vacancieDetails,
   employeeDetail,
   fetchjobVancancies,
+  activityfeed,
+  dynamicrecord
   
 };
