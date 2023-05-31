@@ -1,7 +1,6 @@
 const jobvacancies = require("../models/jobVacancies");
 var ObjectId = require("mongodb").ObjectId;
 const EmployeeModel = require("../models/employee/employeeModel");
-const candidateModal = require("../models/candidate");
 const Meeting = require("../models/meeting");
 const candidateModal = require("../models/candidate");
 const jobVacanciesModal = require("../models/jobVacancies");
