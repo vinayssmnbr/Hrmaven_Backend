@@ -3,6 +3,9 @@ var ObjectId = require("mongodb").ObjectId;
 const EmployeeModel = require("../models/employee/employeeModel");
 const candidateModal = require("../models/candidate");
 const Meeting = require("../models/meeting");
+const candidateModal = require("../models/candidate");
+const jobVacanciesModal = require("../models/jobVacancies");
+const cron = require("node-cron");
 
 const vacancies = async (req, res) => {
   const {
@@ -117,6 +120,154 @@ const meeting = async (req, res) => {
     });
   }
 };
+const activityfeed = async (req, res) => {
+  const hrid = req.headers.hrid;
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  today = today.toString();
+  const data = await jobvacancies.aggregate([
+    {
+      $match: {
+        hrId: new ObjectId(hrid),
+      },
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "job",
+      },
+    },
+    {
+      $unwind: "$job",
+    },
+    {
+      $match: {
+        "job.applieddate": { $gte: new Date(today) },
+      },
+    },
+    {
+      $project: {
+        job_title: 1,
+        _id: 0,
+        candidate: "$job.candidateName",
+        date: "$job.applieddate",
+      },
+    },
+  ]);
+  res.json({ data });
+};
+
+const dynamicrecord = async (req, res) => {
+  const hrid = req.headers.hrid;
+  const data = await jobvacancies.aggregate([
+    {
+      $match: {
+        hrId: new ObjectId(hrid),
+      },
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "job",
+      },
+    },
+    {
+      $unwind: "$job",
+    },
+    {
+      $group: {
+        _id: "$hrId",
+        job: {
+          $push: "$job",
+        },
+      },
+    },
+    {
+      $project: {
+        job: 1,
+        _id: 0,
+      },
+    },
+    {
+      $addFields: {
+        hired: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "Hired"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        reject: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "Rejected"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        shortlisted: {
+          $size: {
+            $filter: {
+              input: "$job",
+              as: "item",
+              cond: {
+                $and: [
+                  {
+                    $eq: ["$$item.status", "Shortlisted"],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        total: {
+          $size: "$job",
+        },
+      },
+    },
+  ]);
+  res.json({ data });
+};
+
+cron.schedule(
+  "0 23 * * * ",
+  function () {
+    console.log("schedule");
+    jobdone();
+  },
+  {
+    scheduled: true,
+    timezone: "Asia/Kolkata",
+  }
+);
+const jobdone = async (req, res) => {
+  const data = await jobvacancies.find({
+    date: { $lt: new Date() },
+    status: "",
+  });
+  data.map(async (item) => {
+    await jobvacancies.findByIdAndUpdate(item._id, { status: "complete" });
+  });
+};
 
 module.exports = {
   vacancies,
@@ -124,4 +275,6 @@ module.exports = {
   employeeDetail,
   fetchjobVancancies,
   meeting,
+  activityfeed,
+  dynamicrecord,
 };
