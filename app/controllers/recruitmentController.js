@@ -2,6 +2,8 @@ const jobvacancies = require("../models/jobVacancies");
 var ObjectId = require("mongodb").ObjectId;
 const EmployeeModel = require("../models/employee/employeeModel");
 const candidateModal = require('../models/candidate');
+const jobVacanciesModal = require("../models/jobVacancies");
+const cron = require("node-cron");
 
 const vacancies = async (req, res) => {
   const {
@@ -233,6 +235,21 @@ const dynamicrecord = async(req,res)=>{
   ])
   res.json({data});
 }
+
+cron.schedule('0 23 * * * ',function() {
+  console.log('schedule');
+  jobdone();
+ }, {
+   scheduled: true,
+   timezone: "Asia/Kolkata"
+ });
+const jobdone = async(req,res)=>{
+  const data = await jobvacancies.find({ date:{$lt:new Date()},status:""});
+  data.map(async(item)=>{
+    await jobvacancies.findByIdAndUpdate(item._id,{status:"complete"})
+  })
+}
+
 module.exports = {
   vacancies,
   vacancieDetails,
