@@ -423,61 +423,6 @@ const getEmployeeMobile = async (req, res) => {
   }
 };
 
-// const exportUsers = async (req, res) => {
-//   console.log("inside")
-//   try {
-//     let users = [];
-//     var userData = await EmployeeModel.find({});
-//     let userData = req.body.userData // this.selectedEmployess
-//      console.log('user', userData)
-//     userData.forEach((employees) => {
-//       const {
-//         id,
-//         uid,
-//         name,
-//         dateOfJoining,
-//         mobile,
-//         address,
-//         email,
-//         dateOfBirth,
-//         gender,
-//         bankname,
-//         accountno,
-//         ifsc,
-//         adhaarno,
-//         panno,
-//         designation,
-//         bloodGroup,
-//         city } = employees;
-//       users.push({ id, uid, name, dateOfJoining, mobile, address, email, dateOfBirth, gender, bankname, accountno, ifsc, adhaarno, panno, designation, bloodGroup, city });
-//     });
-//     const csvFields = ['Id', 'UID', 'Name', 'Email', 'DateOfJoining', 'Mobile', 'Address', 'DateofBirth', 'Gender', 'BankName', 'Accountno', 'Ifsc', 'Adharno', 'Panno', 'Designation', 'BloodGroup', 'City'];
-//     const csvParser = new Parser({ csvFields });
-//     const csvData = csvParser.parse(users);
-//     res.setHeader("Content-Type", "text/csv");
-//     res.setHeader("Content-Disposition", "attatchement:filename=usersData.csv");
-//     res.status(200).end(csvData);
-
-//   } catch (error) {
-//     res.send({ status: 400, success: false, msg: error.message });
-//   }
-// }
-
-//first file of importUsers
-
-// const importUsers = async (req, res) => {
-//   try {
-//     const files = req.files;
-//     if (Array.isArray(files) && files.length > 0) {
-//       res.json(files);
-//     } else {
-//       throw new Error("File upload unsuccessful");
-//     }
-//   } catch (error) {
-//     res.status(500).send(error.message);
-//   }
-// };
-
 // second file for importUser
 
 const importUsers = async (req, res) => {
@@ -519,17 +464,17 @@ const getEmployees = async (req, res) => {
 };
 
 //create Experience
-const experienceArray = async (req, res) => {
-  try {
-    const { experienceDetails } = req.body;
-    const modal = new EmployeeModel({ experienceDetails });
-    const savedModal = await modal.save();
-    res.json(savedModal);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
+// const experienceArray = async (req, res) => {
+//   try {
+//     const { experienceDetails } = req.body;
+//     const modal = new EmployeeModel({ experienceDetails });
+//     const savedModal = await modal.save();
+//     res.json(savedModal);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 const EmpSideUpdate = async (req, res) => {
   const id = req.params.id;
   const {
@@ -608,7 +553,7 @@ module.exports = {
   getEmployees,
   employeedetail,
   getEmployeeMobile,
-  experienceArray,
+  // experienceArray,
   EmpSideUpdate,
   resetpassword,
   oldpasswordcheck,

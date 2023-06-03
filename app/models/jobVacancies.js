@@ -12,12 +12,12 @@ const recruiterSchema = new Schema({
   name: {
     type: String,
   },
-  professionalemail:{
-    type:String,
+  professionalemail: {
+    type: String,
   },
-  designation:{
-    type:String
-  }
+  designation: {
+    type: String,
+  },
 });
 
 const jobVacanciesSchema = new Schema({
@@ -68,10 +68,10 @@ const jobVacanciesSchema = new Schema({
   },
   recruiter: [recruiterSchema],
 
-  uid:{
-    type:Number,
-    default:100
-  }
+  uid: {
+    type: Number,
+    default: 100,
+  },
 });
 
 const jobVacanciesModal = mongoose.model("jobvacancies", jobVacanciesSchema);
