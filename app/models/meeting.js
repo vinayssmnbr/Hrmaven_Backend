@@ -28,10 +28,10 @@ const meetingSchema = new mongoose.Schema({
     type: String,
   },
   start_time: {
-    type: String,
+    type: Date,
   },
   end_time: {
-    type: String,
+    type: Date,
   },
   invite_employee: {
     type: String,

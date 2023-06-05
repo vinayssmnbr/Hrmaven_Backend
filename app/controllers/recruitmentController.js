@@ -100,13 +100,41 @@ const fetchjobVancancies = async (req, res) => {
 };
 
 //MEETING
+cron.schedule(
+  "* * * * * ",
+  async function () {
+    var date = new Date();
+    console.log(date.toISOString());
+    var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
+      date.getUTCDate(), date.getUTCHours(),
+      date.getUTCMinutes(), date.getUTCSeconds());
+    var endTime = new Date(now_utc);
+    var data = await Meeting.find({ end_time: { $lte: new Date(date.toISOString()) } });
+    
+    data.map(async (item) => {
+      console.log(item);
+      await Meeting.findByIdAndDelete(item._id);
+    })
+  }
+);
 
 const meeting = async (req, res) => {
-  const { meeting_title, mode, date, start_time, end_time, invite_employee } =
-    req.body;
+  const { meeting_title, mode, date, start_time, end_time, invite_employee } = req.body;
+  var startTime = new Date(date);
+  var start_part = req.body.start_time.split(":");
+  startTime.setHours(start_part[0]);
+  startTime.setMinutes(start_part[1]);
+
+  var endTime = new Date(date);
+  var end_part = req.body.end_time.split(":");
+  endTime.setHours(end_part[0]);
+  endTime.setMinutes(end_part[1]);
+
   try {
     const data = new Meeting({
       ...req.body,
+      start_time: new Date(startTime),
+      end_time: new Date(endTime),
       candidateId: new ObjectId(req.body.statusid),
     });
     const meetingSave = await data.save();
@@ -119,6 +147,87 @@ const meeting = async (req, res) => {
     });
   }
 };
+
+const readMeeting = async (req, res) => {
+  const id = req.headers.id;
+  const role = req.headers.role;
+  let tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate());
+  tomorrow.setHours(0, 0, 0, 0);
+  const data = await jobvacancies.aggregate(
+    [
+      {
+        $match: {
+          hrId: new ObjectId(id),
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: "candidates",
+          localField: "_id",
+          foreignField: "jobId",
+          as: "result",
+        },
+      },
+      {
+        $unwind: "$result",
+      },
+      {
+        $lookup: {
+          from: "meetings",
+          localField: "result._id",
+          foreignField: "candidateId",
+          as: "meetings",
+        },
+      },
+      {
+        $unwind: "$meetings",
+      },
+      {
+        $match: {
+          "meetings.end_time": {
+            $gte: new Date(
+              tomorrow
+            ),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          meeting: {
+            $push: "$meetings",
+          },
+        },
+      },
+    ]
+  )
+
+  res.json({data});
+
+  // if (role == 'employee') {
+  //   try {
+  //     var date = new Date();
+  //     var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
+  //       date.getUTCDate(), date.getUTCHours(),
+  //       date.getUTCMinutes(), date.getUTCSeconds());
+  //     var endTime = new Date(now_utc);
+  //     var data = await Meeting.find({ date: { $lte: new Date(endTime) } }, { candidateId: new ObjectId(id) });
+  //     res.json(data);
+
+  //   } catch (e) {
+  //     res.status(400);
+  //   }
+  // }
+  // else{
+    
+  // }
+}
 const activityfeed = async (req, res) => {
   const hrid = req.headers.hrid;
   let today = new Date();
@@ -276,4 +385,5 @@ module.exports = {
   meeting,
   activityfeed,
   dynamicrecord,
+  readMeeting
 };
