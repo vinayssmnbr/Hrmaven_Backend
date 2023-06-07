@@ -100,26 +100,31 @@ const fetchjobVancancies = async (req, res) => {
 };
 
 //MEETING
-cron.schedule(
-  "* * * * * ",
-  async function () {
-    var date = new Date();
-    console.log(date.toISOString());
-    var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
-      date.getUTCDate(), date.getUTCHours(),
-      date.getUTCMinutes(), date.getUTCSeconds());
-    var endTime = new Date(now_utc);
-    var data = await Meeting.find({ end_time: { $lte: new Date(date.toISOString()) } });
-    
-    data.map(async (item) => {
-      console.log(item);
-      await Meeting.findByIdAndDelete(item._id);
-    })
-  }
-);
+cron.schedule("* * * * * ", async function () {
+  var date = new Date();
+  console.log(date.toISOString());
+  var now_utc = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds()
+  );
+  var endTime = new Date(now_utc);
+  var data = await Meeting.find({
+    end_time: { $lte: new Date(date.toISOString()) },
+  });
+
+  data.map(async (item) => {
+    console.log(item);
+    await Meeting.findByIdAndDelete(item._id);
+  });
+});
 
 const meeting = async (req, res) => {
-  const { meeting_title, mode, date, start_time, end_time, invite_employee } = req.body;
+  const { meeting_title, mode, date, start_time, end_time, invite_employee } =
+    req.body;
   var startTime = new Date(date);
   var start_part = req.body.start_time.split(":");
   startTime.setHours(start_part[0]);
@@ -154,61 +159,57 @@ const readMeeting = async (req, res) => {
   let tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate());
   tomorrow.setHours(0, 0, 0, 0);
-  const data = await jobvacancies.aggregate(
-    [
-      {
-        $match: {
-          hrId: new ObjectId(id),
+  const data = await jobvacancies.aggregate([
+    {
+      $match: {
+        hrId: new ObjectId(id),
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+      },
+    },
+    {
+      $lookup: {
+        from: "candidates",
+        localField: "_id",
+        foreignField: "jobId",
+        as: "result",
+      },
+    },
+    {
+      $unwind: "$result",
+    },
+    {
+      $lookup: {
+        from: "meetings",
+        localField: "result._id",
+        foreignField: "candidateId",
+        as: "meetings",
+      },
+    },
+    {
+      $unwind: "$meetings",
+    },
+    {
+      $match: {
+        "meetings.end_time": {
+          $gte: new Date(tomorrow),
         },
       },
-      {
-        $project: {
-          _id: 1,
+    },
+    {
+      $group: {
+        _id: null,
+        meeting: {
+          $push: "$meetings",
         },
       },
-      {
-        $lookup: {
-          from: "candidates",
-          localField: "_id",
-          foreignField: "jobId",
-          as: "result",
-        },
-      },
-      {
-        $unwind: "$result",
-      },
-      {
-        $lookup: {
-          from: "meetings",
-          localField: "result._id",
-          foreignField: "candidateId",
-          as: "meetings",
-        },
-      },
-      {
-        $unwind: "$meetings",
-      },
-      {
-        $match: {
-          "meetings.end_time": {
-            $gte: new Date(
-              tomorrow
-            ),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          meeting: {
-            $push: "$meetings",
-          },
-        },
-      },
-    ]
-  )
+    },
+  ]);
 
-  res.json({data});
+  res.json({ data });
 
   // if (role == 'employee') {
   //   try {
@@ -225,9 +226,9 @@ const readMeeting = async (req, res) => {
   //   }
   // }
   // else{
-    
+
   // }
-}
+};
 const activityfeed = async (req, res) => {
   const hrid = req.headers.hrid;
   let today = new Date();
@@ -377,6 +378,27 @@ const jobdone = async (req, res) => {
   });
 };
 
+const fetchmeetingEpSide = async (req, res) => {
+  const id = req.headers.id;
+  const daa = await EmployeeModel.findById(id);
+  const data = await Meeting.aggregate([
+    {
+      $unwind: "$list",
+    },
+    {
+      $addFields: {
+        email: "$list.professionalemail",
+      },
+    },
+    {
+      $match: {
+        email: daa.professionalemail,
+      },
+    },
+  ]);
+  res.json({ data });
+};
+
 module.exports = {
   vacancies,
   vacancieDetails,
@@ -385,5 +407,6 @@ module.exports = {
   meeting,
   activityfeed,
   dynamicrecord,
-  readMeeting
+  readMeeting,
+  fetchmeetingEpSide,
 };
