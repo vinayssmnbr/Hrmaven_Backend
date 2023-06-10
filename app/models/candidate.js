@@ -30,14 +30,6 @@ const candidateSchema = new Schema({
 
   applieddate: {
     type: Date,
-  },
-
-  url: {
-    type: String,
-  },
-
-  applieddate: {
-    type: Date,
     // required: true,
   },
 
