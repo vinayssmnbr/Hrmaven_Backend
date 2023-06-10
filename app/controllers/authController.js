@@ -8,9 +8,11 @@ const googleController = async (req, res) => {
     const hrid = await fetch.user._id;
     console.log(fetch);
     // res.redirect(`https://turneazy.com/login?token=${token}`);
-    res.redirect(`https://turneazy.com/login?token=${token}&email=${email}&hrid=${hrid}`);
+    res.redirect(
+      `https://turneazy.com/dashboard?token=${token}&email=${email}&hrid=${hrid}`
+    );
   } catch (error) {
-    res.redirect('https://turneazy.com/login?token=notfound');
+    res.redirect("https://turneazy.com/login?token=notfound");
   }
 };
 
