@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const google = async (req, res) => {
   try {
     if (userProfile) {
+      console.log(userProfile);
       const user = await User.findOne({ email: userProfile.email });
       if (user) {
         const token = jwt.sign(
@@ -14,13 +15,12 @@ const google = async (req, res) => {
           process.env.JWT_TOKEN_KEY
         );
 
-        return { token,user};
+        return { token, user };
       } else {
         return "email doen not exist";
       }
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 };
 
 module.exports = { google };

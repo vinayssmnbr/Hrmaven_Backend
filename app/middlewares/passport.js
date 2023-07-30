@@ -15,7 +15,7 @@ passport.use(
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
       callbackURL: "https://hrmaven.works/auth/google/callback",
-    //  callbackURL: "http://localhost:3000/auth/google/callback",
+      // callbackURL: "http://localhost:3000/auth/google/callback",
       passReqToCallback: true,
     },
     function (request, accessToken, refreshToken, profile, done) {
